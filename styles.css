@@ -22,4 +22,7 @@ html, body {
 .table-header-section-raw {
     width: 10vw;
     background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

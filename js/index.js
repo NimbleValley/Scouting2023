@@ -18,7 +18,11 @@ function getData() {
         tableHeader.id = "table-header-raw";
         FIELDS.forEach(element => {
             var temp = document.createElement("th");
-            var text = document.cre
+
+            var text = document.createElement("h3");
+            text.innerText = element;
+            temp.appendChild(text);
+            
             temp.className = "table-header-section-raw"
             tableHeader.appendChild(temp);
         });
