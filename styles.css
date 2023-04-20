@@ -1,0 +1,25 @@
+html, body {
+    background-color: rgb(47, 47, 61);
+}
+
+/* RAW TABLE*/
+
+#raw-table {
+    background-color: #858686;
+    border-radius: 0.75vw;
+    padding: 1vw;
+    width: fit-content;
+}
+
+#table-header-raw {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 1vw;
+    height: fit-content;
+}
+
+.table-header-section-raw {
+    width: 10vw;
+    background-color: white;
+}
