@@ -1,28 +1,95 @@
 html, body {
     background-color: rgb(47, 47, 61);
+    font-family: 'Poppins', sans-serif;
 }
 
 /* RAW TABLE*/
 
 #raw-table {
-    background-color: #858686;
+    background-color: #444444;
     border-radius: 0.75vw;
-    padding: 1vw;
     width: fit-content;
-}
-
-#table-header-raw {
-    width: 100%;
     display: flex;
     justify-content: space-around;
-    padding: 1vw;
-    height: fit-content;
 }
 
 .table-header-section-raw {
-    width: 10vw;
-    background-color: white;
+    height: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: fit-content;
+    white-space: nowrap;
+    padding: 1vh;
+    transition: scale 0.15s, background-color 0.15s;
+    background-color: rgb(235, 228, 220);
+    border-radius: 0.75vw;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2vh;
+    user-select: none;
 }
+
+.table-header-section-raw:hover {
+    cursor: pointer;
+    scale: 1.1;
+    background-color: rgb(218, 148, 68);
+    font-weight: bolder;
+}
+
+.column {
+    width: fit-content;
+    padding: 1vh;
+}
+
+.data-value {
+    white-space: nowrap;
+    width: 100%;
+    text-align: center;
+    font-size: 2.5vh;
+    margin-top: 1vh;
+    border-radius: 0.5vw;
+    font-weight: bolder;
+    color: white;
+    transition: background-color 0.25s;
+    background-color: #4d4e4e00
+}
+
+.data-value:hover {
+    cursor: pointer;
+    background-color: #333333
+}
+
+h3 {
+    font-size: 2vh;
+    margin: 0;
+    font-weight: lighter;
+}
+
+
+
+/* Sroll Bar*/
+
+::-webkit-scrollbar {
+    background-color: hsl(0, 0%, 0%);
+    width: 1.5vh;
+    height: 1.5vh;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background-color: hsla(220, 3%, 23%, 0.938);
+    box-shadow: 0 0 3px hsl(0, 0%, 0%);
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background-color: hsl(231, 6%, 59%);
+    border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(19, 98%, 61%);
+  }
