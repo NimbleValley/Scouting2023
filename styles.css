@@ -14,6 +14,8 @@ html, body {
 }
 
 .table-header-section-raw {
+    position: sticky;
+    top: 0;
     height: fit-content;
     display: flex;
     justify-content: center;
