@@ -10,12 +10,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js"></script>
 </head>
 
 <body>
-    <div id="raw-table">
-
+    <div id="sidebar">
+        <div id="side-button-container">
+            <div class="side-button" onclick="refreshData()">Refresh</div>
+            <div class="side-button" onclick="getRawData()">Raw</div>
+            <div class="side-button" onclick="getTeamData()">Team</div>
+        </div>
+        <div id="open-sidebar" onclick="toggleSidebar()">
+            <p>></p>
+        </div>
     </div>
+    <div id="data-table"></div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="lib/csv.js"></script>

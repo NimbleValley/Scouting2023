@@ -1,21 +1,27 @@
 html, body {
     background-color: rgb(47, 47, 61);
     font-family: 'Poppins', sans-serif;
+    margin: 0;
+    display: inline;width: max-content
 }
 
 /* RAW TABLE*/
 
-#raw-table {
+#data-table {
     background-color: #444444;
     border-radius: 0.75vw;
     width: fit-content;
     display: flex;
     justify-content: space-around;
+    margin-bottom: 10vh;
+    margin-left: 34vh;
+    margin-top: -98.5vh;
+    position: relative;
 }
 
 .table-header-section-raw {
     position: sticky;
-    top: 0;
+    top: 0vh;
     height: fit-content;
     display: flex;
     justify-content: center;
@@ -34,7 +40,7 @@ html, body {
 
 .table-header-section-raw:hover {
     cursor: pointer;
-    scale: 1.1;
+    scale: 1.05;
     background-color: rgb(218, 148, 68);
     font-weight: bolder;
 }
@@ -42,6 +48,7 @@ html, body {
 .column {
     width: fit-content;
     padding: 1vh;
+    top: 0;
 }
 
 .data-value {
@@ -68,6 +75,72 @@ h3 {
     font-weight: lighter;
 }
 
+#open-sidebar {
+    background-color: #1a1919;
+    width: 5vh;
+    height: 100vh;
+    left: 0vh;
+    top: 0vh;
+    margin-top: 0vh;
+    font-family: 'Poppins', sans-serif;
+    font-size: 3vw;
+    display: flex;
+    align-items: center;
+    color: white;
+    font-weight: bolder;
+    transition: background-color 0.5s, color 0.5s;
+    z-index: 10;
+}
+
+#open-sidebar:hover {
+    cursor: pointer;
+    background-color: #dfdad6;
+    color: black;
+}
+
+p {
+    margin: 0;
+    width: 100%;
+    text-align: center;
+}
+
+#sidebar {
+    position: sticky;
+    background-color: black;
+    width: 30vh;
+    height: 100vh;
+    z-index: 100;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    left: -26vh;
+}
+
+#side-button-container {
+    width: 17vw;
+}
+
+.side-button {
+    position: relative;
+    color: white;
+    border-radius: 0.75vw;
+    font-size: 4vh;
+    background-color: #444444;
+    width: 18vh;
+    padding: 1vw;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2vh;
+    font-weight: bolder;
+    transition: background-color 0.15s, scale 0.15s;
+    text-align: center;
+}
+
+.side-button:hover {
+    cursor: pointer;
+    background-color: #797979;
+    scale: 1.1;
+}
 
 
 /* Sroll Bar*/
