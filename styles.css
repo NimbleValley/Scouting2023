@@ -2,7 +2,8 @@ html, body {
     background-color: rgb(47, 47, 61);
     font-family: 'Poppins', sans-serif;
     margin: 0;
-    display: inline;width: max-content
+    display: inline;
+    width: max-content;
 }
 
 /* RAW TABLE*/
@@ -139,6 +140,90 @@ p {
 .side-button:hover {
     cursor: pointer;
     background-color: #797979;
+    scale: 1.1;
+}
+
+.active {
+    background-color: #797979;
+}
+
+#settings {
+    position: sticky;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #5b5b5b;
+    z-index: 254;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#settings-interior {
+    background-color: #333333;
+    width: 50vw;
+    left: 25vw;
+    height: 95vh;
+    border-radius: 1vw;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding-top: 1vh;
+    flex-direction: column;
+}
+
+h5 {
+    font-size: 8vh;
+    color: white;
+    background-color: #2b2b2b;
+    width: fit-content;
+    padding: 0.5vw;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    border-radius: 0.5vw;
+    margin: 0;
+    height: fit-content;
+    user-select: none;
+    transition: background-color 0.5s;
+}
+
+h5:hover {
+    cursor: pointer;
+    background-color: #1b1b1b;
+}
+
+select {
+    font-family: 'Poppins', sans-serif;
+    background-color: transparent;
+    border: 0.5vh solid #989898;
+    color: white;
+    font-size: 3vh;
+    padding: 1vh;
+    border-radius: 0.5vh;
+    transition: background-color 0.25s;
+}
+
+select:hover {
+    cursor: pointer;
+    background-color: #bbbaba;
+    color: #171717;
+}
+
+option {
+    color:#171717;
+    background-color: #bbbaba;
+}
+
+#settings-back {
+    font-size: 5vh;
+    background-color:#171717;
+    transition: background-color 0.25s, scale 0.25s;
+}
+
+#settings-back:hover {
+    cursor: pointer;
+    background-color: #5b5b5b;
     scale: 1.1;
 }
 

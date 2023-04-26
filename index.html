@@ -14,11 +14,21 @@
 </head>
 
 <body>
+    <div id="settings">
+        <div id="settings-interior">
+            <h5>Settings</h5>
+            <select name="event" id="event-select"></select>
+            <h5 id="settings-back" onclick="toggleSettings()">Back</h5>
+        </div>
+    </div>
+
     <div id="sidebar">
         <div id="side-button-container">
             <div class="side-button" onclick="refreshData()">Refresh</div>
             <div class="side-button" onclick="getRawData()">Raw</div>
             <div class="side-button" onclick="getTeamData()">Team</div>
+            <div class="side-button" onclick="getTeamData()">TBA</div>
+            <div class="side-button" onclick="toggleSettings()">Settings</div>
         </div>
         <div id="open-sidebar" onclick="toggleSidebar()">
             <p>></p>

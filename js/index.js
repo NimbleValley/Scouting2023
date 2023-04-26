@@ -4,6 +4,11 @@ const sidebar = document.getElementById("sidebar");
 const openSidebarButton = document.getElementById("open-sidebar");
 var sidebarOpen = false;
 
+const body = document.body;
+const settings = document.getElementById("settings");
+var settingsOpen = false;
+const eventSelect = document.getElementById("event-select");
+
 const rawTable = document.getElementById("data-table");
 //API Fetch Response
 var DATA;
@@ -15,6 +20,18 @@ var RECORDS;
 var COLUMNS = new Array();
 var TEAM_COLUMNS = new Array();
 var TEAM_ROWS = new Array();
+
+var TBA_EVENT_KEYS;
+var TBA_EVENT_NAMES = new Array();
+
+const options = {
+    headers: {
+        'X-TBA-Auth-Key': 'sBluV8DKQA0hTvJ2ABC9U3VDZunUGUSehxuDPvtNC8SQ3Q5XHvQVt0nm3X7cvP7j'
+    }
+}
+
+getTBA('https://www.thebluealliance.com/api/v3/events/2023/keys', 0);
+getTBA('https://www.thebluealliance.com/api/v3/events/2023', 1);
 
 var TABLE_TYPE = "raw";
 var TEAMS;
@@ -303,11 +320,11 @@ function getTeamData() {
         rawTable.appendChild(tempC);
     }
 
-    for(var g = 0; g < dataToKeep.length; g ++) {
+    for (var g = 0; g < dataToKeep.length; g++) {
         TEAM_COLUMNS[g] = new Array();
     }
 
-    for(var t = 0; t < TEAMS.length; t ++) {
+    for (var t = 0; t < TEAMS.length; t++) {
         TEAM_ROWS[t] = new Array();
     }
 
@@ -335,4 +352,42 @@ function getTeamData() {
         }
     }
     console.log(TEAM_ROWS);
+}
+
+function getTBA(url, type) {
+    fetch(url, options)
+        .then((response) => response.json())
+        .then((json) => {
+            if (type = 0) {
+                TBA_EVENT_KEYS = json;
+            } else if(type = 1) {
+                console.log(json.length);
+                for(var i = 0; i < json.length; i ++) {
+                    TBA_EVENT_NAMES[i] = json[i].name;
+                    if(TBA_EVENT_NAMES[i].length > 25) {
+                        TBA_EVENT_NAMES[i] = TBA_EVENT_NAMES[i].substring(0, 25);
+                    }
+                }
+            }
+        });
+}
+
+async function toggleSettings() {
+    settingsOpen = !settingsOpen;
+    if (settingsOpen) {
+        settings.style.display = "flex";
+        body.style.overflow = "hidden";
+        //var eventOptions = new Array();
+        eventSelect.innerHTML = "";
+        console.log(TBA_EVENT_NAMES);
+        for (var i = 0; i < TBA_EVENT_NAMES.length; i++) {
+            var temp = document.createElement("option");
+            temp.value = i;
+            temp.innerText = TBA_EVENT_NAMES[i];
+            eventSelect.appendChild(temp);
+        }
+    } else {
+        settings.style.display = "none";
+        body.style.overflow = "auto";
+    }
 }
