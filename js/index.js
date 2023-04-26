@@ -14,6 +14,7 @@ var RECORDS;
 //Records sorted into columns for filtering & sorting
 var COLUMNS = new Array();
 var TEAM_COLUMNS = new Array();
+var TEAM_ROWS = new Array();
 
 var TABLE_TYPE = "raw";
 var TEAMS;
@@ -101,7 +102,7 @@ function sortColumn(colNum, type, col) {
         } else if (direction % 3 == 1) {
             sortedColumn = sortedColumn[colNum].sort(function (a, b) { return b - a });
         } else {
-            originalSort();
+            originalSort(RECORDS, COLUMNS);
             return;
         }
 
@@ -155,15 +156,18 @@ function sortTeamColumn(colNum, type, col, dk) {
     if (type == 1) {
         var sortedColumn = JSON.parse(JSON.stringify(TEAM_COLUMNS));
         //console.log(dir);
-        console.log(dk)
+        console.log(sortedColumn);
+        //console.log(dk)
         if (direction % 3 == 0) {
-            sortedColumn = sortedColumn[dk[colNum]].sort(function (a, b) { return a - b });
+            sortedColumn = sortedColumn[colNum].sort(function (a, b) { return a - b });
         } else if (direction % 3 == 1) {
-            sortedColumn = sortedColumn[dk[colNum]].sort(function (a, b) { return b - a });
+            sortedColumn = sortedColumn[colNum].sort(function (a, b) { return b - a });
         } else {
-            originalSort();
+            originalSort(TEAM_ROWS, TEAM_COLUMNS);
             return;
         }
+
+        console.log(sortedColumn);
 
         var sortedRows = [];
         var takenRows = [];
@@ -176,7 +180,7 @@ function sortTeamColumn(colNum, type, col, dk) {
                 //console.log(tempColumns[colNum][i]);
                 //console.log(takenRows.includes(i));
                 if (TEAM_COLUMNS[colNum][i] == sortedColumn[r] && !takenRows.includes(i)) {
-                    sortedRows[counter] = RECORDS[dk[i]];
+                    sortedRows[counter] = TEAM_ROWS[i];
                     takenRows[counter] = i;
                     counter++;
                     break;
@@ -187,7 +191,7 @@ function sortTeamColumn(colNum, type, col, dk) {
         var cols = document.getElementsByClassName("column");
         for (var i = 0; i < TEAMS.length; i++) {
             for (var s = 0; s < TEAM_COLUMNS.length; s++) {
-                //console.log(RECORDS[i][s]);
+                console.log(sortedRows);
                 var tempCol = cols[s];
                 var temp = tempCol.children[i + 1];
                 temp.innerText = sortedRows[i][s];
@@ -207,14 +211,14 @@ function detectCharacter(val) {
     return 0;
 }
 
-function originalSort() {
+function originalSort(record, column) {
     var cols = document.getElementsByClassName("column");
-    for (var x = 0; x < RECORDS.length; x++) {
-        for (var y = 0; y < RECORDS[x].length - 1; y++) {
+    for (var x = 0; x < record.length; x++) {
+        for (var y = 0; y < record[x].length - 1; y++) {
             //console.log(RECORDS[i][s]);
             var tempCol = cols[y];
             var temp = tempCol.children[x + 1];
-            temp.innerText = COLUMNS[y][x];
+            temp.innerText = column[y][x];
         }
     }
 }
@@ -223,11 +227,11 @@ function toggleSidebar() {
     sidebarOpen = !sidebarOpen;
 
     if (sidebarOpen) {
-        tl.to(sidebar, { left: "0vw", duration: 0.5, ease: "power2" });
+        tl.to(sidebar, { left: "0vh", duration: 0.5, ease: "power2" });
         //tl.to(rawTable, { marginLeft: "23vw", duration: 0.5, ease: "power2"}, "-=0.5");
         tl.to(openSidebarButton, { scale: "-1, 1", duration: 0.5, ease: "power2" }, "-=0.5");
     } else {
-        tl.to(sidebar, { left: "-26vh", duration: 0.5, ease: "power2" });
+        tl.to(sidebar, { left: "-25vh", duration: 0.5, ease: "power2" });
         //tl.to(rawTable, { marginLeft: "3vw", duration: 0.5, ease: "power2"}, "-=0.5");
         tl.to(openSidebarButton, { scale: "1, 1", duration: 0.5, ease: "power2" }, "-=0.5");
     }
@@ -253,6 +257,7 @@ function getTeamData() {
 function getTeamData() {
     rawTable.innerHTML = "";
     TEAM_COLUMNS = [];
+    TEAM_ROWS = [];
 
     var dataToKeep = [];
     var dCounter = 0;
@@ -302,6 +307,10 @@ function getTeamData() {
         TEAM_COLUMNS[g] = new Array();
     }
 
+    for(var t = 0; t < TEAMS.length; t ++) {
+        TEAM_ROWS[t] = new Array();
+    }
+
     for (var i = 0; i < TEAMS.length; i++) {
         var teamRows = [];
         var rCounter = 0;
@@ -322,7 +331,8 @@ function getTeamData() {
             tempData.innerText = Math.floor(average / teamRows.length * 10) / 10;
             rawTable.children[c].appendChild(tempData);
             TEAM_COLUMNS[c][i] = Math.floor(average / teamRows.length * 10) / 10;
+            TEAM_ROWS[i][c] = Math.floor(average / teamRows.length * 10) / 10;
         }
     }
-    console.log(TEAM_COLUMNS);
+    console.log(TEAM_ROWS);
 }

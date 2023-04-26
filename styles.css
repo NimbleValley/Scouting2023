@@ -83,7 +83,7 @@ h3 {
     top: 0vh;
     margin-top: 0vh;
     font-family: 'Poppins', sans-serif;
-    font-size: 3vw;
+    font-size: 4vh;
     display: flex;
     align-items: center;
     color: white;
@@ -113,21 +113,21 @@ p {
     top: 0;
     display: flex;
     justify-content: space-between;
-    left: -26vh;
+    left: -25vh;
 }
 
 #side-button-container {
-    width: 17vw;
+    width: 25vh;
 }
 
 .side-button {
     position: relative;
     color: white;
-    border-radius: 0.75vw;
+    border-radius: 0.75vh;
     font-size: 4vh;
     background-color: #444444;
     width: 18vh;
-    padding: 1vw;
+    padding: 1.25vh;
     margin-left: auto;
     margin-right: auto;
     margin-top: 2vh;
