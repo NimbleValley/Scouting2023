@@ -30,7 +30,7 @@ const options = {
     }
 }
 
-getTBA('https://www.thebluealliance.com/api/v3/events/2023/keys', 0);
+//getTBA('https://www.thebluealliance.com/api/v3/events/2023/keys', 0);
 getTBA('https://www.thebluealliance.com/api/v3/events/2023', 1);
 
 var TABLE_TYPE = "raw";
@@ -38,6 +38,8 @@ var TEAMS;
 
 //CHANGE THIS --------------------------
 var TEAM_INDEX = 2;
+
+const oprHeaders = ["Team", "?", "DPR", "OPR"];
 
 getData();
 
@@ -358,18 +360,80 @@ function getTBA(url, type) {
     fetch(url, options)
         .then((response) => response.json())
         .then((json) => {
-            if (type = 0) {
+            if (type == 0) {
                 TBA_EVENT_KEYS = json;
-            } else if(type = 1) {
+            } else if(type == 1) {
                 console.log(json.length);
+                eventSelect.innerHTML = "";
                 for(var i = 0; i < json.length; i ++) {
                     TBA_EVENT_NAMES[i] = json[i].name;
+                    var tempO = document.createElement("option");
+                    tempO.innerText = json[i].name;
+                    tempO.value = json[i].key;
+                    if(json[i].key == localStorage.getItem("event-key")) {
+                        tempO.selected = "selected";
+                    }
+                    eventSelect.appendChild(tempO);
                     if(TBA_EVENT_NAMES[i].length > 25) {
                         TBA_EVENT_NAMES[i] = TBA_EVENT_NAMES[i].substring(0, 25);
                     }
                 }
+            } else if(type == 2) {
+                console.log(json);
+                getTBAOPRS(json);
             }
         });
+}
+
+function getTBAOPRS(json) {
+    rawTable.innerHTML = "";
+    for (var h = 0; h < 4; h++) {
+        var col = document.createElement("div");
+        var temp = document.createElement("div");
+
+        var text = document.createElement("h3");
+        temp.appendChild(text);
+
+        temp.className = "table-header-section-raw";
+
+        temp.id = 1;
+        temp.classList.add(`${(h)}`);
+        //console.log(temp.classList);
+        //temp.classList.add(h - 1);
+        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), COLUMNS) };
+
+        col.className = "column";
+        if (h % 2 == 0) {
+            col.style.backgroundColor = "#4d4e4e";
+        }
+        col.appendChild(temp);
+        rawTable.appendChild(col);
+    }
+
+    for(var i = 0; i < 4; i ++) {
+        rawTable.children[i].children[0].innerText = oprHeaders[i];
+    }
+
+    localStorage.setItem("direction", 0);
+    localStorage.setItem("column", -1);
+
+    //var tempArray = JSON.parse(json);
+    //console.log(tempArray);
+
+    for(var key in json) {
+        for (var key1 in json[key]) {
+            console.log(json[key][key1]);
+            var temp = document.createElement("div");
+            temp.className = "data-value"
+            temp.innerText = json[key][key1];
+            rawTable.children[0].appendChild(temp);
+        }
+    }
+}
+
+function getTBATeams() {
+    console.log(eventSelect.value);
+    getTBA(`https://www.thebluealliance.com/api/v3/event/${eventSelect.value}/oprs`, 2);
 }
 
 async function toggleSettings() {
@@ -378,16 +442,10 @@ async function toggleSettings() {
         settings.style.display = "flex";
         body.style.overflow = "hidden";
         //var eventOptions = new Array();
-        eventSelect.innerHTML = "";
         console.log(TBA_EVENT_NAMES);
-        for (var i = 0; i < TBA_EVENT_NAMES.length; i++) {
-            var temp = document.createElement("option");
-            temp.value = i;
-            temp.innerText = TBA_EVENT_NAMES[i];
-            eventSelect.appendChild(temp);
-        }
     } else {
         settings.style.display = "none";
         body.style.overflow = "auto";
+        localStorage.setItem("event-key", eventSelect.value);
     }
 }
