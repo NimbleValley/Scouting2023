@@ -24,6 +24,9 @@ var TEAM_ROWS = new Array();
 var TBA_EVENT_KEYS;
 var TBA_EVENT_NAMES = new Array();
 
+var TBA_RECORDS;
+var TBA_COLUMNS;
+
 const options = {
     headers: {
         'X-TBA-Auth-Key': 'sBluV8DKQA0hTvJ2ABC9U3VDZunUGUSehxuDPvtNC8SQ3Q5XHvQVt0nm3X7cvP7j'
@@ -39,7 +42,7 @@ var TEAMS;
 //CHANGE THIS --------------------------
 var TEAM_INDEX = 2;
 
-const oprHeaders = ["Team", "?", "DPR", "OPR"];
+const oprHeaders = ["Team", "CCWMS", "DPR", "OPR"];
 
 getData();
 
@@ -76,7 +79,7 @@ function getData() {
             temp.classList.add(`${(h - 1)}`);
             //console.log(temp.classList);
             //temp.classList.add(h - 1);
-            temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), COLUMNS) };
+            temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS) };
 
             col.className = "column";
             if (h % 2 == 0) {
@@ -102,9 +105,8 @@ function getData() {
     });
 }
 
-function sortColumn(colNum, type, col) {
+function sortColumn(colNum, type, records, columns) {
     var direction = parseInt(localStorage.getItem("direction"));
-    console.log(direction);
     var previousColumn = parseInt(localStorage.getItem("column"));
     localStorage.setItem("column", colNum);
     localStorage.setItem("direction", parseInt(direction) + 1);
@@ -114,14 +116,14 @@ function sortColumn(colNum, type, col) {
     }
 
     if (type == 1) {
-        var sortedColumn = JSON.parse(JSON.stringify(COLUMNS));
+        var sortedColumn = JSON.parse(JSON.stringify(columns));
         //console.log(dir);
         if (direction % 3 == 0) {
             sortedColumn = sortedColumn[colNum].sort(function (a, b) { return a - b });
         } else if (direction % 3 == 1) {
             sortedColumn = sortedColumn[colNum].sort(function (a, b) { return b - a });
         } else {
-            originalSort(RECORDS, COLUMNS);
+            originalSort(records, columns);
             return;
         }
 
@@ -129,14 +131,14 @@ function sortColumn(colNum, type, col) {
         var takenRows = [];
         var counter = 0;
 
-        var tempColumns = JSON.parse(JSON.stringify(COLUMNS));
+        var tempColumns = JSON.parse(JSON.stringify(columns));
 
-        for (var r = 0; r < RECORDS.length; r++) {
+        for (var r = 0; r < records.length; r++) {
             for (var i = 0; i < tempColumns[0].length; i++) {
                 //console.log(tempColumns[colNum][i]);
                 //console.log(takenRows.includes(i));
-                if (COLUMNS[colNum][i] == sortedColumn[r] && !takenRows.includes(i)) {
-                    sortedRows[counter] = RECORDS[i];
+                if (columns[colNum][i] == sortedColumn[r] && !takenRows.includes(i)) {
+                    sortedRows[counter] = records[i];
                     takenRows[counter] = i;
                     counter++;
                     break;
@@ -144,9 +146,11 @@ function sortColumn(colNum, type, col) {
             }
         }
 
+        console.log(sortedColumn);
+
         var cols = document.getElementsByClassName("column");
-        for (var i = 0; i < RECORDS.length; i++) {
-            for (var s = 0; s < RECORDS[i].length - 1; s++) {
+        for (var i = 0; i < records.length; i++) {
+            for (var s = 0; s < records[i].length - 1; s++) {
                 //console.log(RECORDS[i][s]);
                 var tempCol = cols[s];
                 var temp = tempCol.children[i + 1];
@@ -268,12 +272,7 @@ function getRawData() {
 }
 
 function getTeamData() {
-    TABLE_TYPE = "team"
-    rawTable.innerHTML = "";
-    getTeamData();
-}
-
-function getTeamData() {
+    ABLE_TYPE = "team";
     rawTable.innerHTML = "";
     TEAM_COLUMNS = [];
     TEAM_ROWS = [];
@@ -312,11 +311,11 @@ function getTeamData() {
         text.innerText = FIELDS[dataToKeep[i] + 1];
         temp.appendChild(text);
         temp.className = "table-header-section-raw";
-        temp.id = 1;
+        temp.id = 9;
         temp.classList.add(`${(i)}`);
         //console.log(temp.classList);
         //temp.classList.add(h - 1);
-        temp.onclick = function () { sortTeamColumn(this.classList[1], detectCharacter(this.id), TEAM_COLUMNS, dataToKeep) };
+        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), teamRows, TEAM_COLUMNS) };
         tempC.appendChild(temp);
 
         rawTable.appendChild(tempC);
@@ -353,7 +352,10 @@ function getTeamData() {
             TEAM_ROWS[i][c] = Math.floor(average / teamRows.length * 10) / 10;
         }
     }
-    console.log(TEAM_ROWS);
+    console.log(TEAM_COLUMNS);
+    for(var i = 0; i < dataToKeep.length; i ++) {
+        document.getElementsByClassName("column")[i].children[0].onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), teamRows, TEAM_COLUMNS) };
+    }
 }
 
 function getTBA(url, type) {
@@ -362,23 +364,23 @@ function getTBA(url, type) {
         .then((json) => {
             if (type == 0) {
                 TBA_EVENT_KEYS = json;
-            } else if(type == 1) {
+            } else if (type == 1) {
                 console.log(json.length);
                 eventSelect.innerHTML = "";
-                for(var i = 0; i < json.length; i ++) {
+                for (var i = 0; i < json.length; i++) {
                     TBA_EVENT_NAMES[i] = json[i].name;
                     var tempO = document.createElement("option");
                     tempO.innerText = json[i].name;
                     tempO.value = json[i].key;
-                    if(json[i].key == localStorage.getItem("event-key")) {
+                    if (json[i].key == localStorage.getItem("event-key")) {
                         tempO.selected = "selected";
                     }
                     eventSelect.appendChild(tempO);
-                    if(TBA_EVENT_NAMES[i].length > 25) {
+                    if (TBA_EVENT_NAMES[i].length > 25) {
                         TBA_EVENT_NAMES[i] = TBA_EVENT_NAMES[i].substring(0, 25);
                     }
                 }
-            } else if(type == 2) {
+            } else if (type == 2) {
                 console.log(json);
                 getTBAOPRS(json);
             }
@@ -410,7 +412,7 @@ function getTBAOPRS(json) {
         rawTable.appendChild(col);
     }
 
-    for(var i = 0; i < 4; i ++) {
+    for (var i = 0; i < 4; i++) {
         rawTable.children[i].children[0].innerText = oprHeaders[i];
     }
 
@@ -420,13 +422,29 @@ function getTBAOPRS(json) {
     //var tempArray = JSON.parse(json);
     //console.log(tempArray);
 
-    for(var key in json) {
-        for (var key1 in json[key]) {
-            console.log(json[key][key1]);
+    var entries = Object.entries(json);
+
+    console.log(Object.entries(Object.entries(entries[0])[1][1])[1][0]);
+    console.log(entries[0]);
+
+    for (var i = 0; i < Object.entries(Object.entries(entries[0])[1][1]).length; i++) {
+        var temp = document.createElement("div");
+        var teamCode = Object.entries(Object.entries(entries[0])[1][1])[i][0];
+        temp.className = "data-value"
+        temp.innerText = teamCode.substring(3);
+        rawTable.children[0].appendChild(temp);
+    }
+
+    for (var headerKey = 0; headerKey < 3; headerKey++) {
+        //console.log(Object.keys(keys[headerKey]));
+        var innerEntries = Object.entries(Object.entries(entries[headerKey])[1][1]);
+        console.log(innerEntries);
+        for (var innerKey = 0; innerKey < innerEntries.length; innerKey++) {
+            console.log(innerEntries[innerKey]);
             var temp = document.createElement("div");
             temp.className = "data-value"
-            temp.innerText = json[key][key1];
-            rawTable.children[0].appendChild(temp);
+            temp.innerText = Math.floor(innerEntries[innerKey][1] * 100) / 100;
+            rawTable.children[headerKey + 1].appendChild(temp);
         }
     }
 }
