@@ -9,13 +9,24 @@ const settings = document.getElementById("settings");
 var settingsOpen = false;
 const eventSelect = document.getElementById("event-select");
 
+const urlInput = document.getElementById("spreadsheet-url-input");
+console.log(localStorage.getItem("spreadsheet-url"));
+
+const frcGrid = document.getElementById("grid-frc");
+
+if (localStorage.getItem("spreadsheet-url") == null) {
+    urlInput.value = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6jLs728hFBfOHguzmWfDBGNNMSBCHlDCFpSccKipRI5TvtprN05ERYwJFYBQEmpbMx6hSJlUF2BVY/pub?gid=1743760764&single=true&output=csv";
+} else {
+    urlInput.value = localStorage.getItem("spreadsheet-url");
+}
+
 const rawTable = document.getElementById("data-table");
 //API Fetch Response
 var DATA;
 //Headers
-var FIELDS;
+var FIELDS = new Array();
 //Records, value data
-var RECORDS;
+var RECORDS = new Array();
 //Records sorted into columns for filtering & sorting
 var COLUMNS = new Array();
 var TEAM_COLUMNS = new Array();
@@ -40,7 +51,8 @@ var TABLE_TYPE = "raw";
 var TEAMS;
 
 //CHANGE THIS --------------------------
-var TEAM_INDEX = 2;
+const TEAM_INDEX = 1;
+const GRID_INDEX = 31;
 
 const oprHeaders = ["Team", "CCWMS", "DPR", "OPR"];
 
@@ -49,18 +61,23 @@ getData();
 function getData() {
     CSV.fetch({
         //url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNEBYTlOcDv1NuaCd5U-55q2czmUc-HgvNKnaRDxkkL9J39MD_ht2-6GKY4jX3bipv7dONBcUVCpU_/pub?gid=1955868836&single=true&output=csv'
-        url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS6jLs728hFBfOHguzmWfDBGNNMSBCHlDCFpSccKipRI5TvtprN05ERYwJFYBQEmpbMx6hSJlUF2BVY/pub?gid=1743760764&single=true&output=csv'
+        url: urlInput.value
     }
     ).done(function (dataset) {
         //console.log(dataset.records);
         DATA = dataset;
         FIELDS = dataset.fields;
         RECORDS = dataset.records;
+        //Delete Time stamps
+        for (var i = 0; i < RECORDS.length; i++) {
+            RECORDS[i].splice(0, 1);
+        }
+        FIELDS.splice(0, 1);
 
         //var tableHeader = document.createElement("div");
         //tableHeader.id = "raw-table";
-        for (var h = 1; h < FIELDS.length; h++) {
-            COLUMNS[h - 1] = new Array();
+        for (var h = 0; h < FIELDS.length; h++) {
+            COLUMNS[h] = new Array();
             var col = document.createElement("div");
             var temp = document.createElement("div");
 
@@ -76,7 +93,7 @@ function getData() {
                 dataType = 1;
             }
             temp.id = dataType;
-            temp.classList.add(`${(h - 1)}`);
+            temp.classList.add(`${(h)}`);
             //console.log(temp.classList);
             //temp.classList.add(h - 1);
             temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS) };
@@ -93,16 +110,27 @@ function getData() {
         localStorage.setItem("column", -1);
 
         for (var i = 0; i < RECORDS.length; i++) {
-            for (var s = 1; s < RECORDS[i].length; s++) {
-                COLUMNS[s - 1][i] = RECORDS[i][s];
+            for (var s = 0; s < RECORDS[i].length; s++) {
+                COLUMNS[s][i] = RECORDS[i][s];
                 //console.log(RECORDS[i][s]);
                 var temp = document.createElement("div");
                 temp.className = "data-value"
-                temp.innerText = RECORDS[i][s];
-                rawTable.children[s - 1].appendChild(temp);
+                if (s == GRID_INDEX) {
+                    temp.innerText = "{ Show Grid }";
+                    temp.id = i;
+                    temp.onclick = function() {showGrid(this.id)}
+                } else {
+                    temp.innerText = RECORDS[i][s];
+                }
+                rawTable.children[s].appendChild(temp);
             }
         }
     });
+}
+
+function showGrid(recordNum) {
+    body.style.overflow = "hidden";
+    frcGrid.style.display = "flex";
 }
 
 function sortColumn(colNum, type, records, columns) {
@@ -146,7 +174,7 @@ function sortColumn(colNum, type, records, columns) {
             }
         }
 
-        console.log(sortedColumn);
+        //console.log(sortedColumn);
 
         var cols = document.getElementsByClassName("column");
         for (var i = 0; i < records.length; i++) {
@@ -154,7 +182,7 @@ function sortColumn(colNum, type, records, columns) {
                 //console.log(RECORDS[i][s]);
                 var tempCol = cols[s];
                 var temp = tempCol.children[i + 1];
-                temp.innerText = sortedRows[i][s + 1];
+                temp.innerText = sortedRows[i][s];
             }
         }
 
@@ -165,7 +193,7 @@ function sortColumn(colNum, type, records, columns) {
 
 // FOR TEAMS --------------------------------------------------
 
-function sortTeamColumn(colNum, type, col, dk) {
+/*function sortTeamColumn(colNum, type, col, dk) {
     var direction = parseInt(localStorage.getItem("direction"));
     console.log(direction);
     var previousColumn = parseInt(localStorage.getItem("column"));
@@ -224,7 +252,7 @@ function sortTeamColumn(colNum, type, col, dk) {
     } else {
         console.log("Sad");
     }
-}
+}*/
 
 function detectCharacter(val) {
     //console.log(val);
@@ -352,9 +380,9 @@ function getTeamData() {
             TEAM_ROWS[i][c] = Math.floor(average / teamRows.length * 10) / 10;
         }
     }
-    console.log(TEAM_COLUMNS);
-    for(var i = 0; i < dataToKeep.length; i ++) {
-        document.getElementsByClassName("column")[i].children[0].onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), teamRows, TEAM_COLUMNS) };
+    console.log(TEAM_ROWS);
+    for (var i = 0; i < dataToKeep.length; i++) {
+        document.getElementsByClassName("column")[i].children[0].onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), TEAM_ROWS, TEAM_COLUMNS) };
     }
 }
 
@@ -465,5 +493,6 @@ async function toggleSettings() {
         settings.style.display = "none";
         body.style.overflow = "auto";
         localStorage.setItem("event-key", eventSelect.value);
+        localStorage.setItem("spreadsheet-url", urlInput.value);
     }
 }
