@@ -12,6 +12,9 @@ const eventSelect = document.getElementById("event-select");
 const urlInput = document.getElementById("spreadsheet-url-input");
 console.log(localStorage.getItem("spreadsheet-url"));
 
+const breakdownLines = document.getElementById("breakdown-lines-container");
+const overallCategoryHeaders = ["Points", "Gp Moved", "Gp Points", "Auto Points", "Tele Points", "Auto %", "Charge %", "Cubes Moved", "Cones Moved", "High Gp", "Mid Gp", "Low Gp"];
+
 const frcGrid = document.getElementById("grid-frc");
 var gridNodes = document.getElementsByClassName("node-item");
 
@@ -30,8 +33,10 @@ var FIELDS = new Array();
 var RECORDS = new Array();
 //Records sorted into columns for filtering & sorting
 var COLUMNS = new Array();
+
 var TEAM_COLUMNS = new Array();
 var TEAM_ROWS = new Array();
+var TEAMS = new Array();
 
 var TBA_EVENT_KEYS;
 var TBA_EVENT_NAMES = new Array();
@@ -49,7 +54,6 @@ const options = {
 getTBA('https://www.thebluealliance.com/api/v3/events/2023', 1);
 
 var TABLE_TYPE = "raw";
-var TEAMS = new Array();
 
 //CHANGE THIS --------------------------
 const TEAM_INDEX = 1;
@@ -60,6 +64,7 @@ const oprHeaders = ["Team", "CCWMS", "DPR", "OPR"];
 getData();
 
 function getData() {
+    breakdownLines.style.display = "none";
     CSV.fetch({
         //url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNEBYTlOcDv1NuaCd5U-55q2czmUc-HgvNKnaRDxkkL9J39MD_ht2-6GKY4jX3bipv7dONBcUVCpU_/pub?gid=1955868836&single=true&output=csv'
         url: urlInput.value
@@ -119,17 +124,20 @@ function getData() {
                 if (s == GRID_INDEX) {
                     temp.innerText = "{ Show Grid }";
                     temp.id = i;
-                    temp.onclick = function() {showGrid(this.id)}
+                    temp.onclick = function () { showGrid(this.id) }
                 } else {
                     temp.innerText = RECORDS[i][s];
                 }
                 rawTable.children[s].appendChild(temp);
             }
         }
+        openTeamOveralls();
+        breakdownLines.style.display = "flex";
     });
 }
 
 function resetRaw() {
+    breakdownLines.style.display = "none";
     rawTable.innerHTML = "";
 
     for (var h = 0; h < FIELDS.length; h++) {
@@ -174,7 +182,7 @@ function resetRaw() {
             if (s == GRID_INDEX) {
                 temp.innerText = "{ Show Grid }";
                 temp.id = i;
-                temp.onclick = function() {showGrid(this.id)}
+                temp.onclick = function () { showGrid(this.id) }
             } else {
                 temp.innerText = RECORDS[i][s];
             }
@@ -184,16 +192,17 @@ function resetRaw() {
 }
 
 function showGrid(recordNum) {
+    breakdownLines.style.display = "none";
     body.style.overflow = "hidden";
     frcGrid.style.display = "flex";
 
     var nodeData = JSON.parse(RECORDS[recordNum][GRID_INDEX]);
 
-    for(var i = 0; i < gridNodes.length; i ++) {
+    for (var i = 0; i < gridNodes.length; i++) {
         //console.log(nodeData[Math.floor(i/9)][i%9]);
         gridNodes[i].style.backgroundColor = "#797979";
-        if(nodeData[Math.floor(i/9)][i%9] == 1) {
-            if(i % 3 == 1) {
+        if (nodeData[Math.floor(i / 9)][i % 9] == 1) {
+            if (i % 3 == 1) {
                 gridNodes[i].style.backgroundColor = "#6643DA";
             } else {
                 gridNodes[i].style.backgroundColor = "#FDC955";
@@ -208,19 +217,72 @@ function hideGrid() {
 }
 
 function openTeamOveralls() {
-    if(TEAMS.length < 1) {
-        return;
+    breakdownLines.innerText = "";
+    if (TEAMS.length < 1) {
+        getTeamData();
     }
     rawTable.innerHTML = "";
     var temp = document.createElement("select");
     temp.id = "team-overall-select";
-    for(var i = 0; i < TEAMS.length; i ++) {
+    for (var i = 0; i < TEAMS.length; i++) {
         var op = document.createElement("option");
         op.text = TEAMS[i];
         op.value = TEAMS[i];
         temp.append(op);
     }
+
     rawTable.appendChild(temp);
+    breakdownLines.style.display = "flex";
+
+    console.log(TEAM_COLUMNS);
+    var overallData = [];
+    for (var i = 0; i < overallCategoryHeaders.length; i++) {
+        // Sort the column, return the index that was matched up with the data
+        console.log(getSortedIndex(3, 456, TEAM_ROWS, TEAM_COLUMNS));
+    }
+
+    for (var i = 0; i < overallCategoryHeaders.length; i++) {
+        var tempContainer = document.createElement("div");
+        tempContainer.className = "line-container";
+
+        var tempLine = document.createElement("div");
+        tempLine.className = "breakdown-line";
+
+        var temph4 = document.createElement("h4");
+        temph4.innerText = overallCategoryHeaders[i];
+
+        tempContainer.appendChild(tempLine);
+        tempContainer.appendChild(temph4);
+        breakdownLines.appendChild(tempContainer);
+    }
+}
+
+function getSortedIndex(colNum, team, records, columns) {
+    var sortedColumn = JSON.parse(JSON.stringify(columns));
+    sortedColumn = sortedColumn[colNum].sort(function (a, b) { return a - b });
+
+    var sortedRows = [];
+    var previousRows = [];
+    var takenRows = [];
+    var counter = 0;
+
+    var tempColumns = JSON.parse(JSON.stringify(columns));
+
+    for (var r = 0; r < records.length; r++) {
+        for (var i = 0; i < tempColumns[0].length; i++) {
+            //console.log(tempColumns[colNum][i]);
+            //console.log(takenRows.includes(i));
+            if (columns[colNum][i] == sortedColumn[r] && !takenRows.includes(i)) {
+                sortedRows[counter] = records[i];
+                previousRows[counter] = i;
+                takenRows[counter] = i;
+                counter++;
+                break;
+            }
+        }
+    }
+
+    return sortedRows;
 }
 
 function sortColumn(colNum, type, records, columns) {
@@ -246,6 +308,7 @@ function sortColumn(colNum, type, records, columns) {
         }
 
         var sortedRows = [];
+        var previousRows = [];
         var takenRows = [];
         var counter = 0;
 
@@ -257,6 +320,7 @@ function sortColumn(colNum, type, records, columns) {
                 //console.log(takenRows.includes(i));
                 if (columns[colNum][i] == sortedColumn[r] && !takenRows.includes(i)) {
                     sortedRows[counter] = records[i];
+                    previousRows[counter] = i;
                     takenRows[counter] = i;
                     counter++;
                     break;
@@ -272,7 +336,13 @@ function sortColumn(colNum, type, records, columns) {
                 //console.log(RECORDS[i][s]);
                 var tempCol = cols[s];
                 var temp = tempCol.children[i + 1];
-                temp.innerText = sortedRows[i][s];
+                if (s == GRID_INDEX) {
+                    temp.innerText = "{ Show Grid }";
+                    temp.id = previousRows[i];
+                    temp.onclick = function () { showGrid(this.id) }
+                } else {
+                    temp.innerText = sortedRows[i][s];
+                }
             }
         }
 
@@ -359,7 +429,13 @@ function originalSort(record, column) {
             //console.log(RECORDS[i][s]);
             var tempCol = cols[y];
             var temp = tempCol.children[x + 1];
-            temp.innerText = column[y][x];
+            if (y == GRID_INDEX) {
+                temp.innerText = "{ Show Grid }";
+                temp.id = x;
+                temp.onclick = function () { showGrid(this.id) }
+            } else {
+                temp.innerText = column[y][x];
+            }
         }
     }
 }
@@ -383,14 +459,9 @@ function refreshData() {
     getData();
 }
 
-function getRawData() {
-    TABLE_TYPE = "raw";
-    rawTable.innerHTML = "";
-    getData();
-}
-
 function getTeamData() {
-    ABLE_TYPE = "team";
+    breakdownLines.style.display = "none";
+    TABLE_TYPE = "team";
     rawTable.innerHTML = "";
     TEAM_COLUMNS = [];
     TEAM_ROWS = [];
@@ -470,13 +541,14 @@ function getTeamData() {
             TEAM_ROWS[i][c] = Math.floor(average / teamRows.length * 10) / 10;
         }
     }
-    console.log(TEAM_ROWS);
+    //console.log(TEAM_ROWS);
     for (var i = 0; i < dataToKeep.length; i++) {
         document.getElementsByClassName("column")[i].children[0].onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), TEAM_ROWS, TEAM_COLUMNS) };
     }
 }
 
 function getTBA(url, type) {
+    breakdownLines.style.display = "none";
     fetch(url, options)
         .then((response) => response.json())
         .then((json) => {
@@ -499,7 +571,7 @@ function getTBA(url, type) {
                     }
                 }
             } else if (type == 2) {
-                console.log(json);
+                //console.log(json);
                 getTBAOPRS(json);
             }
         });
