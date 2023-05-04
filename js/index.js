@@ -13,6 +13,7 @@ const urlInput = document.getElementById("spreadsheet-url-input");
 console.log(localStorage.getItem("spreadsheet-url"));
 
 const frcGrid = document.getElementById("grid-frc");
+var gridNodes = document.getElementsByClassName("node-item");
 
 if (localStorage.getItem("spreadsheet-url") == null) {
     urlInput.value = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6jLs728hFBfOHguzmWfDBGNNMSBCHlDCFpSccKipRI5TvtprN05ERYwJFYBQEmpbMx6hSJlUF2BVY/pub?gid=1743760764&single=true&output=csv";
@@ -48,11 +49,11 @@ const options = {
 getTBA('https://www.thebluealliance.com/api/v3/events/2023', 1);
 
 var TABLE_TYPE = "raw";
-var TEAMS;
+var TEAMS = new Array();
 
 //CHANGE THIS --------------------------
 const TEAM_INDEX = 1;
-const GRID_INDEX = 31;
+const GRID_INDEX = 4;
 
 const oprHeaders = ["Team", "CCWMS", "DPR", "OPR"];
 
@@ -128,9 +129,98 @@ function getData() {
     });
 }
 
+function resetRaw() {
+    rawTable.innerHTML = "";
+
+    for (var h = 0; h < FIELDS.length; h++) {
+        COLUMNS[h] = new Array();
+        var col = document.createElement("div");
+        var temp = document.createElement("div");
+
+        var text = document.createElement("h3");
+        text.innerText = FIELDS[h];
+        temp.appendChild(text);
+
+        temp.className = "table-header-section-raw";
+
+        //console.log(RECORDS[1][h]);
+        var dataType = new String(RECORDS[1][h]).substring(0, 1);
+        if (RECORDS[1][h] == null) {
+            dataType = 1;
+        }
+        temp.id = dataType;
+        temp.classList.add(`${(h)}`);
+        //console.log(temp.classList);
+        //temp.classList.add(h - 1);
+        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS) };
+
+        col.className = "column";
+        if (h % 2 == 0) {
+            col.style.backgroundColor = "#4d4e4e";
+        }
+        col.appendChild(temp);
+        rawTable.appendChild(col);
+    }
+
+    localStorage.setItem("direction", 0);
+    localStorage.setItem("column", -1);
+
+    for (var i = 0; i < RECORDS.length; i++) {
+        for (var s = 0; s < RECORDS[i].length; s++) {
+            COLUMNS[s][i] = RECORDS[i][s];
+            //console.log(RECORDS[i][s]);
+            var temp = document.createElement("div");
+            temp.className = "data-value"
+            if (s == GRID_INDEX) {
+                temp.innerText = "{ Show Grid }";
+                temp.id = i;
+                temp.onclick = function() {showGrid(this.id)}
+            } else {
+                temp.innerText = RECORDS[i][s];
+            }
+            rawTable.children[s].appendChild(temp);
+        }
+    }
+}
+
 function showGrid(recordNum) {
     body.style.overflow = "hidden";
     frcGrid.style.display = "flex";
+
+    var nodeData = JSON.parse(RECORDS[recordNum][GRID_INDEX]);
+
+    for(var i = 0; i < gridNodes.length; i ++) {
+        //console.log(nodeData[Math.floor(i/9)][i%9]);
+        gridNodes[i].style.backgroundColor = "#797979";
+        if(nodeData[Math.floor(i/9)][i%9] == 1) {
+            if(i % 3 == 1) {
+                gridNodes[i].style.backgroundColor = "#6643DA";
+            } else {
+                gridNodes[i].style.backgroundColor = "#FDC955";
+            }
+        }
+    }
+}
+
+function hideGrid() {
+    body.style.overflow = "auto";
+    frcGrid.style.display = "none";
+}
+
+function openTeamOveralls() {
+    if(TEAMS.length < 1) {
+        return;
+    }
+    rawTable.innerHTML = "";
+    var temp = document.createElement("select");
+    temp.id = "team-overall-select";
+    for(var i = 0; i < TEAMS.length; i ++) {
+        var op = document.createElement("option");
+        op.text = TEAMS[i];
+        op.value = TEAMS[i];
+        temp.append(op);
+    }
+    rawTable.appendChild(temp);
 }
 
 function sortColumn(colNum, type, records, columns) {
