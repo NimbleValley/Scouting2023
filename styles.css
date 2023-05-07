@@ -375,26 +375,28 @@ h2 {
     border-radius: 1vh;
 }
 
-.breakdown-line::after {
+.inner-breakdown-line {
     content: "";
     position: absolute;
-    background-color: orangered;
+    background: linear-gradient(180deg, rgba(255,195,146,1) 0%, rgba(255,69,0,1) 7.5vh);
     width: 2vh;
     height: 50%;
     left: 0;
     bottom: 0;
     border-radius: 2vh;
+    transition-timing-function: ease-out;
+    transition: height 0.65s;
+    animation: overall-pulse 2.5s ease-in-out infinite;
+    background-size: 400% 400%;
 }
 
-.breakdown-line::before {
-    content: "";
-    position: absolute;
-    width: 2vh;
-    height: 25%;
-    z-index: 25;
-    left: 0;
-    bottom: 0;
-    border-radius: 2vh;
+@keyframes overall-pulse {
+    0% {    
+        background-position: 0% -70%;
+    }
+    100% {
+        background-position: 0% 25%;
+    }
 }
 
 h4 {

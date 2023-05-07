@@ -13,7 +13,8 @@ const urlInput = document.getElementById("spreadsheet-url-input");
 console.log(localStorage.getItem("spreadsheet-url"));
 
 const breakdownLines = document.getElementById("breakdown-lines-container");
-const overallCategoryHeaders = ["Points", "Gp Moved", "Gp Points", "Auto Points", "Tele Points", "Auto %", "Charge %", "Cubes Moved", "Cones Moved", "High Gp", "Mid Gp", "Low Gp"];
+const overallCategoryHeaders = ["Points", "Gp Moved", "Gp Points", "Auto Points", "Tele Points", "Cubes Moved", "Cones Moved", "High Gp", "Mid Gp", "Low Gp"];
+var firstOverall = true;
 
 const frcGrid = document.getElementById("grid-frc");
 var gridNodes = document.getElementsByClassName("node-item");
@@ -82,6 +83,58 @@ function getData() {
 
         //var tableHeader = document.createElement("div");
         //tableHeader.id = "raw-table";
+
+        FIELDS.push("GP Moved");
+        FIELDS.push("GP Points");
+        FIELDS.push("Auto Points");
+        FIELDS.push("Tele Points");
+        FIELDS.push("Points");
+
+        for (var i = 0; i < RECORDS.length; i++) {
+            RECORDS[i].push(RECORDS[i][6] + RECORDS[i][7] + RECORDS[i][8] + RECORDS[i][11] + RECORDS[i][12] + RECORDS[i][13]);
+        }
+
+        for (var i = 0; i < RECORDS.length; i++) {
+            RECORDS[i].push((RECORDS[i][6] * 6) + (RECORDS[i][7] * 4) + (RECORDS[i][8] * 3) + (RECORDS[i][11] * 5) + (RECORDS[i][12] * 3) + (RECORDS[i][13] * 2));
+        }
+
+        for (var i = 0; i < RECORDS.length; i++) {
+            var total = (RECORDS[i][6] * 6) + (RECORDS[i][7] * 4) + (RECORDS[i][8] * 3);
+            if (RECORDS[i][10] == "Yes") {
+                //Engaged
+                total += 12;
+            } else if (RECORDS[i][9] == "Yes") {
+                //Docked
+                total += 8;
+            }
+
+            if (RECORDS[i][5] == "Yes") {
+                total += 3;
+            }
+
+            RECORDS[i].push(total);
+        }
+
+        for (var i = 0; i < RECORDS.length; i++) {
+            var total = (RECORDS[i][11] * 5) + (RECORDS[i][12] * 3) + (RECORDS[i][13] * 2);
+            if (RECORDS[i][22] == "Yes") {
+                //Engaged
+                total += 10;
+            } else if (RECORDS[i][21] == "Yes") {
+                //Docked
+                total += 6;
+            } else if (RECORDS[i][20] == "Yes") {
+                total += 2;
+                console.log("parked")
+            }
+
+            RECORDS[i].push(total);
+        }
+
+        for (var i = 0; i < RECORDS.length; i++) {
+            RECORDS[i].push((RECORDS[i][34]) + (RECORDS[i][35]));
+        }
+
         for (var h = 0; h < FIELDS.length; h++) {
             COLUMNS[h] = new Array();
             var col = document.createElement("div");
@@ -105,7 +158,7 @@ function getData() {
             temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS) };
 
             col.className = "column";
-            if (h % 2 == 0) {
+            if (h % 2 == 1) {
                 col.style.backgroundColor = "#4d4e4e";
             }
             col.appendChild(temp);
@@ -131,8 +184,6 @@ function getData() {
                 rawTable.children[s].appendChild(temp);
             }
         }
-        openTeamOveralls();
-        breakdownLines.style.display = "flex";
     });
 }
 
@@ -163,7 +214,7 @@ function resetRaw() {
         temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS) };
 
         col.className = "column";
-        if (h % 2 == 0) {
+        if (h % 2 == 1) {
             col.style.backgroundColor = "#4d4e4e";
         }
         col.appendChild(temp);
@@ -216,14 +267,12 @@ function hideGrid() {
     frcGrid.style.display = "none";
 }
 
-function openTeamOveralls() {
-    breakdownLines.innerText = "";
-    if (TEAMS.length < 1) {
-        getTeamData();
-    }
+function setUpTeamOveralls() {
+    breakdownLines.innerHTML = "";
     rawTable.innerHTML = "";
     var temp = document.createElement("select");
     temp.id = "team-overall-select";
+    temp.addEventListener("input", openTeamOveralls);
     for (var i = 0; i < TEAMS.length; i++) {
         var op = document.createElement("option");
         op.text = TEAMS[i];
@@ -232,14 +281,6 @@ function openTeamOveralls() {
     }
 
     rawTable.appendChild(temp);
-    breakdownLines.style.display = "flex";
-
-    console.log(TEAM_COLUMNS);
-    var overallData = [];
-    for (var i = 0; i < overallCategoryHeaders.length; i++) {
-        // Sort the column, return the index that was matched up with the data
-        console.log(getSortedIndex(3, 456, TEAM_ROWS, TEAM_COLUMNS));
-    }
 
     for (var i = 0; i < overallCategoryHeaders.length; i++) {
         var tempContainer = document.createElement("div");
@@ -248,18 +289,62 @@ function openTeamOveralls() {
         var tempLine = document.createElement("div");
         tempLine.className = "breakdown-line";
 
+        var tempInnerLine = document.createElement("div");
+        tempInnerLine.className = "inner-breakdown-line";
+        tempInnerLine.style.height = `0%`;
+
         var temph4 = document.createElement("h4");
         temph4.innerText = overallCategoryHeaders[i];
 
+        tempLine.appendChild(tempInnerLine);
         tempContainer.appendChild(tempLine);
         tempContainer.appendChild(temph4);
         breakdownLines.appendChild(tempContainer);
     }
 }
 
+function openTeamOveralls() {
+    //breakdownLines.innerText = "";
+    if (TEAMS.length < 1) {
+        getTeamData();
+    }
+
+    if(firstOverall) {
+        setUpTeamOveralls();
+        firstOverall = false;
+    }
+
+    breakdownLines.style.display = "flex";
+
+    //console.log(TEAM_COLUMNS);
+    var overallData = [];
+
+    var sortIndexes = [19, 15, 16, 17, 18, 9, 10, 4, 5, 6, 0, 0, 0];
+
+    for (var i = 0; i < overallCategoryHeaders.length; i++) {
+        var teamsSorted = [];
+        for (var t = 0; t < getSortedIndex(sortIndexes[i], 456, TEAM_ROWS, TEAM_COLUMNS).length; t++) {
+            teamsSorted[t] = getSortedIndex(sortIndexes[i], 456, TEAM_ROWS, TEAM_COLUMNS)[t][0];
+        }
+
+        // Sort the column, return the index that was matched up with the data
+        if (true) {
+            overallData[i] = teamsSorted.indexOf(parseInt(document.getElementById("team-overall-select").value)) / parseFloat(TEAMS.length - 1);
+        } else {
+            overallData[i] = 0.25;
+        }
+    }
+
+    for (var i = 0; i < overallCategoryHeaders.length; i++) {
+        document.getElementsByClassName("inner-breakdown-line")[i].style.height = `${overallData[i] * 100}%`;
+        document.getElementsByClassName("breakdown-line")[i].title = `${(overallData[i] * (TEAMS.length - 1))+1} out of ${TEAMS.length}`;
+    }
+}
+
 function getSortedIndex(colNum, team, records, columns) {
     var sortedColumn = JSON.parse(JSON.stringify(columns));
     sortedColumn = sortedColumn[colNum].sort(function (a, b) { return a - b });
+    //console.log(sortedColumn);
 
     var sortedRows = [];
     var previousRows = [];
@@ -281,6 +366,8 @@ function getSortedIndex(colNum, team, records, columns) {
             }
         }
     }
+
+    //console.log(sortedRows);
 
     return sortedRows;
 }
@@ -446,11 +533,11 @@ function toggleSidebar() {
     if (sidebarOpen) {
         tl.to(sidebar, { left: "0vh", duration: 0.5, ease: "power2" });
         //tl.to(rawTable, { marginLeft: "23vw", duration: 0.5, ease: "power2"}, "-=0.5");
-        tl.to(openSidebarButton, { scale: "-1, 1", duration: 0.5, ease: "power2" }, "-=0.5");
+        tl.to(openSidebarButton, { scale: "-1 1", duration: 0.5, ease: "power2" }, "-=0.5");
     } else {
         tl.to(sidebar, { left: "-25vh", duration: 0.5, ease: "power2" });
         //tl.to(rawTable, { marginLeft: "3vw", duration: 0.5, ease: "power2"}, "-=0.5");
-        tl.to(openSidebarButton, { scale: "1, 1", duration: 0.5, ease: "power2" }, "-=0.5");
+        tl.to(openSidebarButton, { scale: "1 1", duration: 0.5, ease: "power2" }, "-=0.5");
     }
 }
 
