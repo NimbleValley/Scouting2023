@@ -19,8 +19,8 @@ var firstOverall = true;
 const frcGrid = document.getElementById("grid-frc");
 var gridNodes = document.getElementsByClassName("node-item");
 
-if (localStorage.getItem("spreadsheet-url") == null) {
-    urlInput.value = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6jLs728hFBfOHguzmWfDBGNNMSBCHlDCFpSccKipRI5TvtprN05ERYwJFYBQEmpbMx6hSJlUF2BVY/pub?gid=1743760764&single=true&output=csv";
+if (localStorage.getItem("spreadsheet-url") == null || localStorage.getItem("spreadsheet-url") == "") {
+    urlInput.value = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqII95Z0qCbWjGeG_NiYPiiNxOLCPTRbHnpo-3fIAquhIigYd6tTTryEUYAvuqQTr1eGZ4W-VKWkFX/pub?gid=0&single=true&output=csv";
 } else {
     urlInput.value = localStorage.getItem("spreadsheet-url");
 }
@@ -30,6 +30,8 @@ const rawTable = document.getElementById("data-table");
 var DATA;
 //Headers
 var FIELDS = new Array();
+
+var TEAM_FIELDS = new Array();
 //Records, value data
 var RECORDS = new Array();
 //Records sorted into columns for filtering & sorting
@@ -57,7 +59,7 @@ getTBA('https://www.thebluealliance.com/api/v3/events/2023', 1);
 var TABLE_TYPE = "raw";
 
 //CHANGE THIS --------------------------
-const TEAM_INDEX = 1;
+const TEAM_INDEX = 0;
 const GRID_INDEX = 4;
 
 const oprHeaders = ["Team", "CCWMS", "DPR", "OPR"];
@@ -86,53 +88,18 @@ function getData() {
 
         FIELDS.push("GP Moved");
         FIELDS.push("GP Points");
-        FIELDS.push("Auto Points");
-        FIELDS.push("Tele Points");
         FIELDS.push("Points");
 
         for (var i = 0; i < RECORDS.length; i++) {
-            RECORDS[i].push(RECORDS[i][6] + RECORDS[i][7] + RECORDS[i][8] + RECORDS[i][11] + RECORDS[i][12] + RECORDS[i][13]);
+            RECORDS[i].push(RECORDS[i][7] + RECORDS[i][8] + RECORDS[i][9] + RECORDS[i][15] + RECORDS[i][16] + RECORDS[i][17]);
         }
 
         for (var i = 0; i < RECORDS.length; i++) {
-            RECORDS[i].push((RECORDS[i][6] * 6) + (RECORDS[i][7] * 4) + (RECORDS[i][8] * 3) + (RECORDS[i][11] * 5) + (RECORDS[i][12] * 3) + (RECORDS[i][13] * 2));
+            RECORDS[i].push((RECORDS[i][7] * 6) + (RECORDS[i][8] * 4) + (RECORDS[i][9] * 3) + (RECORDS[i][15] * 5) + (RECORDS[i][16] * 3) + (RECORDS[i][17] * 2));
         }
 
         for (var i = 0; i < RECORDS.length; i++) {
-            var total = (RECORDS[i][6] * 6) + (RECORDS[i][7] * 4) + (RECORDS[i][8] * 3);
-            if (RECORDS[i][10] == "Yes") {
-                //Engaged
-                total += 12;
-            } else if (RECORDS[i][9] == "Yes") {
-                //Docked
-                total += 8;
-            }
-
-            if (RECORDS[i][5] == "Yes") {
-                total += 3;
-            }
-
-            RECORDS[i].push(total);
-        }
-
-        for (var i = 0; i < RECORDS.length; i++) {
-            var total = (RECORDS[i][11] * 5) + (RECORDS[i][12] * 3) + (RECORDS[i][13] * 2);
-            if (RECORDS[i][22] == "Yes") {
-                //Engaged
-                total += 10;
-            } else if (RECORDS[i][21] == "Yes") {
-                //Docked
-                total += 6;
-            } else if (RECORDS[i][20] == "Yes") {
-                total += 2;
-                console.log("parked")
-            }
-
-            RECORDS[i].push(total);
-        }
-
-        for (var i = 0; i < RECORDS.length; i++) {
-            RECORDS[i].push((RECORDS[i][34]) + (RECORDS[i][35]));
+            RECORDS[i].push(parseInt(RECORDS[i][4]) + parseInt(RECORDS[i][6]));
         }
 
         for (var h = 0; h < FIELDS.length; h++) {
@@ -155,7 +122,7 @@ function getData() {
             temp.classList.add(`${(h)}`);
             //console.log(temp.classList);
             //temp.classList.add(h - 1);
-            temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS) };
+            temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS, FIELDS) };
 
             col.className = "column";
             if (h % 2 == 1) {
@@ -173,8 +140,8 @@ function getData() {
                 COLUMNS[s][i] = RECORDS[i][s];
                 //console.log(RECORDS[i][s]);
                 var temp = document.createElement("div");
-                temp.className = "data-value"
-                if (s == GRID_INDEX) {
+                temp.className = "data-value";
+                if (FIELDS[s].includes("Placement")) {
                     temp.innerText = "{ Show Grid }";
                     temp.id = i;
                     temp.onclick = function () { showGrid(this.id) }
@@ -211,7 +178,7 @@ function resetRaw() {
         temp.classList.add(`${(h)}`);
         //console.log(temp.classList);
         //temp.classList.add(h - 1);
-        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS) };
+        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS, FIELDS) };
 
         col.className = "column";
         if (h % 2 == 1) {
@@ -230,7 +197,7 @@ function resetRaw() {
             //console.log(RECORDS[i][s]);
             var temp = document.createElement("div");
             temp.className = "data-value"
-            if (s == GRID_INDEX) {
+            if (FIELDS[s].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
                 temp.id = i;
                 temp.onclick = function () { showGrid(this.id) }
@@ -372,7 +339,7 @@ function getSortedIndex(colNum, team, records, columns) {
     return sortedRows;
 }
 
-function sortColumn(colNum, type, records, columns) {
+function sortColumn(colNum, type, records, columns, field) {
     var direction = parseInt(localStorage.getItem("direction"));
     var previousColumn = parseInt(localStorage.getItem("column"));
     localStorage.setItem("column", colNum);
@@ -390,7 +357,7 @@ function sortColumn(colNum, type, records, columns) {
         } else if (direction % 3 == 1) {
             sortedColumn = sortedColumn[colNum].sort(function (a, b) { return b - a });
         } else {
-            originalSort(records, columns);
+            originalSort(records, columns, field);
             return;
         }
 
@@ -423,9 +390,9 @@ function sortColumn(colNum, type, records, columns) {
                 //console.log(RECORDS[i][s]);
                 var tempCol = cols[s];
                 var temp = tempCol.children[i + 1];
-                if (s == GRID_INDEX) {
+                if (field[s].includes("Placement")) {
                     temp.innerText = "{ Show Grid }";
-                    temp.id = previousRows[i];
+                    temp.id = i;
                     temp.onclick = function () { showGrid(this.id) }
                 } else {
                     temp.innerText = sortedRows[i][s];
@@ -509,16 +476,16 @@ function detectCharacter(val) {
     return 0;
 }
 
-function originalSort(record, column) {
+function originalSort(record, column, field) {
     var cols = document.getElementsByClassName("column");
     for (var x = 0; x < record.length; x++) {
         for (var y = 0; y < record[x].length - 1; y++) {
             //console.log(RECORDS[i][s]);
             var tempCol = cols[y];
             var temp = tempCol.children[x + 1];
-            if (y == GRID_INDEX) {
+            if (field[y].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
-                temp.id = x;
+                temp.id = y;
                 temp.onclick = function () { showGrid(this.id) }
             } else {
                 temp.innerText = column[y][x];
@@ -552,17 +519,19 @@ function getTeamData() {
     rawTable.innerHTML = "";
     TEAM_COLUMNS = [];
     TEAM_ROWS = [];
+    TEAM_FIELDS = [];
 
     var dataToKeep = [];
     var dCounter = 0;
-    for (var i = 1; i < FIELDS.length; i++) {
+    for (var i = 0; i < FIELDS.length; i++) {
         var dataType = new String(RECORDS[1][i]).substring(0, 1);
         if (RECORDS[1][i] == null) {
             dataType = 1;
         }
-        if (detectCharacter(dataType) == 1 && FIELDS[i] != "Match Number") {
+        if (detectCharacter(dataType) == 1 && FIELDS[i] != "Match Number" && !FIELDS[i].includes("Placement")) {
             dataToKeep[dCounter] = i - 1;
             dCounter++;
+            TEAM_FIELDS.push(FIELDS[i]);
         }
     }
     console.log(dataToKeep);
@@ -591,7 +560,7 @@ function getTeamData() {
         temp.classList.add(`${(i)}`);
         //console.log(temp.classList);
         //temp.classList.add(h - 1);
-        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), teamRows, TEAM_COLUMNS) };
+        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), teamRows, TEAM_COLUMNS, TEAM_FIELDS) };
         tempC.appendChild(temp);
 
         rawTable.appendChild(tempC);
@@ -617,7 +586,7 @@ function getTeamData() {
         for (var c = 0; c < dataToKeep.length; c++) {
             var average = 0;
             for (var r = 0; r < teamRows.length; r++) {
-                average += RECORDS[teamRows[r]][dataToKeep[c] + 1];
+                average += parseInt(RECORDS[teamRows[r]][dataToKeep[c] + 1]);
             }
             //console.log(average / teamRows.length);
             var tempData = document.createElement("div");
@@ -630,7 +599,7 @@ function getTeamData() {
     }
     //console.log(TEAM_ROWS);
     for (var i = 0; i < dataToKeep.length; i++) {
-        document.getElementsByClassName("column")[i].children[0].onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), TEAM_ROWS, TEAM_COLUMNS) };
+        document.getElementsByClassName("column")[i].children[0].onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), TEAM_ROWS, TEAM_COLUMNS, TEAM_FIELDS) };
     }
 }
 
