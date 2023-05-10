@@ -15,60 +15,62 @@
 
 <body>
     <div id="grid-frc">
-    <div id="close-grid-button" onclick="hideGrid()"><h2>Back</h2></div>
-    <div id="grid-inner">
-        <div class="node-container">
-            <div class="node-row">
-                <div class="node-high node-item" title="High node"></div>
-                <div class="node-high node-item" title="High node"></div>
-                <div class="node-high node-item" title="High node"></div>
+        <div id="close-grid-button" onclick="hideGrid()">
+            <h2>Back</h2>
+        </div>
+        <div id="grid-inner">
+            <div class="node-container">
+                <div class="node-row">
+                    <div class="node-low node-item" title="Low node"></div>
+                    <div class="node-low node-item" title="Low node"></div>
+                    <div class="node-low node-item" title="Low node"></div>
+                </div>
+                <div class="node-row">
+                    <div class="node-mid node-item" title="Mid node"></div>
+                    <div class="node-mid node-item" title="Mid node"></div>
+                    <div class="node-mid node-item" title="Mid node"></div>
+                </div>
+                <div class="node-row">
+                    <div class="node-high node-item" title="High node"></div>
+                    <div class="node-high node-item" title="High node"></div>
+                    <div class="node-high node-item" title="High node"></div>
+                </div>
             </div>
-            <div class="node-row">
-                <div class="node-mid node-item" title="Mid node"></div>
-                <div class="node-mid node-item" title="Mid node"></div>
-                <div class="node-mid node-item" title="Mid node"></div>
+            <div class="node-container">
+                <div class="node-row">
+                    <div class="node-low node-item" title="Low node"></div>
+                    <div class="node-low node-item" title="Low node"></div>
+                    <div class="node-low node-item" title="Low node"></div>
+                </div>
+                <div class="node-row">
+                    <div class="node-mid node-item" title="Mid node"></div>
+                    <div class="node-mid node-item" title="Mid node"></div>
+                    <div class="node-mid node-item" title="Mid node"></div>
+                </div>
+                <div class="node-row">
+                    <div class="node-high node-item" title="High node"></div>
+                    <div class="node-high node-item" title="High node"></div>
+                    <div class="node-high node-item" title="High node"></div>
+                </div>
             </div>
-            <div class="node-row">
-                <div class="node-low node-item" title="Low node"></div>
-                <div class="node-low node-item" title="Low node"></div>
-                <div class="node-low node-item" title="Low node"></div>
+            <div class="node-container">
+                <div class="node-row">
+                    <div class="node-low node-item" title="Low node"></div>
+                    <div class="node-low node-item" title="Low node"></div>
+                    <div class="node-low node-item" title="Low node"></div>
+                </div>
+                <div class="node-row">
+                    <div class="node-mid node-item" title="Mid node"></div>
+                    <div class="node-mid node-item" title="Mid node"></div>
+                    <div class="node-mid node-item" title="Mid node"></div>
+                </div>
+                <div class="node-row">
+                    <div class="node-high node-item" title="High node"></div>
+                    <div class="node-high node-item" title="High node"></div>
+                    <div class="node-high node-item" title="High node"></div>
+                </div>
             </div>
         </div>
-        <div class="node-container">
-            <div class="node-row">
-                <div class="node-high node-item" title="High node"></div>
-                <div class="node-high node-item" title="High node"></div>
-                <div class="node-high node-item" title="High node"></div>
-            </div>
-            <div class="node-row">
-                <div class="node-mid node-item" title="Mid node"></div>
-                <div class="node-mid node-item" title="Mid node"></div>
-                <div class="node-mid node-item" title="Mid node"></div>
-            </div>
-            <div class="node-row">
-                <div class="node-low node-item" title="Low node"></div>
-                <div class="node-low node-item" title="Low node"></div>
-                <div class="node-low node-item" title="Low node"></div>
-            </div>
-        </div>
-        <div class="node-container">
-            <div class="node-row">
-                <div class="node-high node-item" title="High node"></div>
-                <div class="node-high node-item" title="High node"></div>
-                <div class="node-high node-item" title="High node"></div>
-            </div>
-            <div class="node-row">
-                <div class="node-mid node-item" title="Mid node"></div>
-                <div class="node-mid node-item" title="Mid node"></div>
-                <div class="node-mid node-item" title="Mid node"></div>
-            </div>
-            <div class="node-row">
-                <div class="node-low node-item" title="Low node"></div>
-                <div class="node-low node-item" title="Low node"></div>
-                <div class="node-low node-item" title="Low node"></div>
-            </div>
-        </div>
-    </div>
     </div>
 
     <div id="settings">
@@ -81,13 +83,37 @@
     </div>
 
     <div id="sidebar">
-        <div id="side-button-container">
-            <div class="side-button" onclick="refreshData()">Refresh</div>
-            <div class="side-button" onclick="resetRaw()">Raw</div>
-            <div class="side-button" onclick="getTeamData()">Team</div>
-            <div class="side-button" onclick="setUpTeamOveralls(); openTeamOveralls();">Overalls</div>
-            <div class="side-button" onclick="getTBATeams()">TBA</div>
-            <div class="side-button" onclick="toggleSettings()">Settings</div>
+            <div id="cards">
+                <div class="card" onclick="refreshData()">
+                    <div class="card-content">
+                        Refresh
+                    </div>
+                </div>
+                <div class="card" onclick="resetRaw()">
+                    <div class="card-content">
+                        Raw
+                    </div>
+                </div>
+                <div class="card" onclick="getTeamData()">
+                    <div class="card-content">
+                        Team
+                    </div>
+                </div>
+                <div class="card" onclick="setUpTeamOveralls(); openTeamOveralls();">
+                    <div class="card-content">
+                        Breakdown
+                    </div>
+                </div>
+                <div class="card" onclick="getTBATeams()">
+                    <div class="card-content">
+                        TBA
+                    </div>
+                </div>
+                <div class="card" onclick="toggleSettings()">
+                    <div class="card-content">
+                        Settings
+                    </div>
+                </div>
         </div>
         <div id="open-sidebar" onclick="toggleSidebar()">
             <p>></p>
@@ -101,6 +127,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="lib/csv.js"></script>
     <script src="js/index.js"></script>
+    <script src="js/polish.js"></script>
 </body>
 
 </html>

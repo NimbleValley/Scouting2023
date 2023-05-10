@@ -13,7 +13,7 @@ const urlInput = document.getElementById("spreadsheet-url-input");
 console.log(localStorage.getItem("spreadsheet-url"));
 
 const breakdownLines = document.getElementById("breakdown-lines-container");
-const overallCategoryHeaders = ["Points", "Gp Moved", "Gp Points", "Auto Points", "Tele Points", "Cubes Moved", "Cones Moved", "High Gp", "Mid Gp", "Low Gp"];
+const overallCategoryHeaders = ["Points", "Gp Moved", "Gp Points", "Auto Points", "Tele Points", "Cubes Moved", "Cones Moved", "High Gp (Tele)", "Mid Gp (Tele)", "Low Gp (Tele)"];
 var firstOverall = true;
 
 const frcGrid = document.getElementById("grid-frc");
@@ -86,9 +86,30 @@ function getData() {
         //var tableHeader = document.createElement("div");
         //tableHeader.id = "raw-table";
 
+        FIELDS.push("Cubes");
+        FIELDS.push("Cones");
         FIELDS.push("GP Moved");
         FIELDS.push("GP Points");
         FIELDS.push("Points");
+
+        for (var i = 0; i < RECORDS.length; i++) {
+            var totalCubes = 0;
+            var totalCones = 0;
+            for(var c = 0; c < RECORDS[i].length; c ++) {
+                if(FIELDS[c].includes("Placement")) {
+                    var nodeData = JSON.parse("[" + RECORDS[i][c] + "]");
+                    for(var n = 0; n < nodeData.length; n ++) {
+                        if(nodeData[n] == 1) {
+                            totalCubes ++;
+                        } else if(nodeData[n] == 2) {
+                            totalCones ++;
+                        }
+                    }
+                }
+            }
+            RECORDS[i].push(totalCubes);
+            RECORDS[i].push(totalCones);
+        }
 
         for (var i = 0; i < RECORDS.length; i++) {
             RECORDS[i].push(RECORDS[i][7] + RECORDS[i][8] + RECORDS[i][9] + RECORDS[i][15] + RECORDS[i][16] + RECORDS[i][17]);
@@ -144,7 +165,8 @@ function getData() {
                 if (FIELDS[s].includes("Placement")) {
                     temp.innerText = "{ Show Grid }";
                     temp.id = i;
-                    temp.onclick = function () { showGrid(this.id) }
+                    temp.classList.add(s);
+                    temp.onclick = function () { showGrid(this.id, this.classList[1], RECORDS) }
                 } else {
                     temp.innerText = RECORDS[i][s];
                 }
@@ -200,7 +222,8 @@ function resetRaw() {
             if (FIELDS[s].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
                 temp.id = i;
-                temp.onclick = function () { showGrid(this.id) }
+                temp.classList.add(s);
+                temp.onclick = function () { showGrid(this.id, this.classList[1], RECORDS) }
             } else {
                 temp.innerText = RECORDS[i][s];
             }
@@ -209,18 +232,20 @@ function resetRaw() {
     }
 }
 
-function showGrid(recordNum) {
+function showGrid(recordNum, colNum, record) {
     breakdownLines.style.display = "none";
     body.style.overflow = "hidden";
     frcGrid.style.display = "flex";
 
-    var nodeData = JSON.parse(RECORDS[recordNum][GRID_INDEX]);
+    var nodeData = JSON.parse("[" + record[recordNum][colNum] + "]");
+    console.log(nodeData);
 
     for (var i = 0; i < gridNodes.length; i++) {
         //console.log(nodeData[Math.floor(i/9)][i%9]);
         gridNodes[i].style.backgroundColor = "#797979";
-        if (nodeData[Math.floor(i / 9)][i % 9] == 1) {
-            if (i % 3 == 1) {
+        console.log((9-(i%9)) * ((Math.floor(i/9)+1)));
+        if (nodeData[i] > 0) {
+            if (nodeData[i] == 1) {
                 gridNodes[i].style.backgroundColor = "#6643DA";
             } else {
                 gridNodes[i].style.backgroundColor = "#FDC955";
@@ -286,7 +311,7 @@ function openTeamOveralls() {
     //console.log(TEAM_COLUMNS);
     var overallData = [];
 
-    var sortIndexes = [19, 15, 16, 17, 18, 9, 10, 4, 5, 6, 0, 0, 0];
+    var sortIndexes = [13, 11, 12, 1, 2, 9, 10, 6, 7, 8, 0, 0, 0];
 
     for (var i = 0; i < overallCategoryHeaders.length; i++) {
         var teamsSorted = [];
@@ -357,7 +382,8 @@ function sortColumn(colNum, type, records, columns, field) {
         } else if (direction % 3 == 1) {
             sortedColumn = sortedColumn[colNum].sort(function (a, b) { return b - a });
         } else {
-            originalSort(records, columns, field);
+            resetRaw();
+            //originalSort(records, columns, field);
             return;
         }
 
@@ -390,10 +416,10 @@ function sortColumn(colNum, type, records, columns, field) {
                 //console.log(RECORDS[i][s]);
                 var tempCol = cols[s];
                 var temp = tempCol.children[i + 1];
-                if (field[s].includes("Placement")) {
+                if (FIELDS[s].includes("Placement")) {
                     temp.innerText = "{ Show Grid }";
                     temp.id = i;
-                    temp.onclick = function () { showGrid(this.id) }
+                    temp.onclick = function () { showGrid(this.id, this.classList[1], sortedRows) }
                 } else {
                     temp.innerText = sortedRows[i][s];
                 }
@@ -483,10 +509,10 @@ function originalSort(record, column, field) {
             //console.log(RECORDS[i][s]);
             var tempCol = cols[y];
             var temp = tempCol.children[x + 1];
-            if (field[y].includes("Placement")) {
+            if (FIELDS[s].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
-                temp.id = y;
-                temp.onclick = function () { showGrid(this.id) }
+                temp.id = i;
+                temp.onclick = function () { showGrid(this.id, this.classList[1], RECORDS) }
             } else {
                 temp.innerText = column[y][x];
             }
