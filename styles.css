@@ -16,7 +16,7 @@ body {
 
 #data-table {
     background-color: #444444;
-    border-radius: 0.75vw;
+    border-radius: 1vh;
     width: fit-content;
     display: flex;
     justify-content: space-around;
@@ -25,6 +25,7 @@ body {
     margin-top: -98.25vh;
     position: relative;
     top: 0vh;
+    z-index: 0;
 }
 
 .table-header-section-raw {
@@ -37,20 +38,39 @@ body {
     width: fit-content;
     white-space: nowrap;
     padding: 1vh;
-    transition: scale 0.15s, background-color 0.15s;
-    background-color: rgb(235, 228, 220);
-    border-radius: 0.75vw;
+    transition: scale 0.25s, background-color 0.25s, color 0.25s;
+    border: 0.35vh solid rgb(235, 228, 220);
+    color: rgb(235, 228, 220);
+    border-radius: 1vh;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 2vh;
     user-select: none;
+    font-weight: 700;
 }
 
 .table-header-section-raw:hover {
     cursor: pointer;
-    scale: 1.05;
-    background-color: rgb(218, 148, 68);
-    font-weight: bolder;
+    color: black;
+}
+
+.table-header-section-raw::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 102, 0, 0);
+    position: absolute;
+    transition: background-color 0.25s, scale 0.15s;
+    scale: 0 1;
+    z-index: -1;
+}
+
+.table-header-section-raw:hover::after {
+    background-color: rgb(235, 228, 220);
+    z-index: -1;
+    scale: 1 1;
 }
 
 .column {
@@ -69,12 +89,13 @@ body {
     font-weight: bolder;
     color: white;
     transition: background-color 0.25s;
-    background-color: #4d4e4e00
+    background-color: #4d4e4e00;
+    z-index: 10;
 }
 
 .data-value:hover {
     cursor: pointer;
-    background-color: #333333
+    background-color: #333333 !important;
 }
 
 h3 {
@@ -416,7 +437,6 @@ h4 {
 
 
 
-
 #cards {
     display: flex;
     flex-wrap: wrap;
@@ -433,17 +453,17 @@ h4 {
 }
 
 .card {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 1vw;
+    background-color: rgba(255, 255, 255, 0.356);
+    border-radius: 0.75vh;
     cursor: pointer;
     display: flex;
-    font-size: 4vh;
-    color: white;
+    font-size: 3.5vh;
+    color: rgb(235, 230, 225);
     height: fit-content;
     flex-direction: column;
     position: relative;
     width: 100%;
-    height: 10vh;
+    height: 8.75vh;
     position: relative;
 }
 
@@ -465,15 +485,15 @@ h4 {
 }
 
 .card::before {
-    background: radial-gradient(75vh circle at var(--mouse-x) var(--mouse-y),
+    background: radial-gradient(125vh circle at var(--mouse-x) var(--mouse-y),
             rgba(255, 255, 255, 0.345),
             transparent 40%);
     z-index: 3;
 }
 
 .card::after {
-    background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y),
-            rgba(255, 255, 255, 0.4),
+    background: radial-gradient(100vh circle at var(--mouse-x) var(--mouse-y),
+            rgba(255, 255, 255, 0.61),
             transparent 40%);
     z-index: 1;
 }
@@ -484,7 +504,7 @@ h4 {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    inset: 0.3vh;
+    inset: 0.35vh;
     padding: 10px;
     position: absolute;
     z-index: 2;

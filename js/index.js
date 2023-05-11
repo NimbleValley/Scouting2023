@@ -1,5 +1,7 @@
 var tl = new TimelineMax();
 
+const rowHighlight = document.getElementById("row-highlight");
+
 const sidebar = document.getElementById("sidebar");
 const openSidebarButton = document.getElementById("open-sidebar");
 var sidebarOpen = false;
@@ -95,14 +97,14 @@ function getData() {
         for (var i = 0; i < RECORDS.length; i++) {
             var totalCubes = 0;
             var totalCones = 0;
-            for(var c = 0; c < RECORDS[i].length; c ++) {
-                if(FIELDS[c].includes("Placement")) {
+            for (var c = 0; c < RECORDS[i].length; c++) {
+                if (FIELDS[c].includes("Placement")) {
                     var nodeData = JSON.parse("[" + RECORDS[i][c] + "]");
-                    for(var n = 0; n < nodeData.length; n ++) {
-                        if(nodeData[n] == 1) {
-                            totalCubes ++;
-                        } else if(nodeData[n] == 2) {
-                            totalCones ++;
+                    for (var n = 0; n < nodeData.length; n++) {
+                        if (nodeData[n] == 1) {
+                            totalCubes++;
+                        } else if (nodeData[n] == 2) {
+                            totalCones++;
                         }
                     }
                 }
@@ -143,7 +145,7 @@ function getData() {
             temp.classList.add(`${(h)}`);
             //console.log(temp.classList);
             //temp.classList.add(h - 1);
-            temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS, FIELDS) };
+            temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS, FIELDS, false) };
 
             col.className = "column";
             if (h % 2 == 1) {
@@ -162,9 +164,12 @@ function getData() {
                 //console.log(RECORDS[i][s]);
                 var temp = document.createElement("div");
                 temp.className = "data-value";
+                temp.id = i;
+                temp.addEventListener("click", function () {
+                    setRowHighlight(this.id);
+                });
                 if (FIELDS[s].includes("Placement")) {
                     temp.innerText = "{ Show Grid }";
-                    temp.id = i;
                     temp.classList.add(s);
                     temp.onclick = function () { showGrid(this.id, this.classList[1], RECORDS) }
                 } else {
@@ -200,7 +205,7 @@ function resetRaw() {
         temp.classList.add(`${(h)}`);
         //console.log(temp.classList);
         //temp.classList.add(h - 1);
-        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS, FIELDS) };
+        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS, FIELDS, false) };
 
         col.className = "column";
         if (h % 2 == 1) {
@@ -218,7 +223,11 @@ function resetRaw() {
             COLUMNS[s][i] = RECORDS[i][s];
             //console.log(RECORDS[i][s]);
             var temp = document.createElement("div");
-            temp.className = "data-value"
+            temp.className = "data-value";
+            temp.id = i;
+            temp.addEventListener("click", function () {
+                setRowHighlight(this.id);
+            });
             if (FIELDS[s].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
                 temp.id = i;
@@ -232,6 +241,29 @@ function resetRaw() {
     }
 }
 
+function setRowHighlight(row) {
+    var cols = document.getElementsByClassName("column");
+    for (var c = 0; c < cols.length; c++) {
+        for (var i = 1; i < cols[c].children.length; i++) {
+            cols[c].children[i].style.backgroundColor = "#4d4e4e00";
+        }
+    }
+
+    if (localStorage.getItem("previousHighlightRow") != row) {
+        localStorage.setItem("previousHighlightRow", row);
+        for (var c = 0; c < cols.length; c++) {
+            for (var i = 1; i < cols[c].children.length; i++) {
+                if (i - 1 == row) {
+                    cols[c].children[i].style.setProperty("background-color", "#a8652d", "important");
+                }
+            }
+        }
+    } else {
+        localStorage.setItem("previousHighlightRow", -1);
+    }
+
+}
+
 function showGrid(recordNum, colNum, record) {
     breakdownLines.style.display = "none";
     body.style.overflow = "hidden";
@@ -243,7 +275,7 @@ function showGrid(recordNum, colNum, record) {
     for (var i = 0; i < gridNodes.length; i++) {
         //console.log(nodeData[Math.floor(i/9)][i%9]);
         gridNodes[i].style.backgroundColor = "#797979";
-        console.log((9-(i%9)) * ((Math.floor(i/9)+1)));
+        console.log((9 - (i % 9)) * ((Math.floor(i / 9) + 1)));
         if (nodeData[i] > 0) {
             if (nodeData[i] == 1) {
                 gridNodes[i].style.backgroundColor = "#6643DA";
@@ -301,7 +333,7 @@ function openTeamOveralls() {
         getTeamData();
     }
 
-    if(firstOverall) {
+    if (firstOverall) {
         setUpTeamOveralls();
         firstOverall = false;
     }
@@ -329,7 +361,7 @@ function openTeamOveralls() {
 
     for (var i = 0; i < overallCategoryHeaders.length; i++) {
         document.getElementsByClassName("inner-breakdown-line")[i].style.height = `${overallData[i] * 100}%`;
-        document.getElementsByClassName("breakdown-line")[i].title = `${(overallData[i] * (TEAMS.length - 1))+1} out of ${TEAMS.length}`;
+        document.getElementsByClassName("breakdown-line")[i].title = `${(overallData[i] * (TEAMS.length - 1)) + 1} out of ${TEAMS.length}`;
     }
 }
 
@@ -364,7 +396,7 @@ function getSortedIndex(colNum, team, records, columns) {
     return sortedRows;
 }
 
-function sortColumn(colNum, type, records, columns, field) {
+function sortColumn(colNum, type, records, columns, field, team) {
     var direction = parseInt(localStorage.getItem("direction"));
     var previousColumn = parseInt(localStorage.getItem("column"));
     localStorage.setItem("column", colNum);
@@ -382,7 +414,12 @@ function sortColumn(colNum, type, records, columns, field) {
         } else if (direction % 3 == 1) {
             sortedColumn = sortedColumn[colNum].sort(function (a, b) { return b - a });
         } else {
-            resetRaw();
+            console.log(team);
+            if (team) {
+                getTeamData();
+            } else {
+                resetRaw();
+            }
             //originalSort(records, columns, field);
             return;
         }
@@ -416,7 +453,7 @@ function sortColumn(colNum, type, records, columns, field) {
                 //console.log(RECORDS[i][s]);
                 var tempCol = cols[s];
                 var temp = tempCol.children[i + 1];
-                if (FIELDS[s].includes("Placement")) {
+                if (field[s].includes("Placement")) {
                     temp.innerText = "{ Show Grid }";
                     temp.id = i;
                     temp.onclick = function () { showGrid(this.id, this.classList[1], sortedRows) }
@@ -509,10 +546,10 @@ function originalSort(record, column, field) {
             //console.log(RECORDS[i][s]);
             var tempCol = cols[y];
             var temp = tempCol.children[x + 1];
-            if (FIELDS[s].includes("Placement")) {
+            if (field[s].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
                 temp.id = i;
-                temp.onclick = function () { showGrid(this.id, this.classList[1], RECORDS) }
+                temp.onclick = function () { showGrid(this.id, this.classList[1], record) }
             } else {
                 temp.innerText = column[y][x];
             }
@@ -577,6 +614,10 @@ function getTeamData() {
         var tempC = document.createElement("div");
         tempC.className = "column";
 
+        if (i % 2 == 1) {
+            tempC.style.backgroundColor = "#4d4e4e";
+        }
+
         var temp = document.createElement("div");
         var text = document.createElement("h3");
         text.innerText = FIELDS[dataToKeep[i] + 1];
@@ -586,7 +627,7 @@ function getTeamData() {
         temp.classList.add(`${(i)}`);
         //console.log(temp.classList);
         //temp.classList.add(h - 1);
-        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), teamRows, TEAM_COLUMNS, TEAM_FIELDS) };
+        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), teamRows, TEAM_COLUMNS, TEAM_FIELDS, true) };
         tempC.appendChild(temp);
 
         rawTable.appendChild(tempC);
@@ -618,6 +659,10 @@ function getTeamData() {
             var tempData = document.createElement("div");
             tempData.className = "data-value";
             tempData.innerText = Math.floor(average / teamRows.length * 10) / 10;
+            tempData.id = i;
+            tempData.addEventListener("click", function () {
+                setRowHighlight(this.id);
+            });
             rawTable.children[c].appendChild(tempData);
             TEAM_COLUMNS[c][i] = Math.floor(average / teamRows.length * 10) / 10;
             TEAM_ROWS[i][c] = Math.floor(average / teamRows.length * 10) / 10;
@@ -625,7 +670,7 @@ function getTeamData() {
     }
     //console.log(TEAM_ROWS);
     for (var i = 0; i < dataToKeep.length; i++) {
-        document.getElementsByClassName("column")[i].children[0].onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), TEAM_ROWS, TEAM_COLUMNS, TEAM_FIELDS) };
+        document.getElementsByClassName("column")[i].children[0].onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), TEAM_ROWS, TEAM_COLUMNS, TEAM_FIELDS, true) };
     }
 }
 
@@ -674,7 +719,7 @@ function getTBAOPRS(json) {
         temp.classList.add(`${(h)}`);
         //console.log(temp.classList);
         //temp.classList.add(h - 1);
-        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), COLUMNS) };
+        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), COLUMNS, false) };
 
         col.className = "column";
         if (h % 2 == 0) {
