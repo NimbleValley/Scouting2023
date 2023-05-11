@@ -18,6 +18,9 @@ const breakdownLines = document.getElementById("breakdown-lines-container");
 const overallCategoryHeaders = ["Points", "Gp Moved", "Gp Points", "Auto Points", "Tele Points", "Cubes Moved", "Cones Moved", "High Gp (Tele)", "Mid Gp (Tele)", "Low Gp (Tele)"];
 var firstOverall = true;
 
+const graphContainer = document.getElementById("graph-container");
+var firstGraph = true;
+
 const frcGrid = document.getElementById("grid-frc");
 var gridNodes = document.getElementsByClassName("node-item");
 
@@ -70,6 +73,7 @@ getData();
 
 function getData() {
     breakdownLines.style.display = "none";
+    graphContainer.style.display = "none";
     CSV.fetch({
         //url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNEBYTlOcDv1NuaCd5U-55q2czmUc-HgvNKnaRDxkkL9J39MD_ht2-6GKY4jX3bipv7dONBcUVCpU_/pub?gid=1955868836&single=true&output=csv'
         url: urlInput.value
@@ -178,11 +182,13 @@ function getData() {
                 rawTable.children[s].appendChild(temp);
             }
         }
+        setUpGraph();
     });
 }
 
 function resetRaw() {
     breakdownLines.style.display = "none";
+    graphContainer.style.display = "none";
     rawTable.innerHTML = "";
 
     for (var h = 0; h < FIELDS.length; h++) {
@@ -266,6 +272,7 @@ function setRowHighlight(row) {
 
 function showGrid(recordNum, colNum, record) {
     breakdownLines.style.display = "none";
+    graphContainer.style.display = "none";
     body.style.overflow = "hidden";
     frcGrid.style.display = "flex";
 
@@ -291,7 +298,49 @@ function hideGrid() {
     frcGrid.style.display = "none";
 }
 
+function setUpGraph() {
+    breakdownLines.style.display = "none";
+
+    if (TEAMS.length < 1) {
+        getTeamData();
+    }
+
+    //graphContainer.innerHTML = "";
+    graphContainer.style.display = "flex";
+    rawTable.innerHTML = "";
+
+    var temp = document.createElement("select");
+    temp.id = "graph-number-select";
+    temp.style.width = "20vh";
+    for (var i = 0; i < 2; i++) {
+        var op = document.createElement("option");
+        if (i == 0) {
+            op.text = i + 1 + " Value";
+        } else {
+            op.text = i + 1 + " Values";
+        }
+        op.value = i + 1;
+        temp.append(op);
+    }
+    rawTable.appendChild(temp);
+
+    var tempT = document.createElement("select");
+    tempT.id = "graph-category-select";
+    tempT.addEventListener("input", openTeamOveralls);
+    tempT.style.width = "30vh";
+    tempT.style.marginLeft = "5vh";
+    for (var i = 1; i < TEAM_FIELDS.length; i++) {
+        var op = document.createElement("option");
+        op.text = TEAM_FIELDS[i];
+        op.value = TEAM_FIELDS[i];
+        tempT.append(op);
+    }
+
+    rawTable.appendChild(tempT);
+}
+
 function setUpTeamOveralls() {
+    graphContainer.style.display = "none";
     breakdownLines.innerHTML = "";
     rawTable.innerHTML = "";
     var temp = document.createElement("select");
@@ -339,6 +388,7 @@ function openTeamOveralls() {
     }
 
     breakdownLines.style.display = "flex";
+    graphContainer.style.display = "none";
 
     //console.log(TEAM_COLUMNS);
     var overallData = [];
@@ -578,6 +628,7 @@ function refreshData() {
 
 function getTeamData() {
     breakdownLines.style.display = "none";
+    graphContainer.style.display = "none";
     TABLE_TYPE = "team";
     rawTable.innerHTML = "";
     TEAM_COLUMNS = [];

@@ -47,6 +47,7 @@ body {
     margin-bottom: 2vh;
     user-select: none;
     font-weight: 700;
+    background-color: #333333;
 }
 
 .table-header-section-raw:hover {
@@ -145,26 +146,62 @@ p {
     top: 0;
 }
 
-.side-button {
-    position: relative;
-    color: white;
-    border-radius: 0.75vh;
-    font-size: 4vh;
-    background-color: #444444;
-    width: 18vh;
-    padding: 1.25vh;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 2vh;
-    font-weight: bolder;
-    transition: background-color 0.15s, scale 0.15s;
-    text-align: center;
+#side-button-container {
+    width: 25vh;
 }
 
 .side-button:hover {
     cursor: pointer;
-    background-color: #797979;
-    scale: 1.1;
+}
+
+.side-button {
+    position: relative;
+    color: white;
+    border-radius: 1vh;
+    font-size: 3.5vh;
+    width: 20vh;
+    padding: 1.25vh;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1.5vh;
+    font-weight: bolder;
+    transition: background-color 0.15s, scale 0.15s;
+    text-align: center;
+    border: 0.5vh solid #444444;
+}
+
+.side-button::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-color: #79797900;
+    z-index: -1;
+    transition: width 0.15s, background-color 0.15s;
+}
+
+.side-button:hover::after {
+    width: 50%;
+    background-color: #5c5c5c;
+}
+
+.side-button::before {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 100%;
+    right: 0;
+    top: 0;
+    background-color: #79797900;
+    z-index: -1;
+    transition: width 0.15s, background-color 0.15s;
+}
+
+.side-button:hover::before {
+    width: 50%;
+    background-color: #5c5c5c;
 }
 
 .active {
@@ -434,6 +471,73 @@ h4 {
     color: white;
     user-select: none;
 }
+
+h6 {
+    text-align: center;
+    width: 7.5vh;
+    font-size: 2vh;
+    margin: 0;
+    height: fit-content;
+    color: white;
+    user-select: none;
+    background-color: #2b2b2b;
+    border-radius: 0.85vh;
+    margin-right: 2vh;
+}
+
+#graph-container {
+    margin-left: 34vh;
+    top: 0;
+    width: 115vh;
+    padding: 0.5vh;
+    background-color: #444444;
+    flex-direction: column;
+    height: 10vh;
+    justify-content: space-around;
+}
+
+.graph-line {
+    width: 99%;
+    background-color: #5e5e5e;
+    display: flex;
+    height: fit-content;
+    padding: 0.5vh;
+    border-radius: 0.75vh;
+    align-items: center;
+}
+
+.graph-track {
+    width: 100%;
+    background-color: #7c624d;
+    height: 1.85vh;
+    border-radius: 5vh;
+    margin-right: 2vh;
+}
+
+.graph-inner-line {
+    height: 2vh;
+    border-radius: 5vh;
+    background-color: rgb(235, 106, 31);
+    width: 25%;
+    position: absolute;
+}
+
+.graph-inner-line::after {
+    content: "";
+    width: 3.5vh;
+    height: 3.5vh;
+    background-color: rgb(255, 94, 0);
+    right: -0.875vh;
+    top: -0.875vh;
+    position: absolute;
+    border-radius: 10000000000000000px;
+}
+
+
+
+
+
+
 
 
 

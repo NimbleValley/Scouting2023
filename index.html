@@ -83,52 +83,16 @@
     </div>
 
     <div id="sidebar">
-            <div id="cards">
-                <div class="card" onclick="refreshData()">
-                    <div class="card-content">
-                        Refresh
-                    </div>
-                </div>
-                <div class="card" onclick="resetRaw()">
-                    <div class="card-content">
-                        Raw
-                    </div>
-                </div>
-                <div class="card" onclick="getTeamData()">
-                    <div class="card-content">
-                        Team
-                    </div>
-                </div>
-                <div class="card" onclick="setUpTeamOveralls(); openTeamOveralls();">
-                    <div class="card-content">
-                        Breakdown
-                    </div>
-                </div>
-                <div class="card" onclick="setUpTeamOveralls(); openTeamOveralls();">
-                    <div class="card-content">
-                        Graph
-                    </div>
-                </div>
-                <div class="card" onclick="setUpTeamOveralls(); openTeamOveralls();">
-                    <div class="card-content">
-                        Compare
-                    </div>
-                </div>
-                <div class="card" onclick="setUpTeamOveralls(); openTeamOveralls();">
-                    <div class="card-content">
-                        Pick List
-                    </div>
-                </div>
-                <div class="card" onclick="getTBATeams()">
-                    <div class="card-content">
-                        TBA
-                    </div>
-                </div>
-                <div class="card" onclick="toggleSettings()">
-                    <div class="card-content">
-                        Settings
-                    </div>
-                </div>
+        <div id="side-button-container">
+            <div class="side-button" onclick="refreshData()">Refresh</div>
+            <div class="side-button" onclick="resetRaw()">Raw</div>
+            <div class="side-button" onclick="getTeamData()">Team</div>
+            <div class="side-button" onclick="setUpTeamOveralls(); openTeamOveralls();">Breakdown</div>
+            <div class="side-button" onclick="setUpGraph()">Graph</div>
+            <div class="side-button" onclick="getTeamData()">Compare</div>
+            <div class="side-button" onclick="getTeamData()">Pick List</div>
+            <div class="side-button" onclick="getTBATeams()">TBA</div>
+            <div class="side-button" onclick="toggleSettings()">Settings</div>
         </div>
         <div id="open-sidebar" onclick="toggleSidebar()">
             <p>></p>
@@ -138,11 +102,24 @@
     </div>
     <div id="breakdown-lines-container">
     </div>
+    <div id="graph-container">
+        <div class="graph-line">
+            <h6>3197</h6>
+            <div class="graph-track">
+                <div class="graph-inner-line"></div>
+            </div>
+        </div>
+        <div class="graph-line">
+            <h6>930</h6>
+            <div class="graph-track">
+                <div class="graph-inner-line"></div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="lib/csv.js"></script>
     <script src="js/index.js"></script>
-    <script src="js/polish.js"></script>
 </body>
 
 </html>
