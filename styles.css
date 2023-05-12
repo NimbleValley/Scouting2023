@@ -150,10 +150,6 @@ p {
     width: 25vh;
 }
 
-.side-button:hover {
-    cursor: pointer;
-}
-
 .side-button {
     position: relative;
     color: white;
@@ -165,43 +161,51 @@ p {
     margin-right: auto;
     margin-top: 1.5vh;
     font-weight: bolder;
-    transition: background-color 0.15s, scale 0.15s;
+    transition: background-color 0.15s, scale 0.15s, text-shadow 0.15s;
     text-align: center;
     border: 0.5vh solid #444444;
+    text-shadow: #6c676700 0vh 0vh 1vh;
+}
+
+.side-button:hover {
+    cursor: pointer;
+    text-shadow: #000000 0vh 0vh 1vh;
 }
 
 .side-button::after {
     content: "";
     position: absolute;
     width: 0%;
-    height: 100%;
+    height: 50%;
     left: 0;
     top: 0;
-    background-color: #79797900;
+    background-color: #7979797b;
     z-index: -1;
-    transition: width 0.15s, background-color 0.15s;
+    transition: width 0.2s, height 0.2s, background-color 0.25s;
 }
 
 .side-button:hover::after {
-    width: 50%;
-    background-color: #5c5c5c;
+    width: 100%;
+    height: 50%;
+    background-color: #a1958a;
 }
 
 .side-button::before {
     content: "";
     position: absolute;
     width: 0%;
-    height: 100%;
+    height: 50%;
     right: 0;
-    top: 0;
-    background-color: #79797900;
+    bottom: 0;
+    background-color: #7979797e;
     z-index: -1;
-    transition: width 0.15s, background-color 0.15s;
+    transition: width 0.25s, height 0.25s, background-color 0.25s;
 }
 
 .side-button:hover::before {
-    width: 50%;
-    background-color: #5c5c5c;
+    width: 100%;
+    height: 50%;
+    background-color: #a1958a;
 }
 
 .active {
@@ -472,6 +476,52 @@ h4 {
     user-select: none;
 }
 
+/* LOADING CONTAINER                                              */
+#loading-container {
+    position: absolute;
+    width: 50vh;
+    height: 50vh;
+    top: 25vh;
+    left: calc(50vw - 25vh);
+    margin-left: auto;
+    margin-right: auto;
+    background-color: red;
+    z-index: 100000;
+}
+
+#load-horizontal {
+    background-color: blue;
+    position: absolute;
+    height: 50%;
+    width: 100%;
+    top: 25%;
+}
+
+#load-vertical {
+    background-color: green;
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    left: 25%;
+}
+
+#load-vertical::before {
+    content: "";
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    background-color: olivedrab;
+}
+
+#load-vertical::after {
+    content: "";
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    right: 0;
+    background-color: rgb(142, 138, 35);
+}
+
 h6 {
     text-align: center;
     width: 7.5vh;
@@ -480,7 +530,7 @@ h6 {
     height: fit-content;
     color: white;
     user-select: none;
-    background-color: #2b2b2b;
+    background-color: #3b3838;
     border-radius: 0.85vh;
     margin-right: 2vh;
 }
@@ -489,21 +539,21 @@ h6 {
     margin-left: 34vh;
     top: 0;
     width: 115vh;
-    padding: 0.5vh;
     background-color: #444444;
     flex-direction: column;
-    height: 10vh;
     justify-content: space-around;
+    height: fit-content;
 }
 
 .graph-line {
     width: 99%;
-    background-color: #5e5e5e;
+    background-color: #272626;
     display: flex;
     height: fit-content;
-    padding: 0.5vh;
+    padding: 0.25vh;
     border-radius: 0.75vh;
     align-items: center;
+    margin: 0.25vh;
 }
 
 .graph-track {
@@ -520,20 +570,30 @@ h6 {
     background-color: rgb(235, 106, 31);
     width: 25%;
     position: absolute;
+    transition: background-color 0.15s;
+}
+
+.graph-inner-line:hover {
+    cursor: pointer;
+    background-color: rgb(199, 71, 24);
 }
 
 .graph-inner-line::after {
     content: "";
     width: 3.5vh;
     height: 3.5vh;
-    background-color: rgb(255, 94, 0);
+    background-color: rgb(220, 73, 5);
     right: -0.875vh;
     top: -0.875vh;
     position: absolute;
     border-radius: 10000000000000000px;
+    transition: background-color 0.15s;
 }
 
-
+.graph-inner-line:hover::after {
+    background-color: rgb(189, 41, 8);
+    cursor: pointer;
+}
 
 
 

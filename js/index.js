@@ -337,6 +337,17 @@ function setUpGraph() {
     }
 
     rawTable.appendChild(tempT);
+    for (var i = 0; i < TEAMS.length; i++) {
+        var tempGraphLine = document.createElement("div");
+        tempGraphLine.className = "graph-line";
+        tempGraphLine.innerHTML = `<div class="graph-line">
+                                        <h6>${TEAMS[i]}</h6>
+                                        <div class="graph-track">
+                                            <div class="graph-inner-line"></div>
+                                        </div>
+                                    </div>`;
+        graphContainer.appendChild(tempGraphLine);
+    }
 }
 
 function setUpTeamOveralls() {
@@ -364,7 +375,7 @@ function setUpTeamOveralls() {
 
         var tempInnerLine = document.createElement("div");
         tempInnerLine.className = "inner-breakdown-line";
-        tempInnerLine.style.height = `0%`;
+        tempInnerLine.style.height = `0 % `;
 
         var temph4 = document.createElement("h4");
         temph4.innerText = overallCategoryHeaders[i];
@@ -410,8 +421,8 @@ function openTeamOveralls() {
     }
 
     for (var i = 0; i < overallCategoryHeaders.length; i++) {
-        document.getElementsByClassName("inner-breakdown-line")[i].style.height = `${overallData[i] * 100}%`;
-        document.getElementsByClassName("breakdown-line")[i].title = `${(overallData[i] * (TEAMS.length - 1)) + 1} out of ${TEAMS.length}`;
+        document.getElementsByClassName("inner-breakdown-line")[i].style.height = `${ overallData[i] * 100 }% `;
+        document.getElementsByClassName("breakdown-line")[i].title = `${ (overallData[i] * (TEAMS.length - 1)) + 1 } out of ${ TEAMS.length } `;
     }
 }
 
@@ -675,7 +686,7 @@ function getTeamData() {
         temp.appendChild(text);
         temp.className = "table-header-section-raw";
         temp.id = 9;
-        temp.classList.add(`${(i)}`);
+        temp.classList.add(`${ (i) } `);
         //console.log(temp.classList);
         //temp.classList.add(h - 1);
         temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), teamRows, TEAM_COLUMNS, TEAM_FIELDS, true) };
@@ -767,7 +778,7 @@ function getTBAOPRS(json) {
         temp.className = "table-header-section-raw";
 
         temp.id = 1;
-        temp.classList.add(`${(h)}`);
+        temp.classList.add(`${ (h) } `);
         //console.log(temp.classList);
         //temp.classList.add(h - 1);
         temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), COLUMNS, false) };
@@ -822,17 +833,17 @@ function getTBATeams() {
     getTBA(`https://www.thebluealliance.com/api/v3/event/${eventSelect.value}/oprs`, 2);
 }
 
-async function toggleSettings() {
-    settingsOpen = !settingsOpen;
-    if (settingsOpen) {
-        settings.style.display = "flex";
-        body.style.overflow = "hidden";
-        //var eventOptions = new Array();
-        console.log(TBA_EVENT_NAMES);
-    } else {
-        settings.style.display = "none";
-        body.style.overflow = "auto";
-        localStorage.setItem("event-key", eventSelect.value);
-        localStorage.setItem("spreadsheet-url", urlInput.value);
+    async function toggleSettings() {
+        settingsOpen = !settingsOpen;
+        if (settingsOpen) {
+            settings.style.display = "flex";
+            body.style.overflow = "hidden";
+            //var eventOptions = new Array();
+            console.log(TBA_EVENT_NAMES);
+        } else {
+            settings.style.display = "none";
+            body.style.overflow = "auto";
+            localStorage.setItem("event-key", eventSelect.value);
+            localStorage.setItem("spreadsheet-url", urlInput.value);
+        }
     }
-}
