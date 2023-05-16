@@ -474,6 +474,20 @@ h2 {
     }
 }
 
+@keyframes fade-in-dot {
+    0% {
+        opacity: 0;
+        scale: 0.5;
+        margin-right: 0vh;
+    }
+
+    100% {
+        opacity: 1;
+        scale: 1;
+        margin-right: 2vh;
+    }
+}
+
 .inner-breakdown-line {
     content: "";
     position: absolute;
@@ -594,6 +608,9 @@ h6 {
     background-color: #3b3838;
     border-radius: 0.85vh;
     margin-left: 1vh;
+    margin-right: 1vh;
+    margin-bottom: 1vh;
+    margin-top: 1vh;
 }
 
 #graph-container {
@@ -614,12 +631,23 @@ h6 {
     left: 0;
 }
 
-#graph-tick-container {
+#graph-bottom-legend {
     position: absolute;
     width: calc(100% - 10vh);
+    height: 5vh;
+    bottom: -5vh;
     right: 0;
-    background-color: rebeccapurple;
-    height: 100%;
+    background-color: #444444;
+    display: flex;
+    justify-content: space-between;
+}
+
+#graph-tick-container {
+    position: absolute;
+    width: calc(100% - 10vh - 0vh);
+    left: 10vh;
+    background-color:#272727;
+    height: calc(100% - 0vh);
 }
 
 .graph-tick-container {
@@ -643,6 +671,38 @@ h6 {
     position: absolute;
     border-radius: 10000000000000000px;
     transition: background-color 0.15s;
+    transition: background-color 0.15s;
+}
+
+.graph-dot:hover {
+    cursor: pointer;
+    background-color: rgb(189, 46, 11);
+}
+
+.graph-dot:hover > .dot-popup {
+    display: block;
+    animation: fade-in-dot 0.25s;
+}
+
+.dot-popup {
+    position: absolute;
+    width: fit-content;
+    font-size: 2vh;
+    padding: 0vh 0.5vh 0vh 0.5vh;
+    border:#5c5c5c solid 0.35vh;
+    background-color: #a3a3a3;
+    z-index: 1000000;
+    display: none;
+    margin-right: 2vh;
+    right: 0;
+    text-align: right;
+}
+
+#graph-average-vertical {
+    position: absolute;
+    background-color: rgb(22, 113, 152);
+    width: 0.5%;
+    height: 100%;
 }
 
 
