@@ -74,12 +74,6 @@ body {
     scale: 1 1;
 }
 
-.column {
-    width: fit-content;
-    padding: 1vh;
-    top: 0;
-}
-
 .data-value {
     white-space: nowrap;
     width: 100%;
@@ -438,6 +432,46 @@ h2 {
     width: 2vh;
     height: 75%;
     border-radius: 1vh;
+    transition: scale 0.15s;
+}
+
+.line-container:hover {
+    cursor: pointer;
+}
+
+.breakdown-popup {
+    position: absolute;
+    width: 10vh;
+    font-size: 2vh;
+    padding: 0vh 0.5vh 0vh 0.5vh;
+    border:#5c5c5c solid 0.35vh;
+    background-color: #a3a3a3;
+    z-index: 1000000;
+    display: none;
+    margin-left: 13vh;
+}
+
+.line-container:hover > .breakdown-popup {
+    display: block;
+    animation: fade-in 0.25s;
+}
+
+.line-container:hover > .breakdown-line {
+    scale: 1.25 1;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+        scale: 0.5;
+        margin-left: 5vh;
+    }
+
+    100% {
+        opacity: 1;
+        scale: 1;
+        margin-left: 13vh;
+    }
 }
 
 .inner-breakdown-line {
@@ -455,6 +489,13 @@ h2 {
     background-size: 400% 400%;
 }
 
+.column {
+    width: fit-content;
+    padding: 1vh;
+    top: 0;
+    animation: column-sort 2.5s ease-in-out infinite;
+}
+
 @keyframes overall-pulse {
     0% {
         background-position: 0% -70%;
@@ -462,6 +503,26 @@ h2 {
 
     100% {
         background-position: 0% 25%;
+    }
+}
+
+@keyframes column-sort-up {
+    0% {
+        background-position: 0% 125%;
+    }
+    
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+@keyframes column-sort-down {
+    0% {
+        background-position: 0% 100%;
+    }
+    
+    100% {
+        background-position: 0% 225%;
     }
 }
 
@@ -532,67 +593,56 @@ h6 {
     user-select: none;
     background-color: #3b3838;
     border-radius: 0.85vh;
-    margin-right: 2vh;
+    margin-left: 1vh;
 }
 
 #graph-container {
-    margin-left: 34vh;
+    position: relative;
+    border-radius: 0.5vh;
+    margin-left: calc(2.5vw + 30vh);
     top: 0;
-    width: 115vh;
+    width: calc(95vw - 30vh);
     background-color: #444444;
-    flex-direction: column;
-    justify-content: space-around;
+    flex-direction: row;
     height: fit-content;
+    flex-direction: row;
 }
 
-.graph-line {
-    width: 99%;
-    background-color: #272626;
-    display: flex;
-    height: fit-content;
-    padding: 0.25vh;
-    border-radius: 0.75vh;
-    align-items: center;
-    margin: 0.25vh;
+#graph-left-legend {
+    width: 10vh;
+    margin: 0;
+    left: 0;
 }
 
-.graph-track {
-    width: 100%;
-    background-color: #7c624d;
-    height: 1.85vh;
-    border-radius: 5vh;
-    margin-right: 2vh;
-}
-
-.graph-inner-line {
-    height: 2vh;
-    border-radius: 5vh;
-    background-color: rgb(235, 106, 31);
-    width: 25%;
+#graph-tick-container {
     position: absolute;
-    transition: background-color 0.15s;
+    width: calc(100% - 10vh);
+    right: 0;
+    background-color: rebeccapurple;
+    height: 100%;
 }
 
-.graph-inner-line:hover {
-    cursor: pointer;
-    background-color: rgb(199, 71, 24);
+.graph-tick-container {
+    display: flex;
+    align-items: center;
 }
 
-.graph-inner-line::after {
-    content: "";
-    width: 3.5vh;
-    height: 3.5vh;
+.graph-tick {
+    position: relative;
+    background-color: #272727;
+    height: 0.65vh;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.graph-dot {
+    width: 2vh;
+    height: 2vh;
     background-color: rgb(220, 73, 5);
-    right: -0.875vh;
-    top: -0.875vh;
     position: absolute;
     border-radius: 10000000000000000px;
     transition: background-color 0.15s;
-}
-
-.graph-inner-line:hover::after {
-    background-color: rgb(189, 41, 8);
-    cursor: pointer;
 }
 
 

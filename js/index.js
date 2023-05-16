@@ -149,7 +149,7 @@ function getData() {
             temp.classList.add(`${(h)}`);
             //console.log(temp.classList);
             //temp.classList.add(h - 1);
-            temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS, FIELDS, false) };
+            temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS, FIELDS, false, true) };
 
             col.className = "column";
             if (h % 2 == 1) {
@@ -211,7 +211,7 @@ function resetRaw() {
         temp.classList.add(`${(h)}`);
         //console.log(temp.classList);
         //temp.classList.add(h - 1);
-        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS, FIELDS, false) };
+        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS, FIELDS, false, true) };
 
         col.className = "column";
         if (h % 2 == 1) {
@@ -336,18 +336,47 @@ function setUpGraph() {
         tempT.append(op);
     }
 
+    var graphColumn = 1;
+    var sortedGraphColumn = TEAM_COLUMNS[graphColumn].sort();
+
+    var lower_bound = sortedGraphColumn[0];
+    var upper_bound = sortedGraphColumn[sortedGraphColumn.length - 1];
+
+    var leftContainer = document.createElement("div");
+    leftContainer.id = "graph-left-legend";
+
+    var tickContainer = document.createElement("div");
+    tickContainer.id = "graph-tick-container";
+
     rawTable.appendChild(tempT);
     for (var i = 0; i < TEAMS.length; i++) {
         var tempGraphLine = document.createElement("div");
         tempGraphLine.className = "graph-line";
-        tempGraphLine.innerHTML = `<div class="graph-line">
-                                        <h6>${TEAMS[i]}</h6>
+        tempGraphLine.innerHTML = `
                                         <div class="graph-track">
                                             <div class="graph-inner-line"></div>
                                         </div>
-                                    </div>`;
-        graphContainer.appendChild(tempGraphLine);
+                                    `;
+        var tempLeft = document.createElement("h6");
+        tempLeft.innerText = `${TEAMS[i]}`;
+
+        var tempDot = document.createElement("div");
+        tempDot.className = "graph-dot";
+        tempDot.id = TEAMS[i];
+
+        var tempTick = document.createElement("div");
+        tempTick.className = "graph-tick-container";
+        tempTick.innerHTML = `<div class = "graph-tick"> </div>`;
+        var percentage = (TEAM_ROWS[i][graphColumn]-lower_bound) / (upper_bound - lower_bound);
+        tempDot.style.left = `8vh`;
+        tempDot.style.top = `${(i*3.6)+1}vh`;
+
+        leftContainer.appendChild(tempLeft);
+        graphContainer.appendChild(tempDot);
+        //graphContainer.appendChild(tempGraphLine);
     }
+    graphContainer.appendChild(leftContainer);
+    graphContainer.appendChild(tickContainer);
 }
 
 function setUpTeamOveralls() {
@@ -372,6 +401,10 @@ function setUpTeamOveralls() {
 
         var tempLine = document.createElement("div");
         tempLine.className = "breakdown-line";
+
+        var tempPopup = document.createElement("div");
+        tempPopup.className = "breakdown-popup";
+        tempContainer.appendChild(tempPopup);
 
         var tempInnerLine = document.createElement("div");
         tempInnerLine.className = "inner-breakdown-line";
@@ -421,13 +454,14 @@ function openTeamOveralls() {
     }
 
     for (var i = 0; i < overallCategoryHeaders.length; i++) {
-        document.getElementsByClassName("inner-breakdown-line")[i].style.height = `${ overallData[i] * 100 }% `;
-        document.getElementsByClassName("breakdown-line")[i].title = `${ (overallData[i] * (TEAMS.length - 1)) + 1 } out of ${ TEAMS.length } `;
+        document.getElementsByClassName("inner-breakdown-line")[i].style.height = `${overallData[i] * 100}% `;
+        document.getElementsByClassName("breakdown-popup")[i].innerText = `${(overallData[i] * (TEAMS.length - 1)) + 1} out of ${TEAMS.length} `;
     }
 }
 
 function getSortedIndex(colNum, team, records, columns) {
     var sortedColumn = JSON.parse(JSON.stringify(columns));
+    console.log(sortedColumn);
     sortedColumn = sortedColumn[colNum].sort(function (a, b) { return a - b });
     //console.log(sortedColumn);
 
@@ -457,7 +491,7 @@ function getSortedIndex(colNum, team, records, columns) {
     return sortedRows;
 }
 
-function sortColumn(colNum, type, records, columns, field, team) {
+function sortColumn(colNum, type, records, columns, field, team, useCols) {
     var direction = parseInt(localStorage.getItem("direction"));
     var previousColumn = parseInt(localStorage.getItem("column"));
     localStorage.setItem("column", colNum);
@@ -465,6 +499,24 @@ function sortColumn(colNum, type, records, columns, field, team) {
     if (previousColumn != colNum) {
         direction = 0;
         localStorage.setItem("direction", 1);
+    }
+
+    if (useCols) {
+        var cols = document.getElementsByClassName("column");
+        for (var i = 0; i < cols.length; i++) {
+            cols[i].style.background = "";
+            if (i % 2 == 1) {
+                cols[i].style.background = "#4D4E4E";
+            }
+        }
+        if (direction % 3 == 0) {
+            cols[colNum].style.background = 'linear-gradient(0deg, rgba(159,99,48,1) 0%, rgba(102,95,81,1) 100%)';
+            cols[colNum].style.animation = `column-sort-up ${document.documentElement.scrollHeight / 500}s infinite`;
+        } else {
+            cols[colNum].style.background = 'linear-gradient(180deg, rgba(159,99,48,1) 0%, rgba(102,95,81,1) 100%)';
+            cols[colNum].style.animation = `column-sort-down ${document.documentElement.scrollHeight / 500}s infinite`;
+        }
+        cols[colNum].style.backgroundSize = "100% 500%";
     }
 
     if (type == 1) {
@@ -686,7 +738,7 @@ function getTeamData() {
         temp.appendChild(text);
         temp.className = "table-header-section-raw";
         temp.id = 9;
-        temp.classList.add(`${ (i) } `);
+        temp.classList.add(`${(i)}`);
         //console.log(temp.classList);
         //temp.classList.add(h - 1);
         temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), teamRows, TEAM_COLUMNS, TEAM_FIELDS, true) };
@@ -778,7 +830,7 @@ function getTBAOPRS(json) {
         temp.className = "table-header-section-raw";
 
         temp.id = 1;
-        temp.classList.add(`${ (h) } `);
+        temp.classList.add(`${(h)} `);
         //console.log(temp.classList);
         //temp.classList.add(h - 1);
         temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), COLUMNS, false) };
@@ -833,17 +885,17 @@ function getTBATeams() {
     getTBA(`https://www.thebluealliance.com/api/v3/event/${eventSelect.value}/oprs`, 2);
 }
 
-    async function toggleSettings() {
-        settingsOpen = !settingsOpen;
-        if (settingsOpen) {
-            settings.style.display = "flex";
-            body.style.overflow = "hidden";
-            //var eventOptions = new Array();
-            console.log(TBA_EVENT_NAMES);
-        } else {
-            settings.style.display = "none";
-            body.style.overflow = "auto";
-            localStorage.setItem("event-key", eventSelect.value);
-            localStorage.setItem("spreadsheet-url", urlInput.value);
-        }
+async function toggleSettings() {
+    settingsOpen = !settingsOpen;
+    if (settingsOpen) {
+        settings.style.display = "flex";
+        body.style.overflow = "hidden";
+        //var eventOptions = new Array();
+        console.log(TBA_EVENT_NAMES);
+    } else {
+        settings.style.display = "none";
+        body.style.overflow = "auto";
+        localStorage.setItem("event-key", eventSelect.value);
+        localStorage.setItem("spreadsheet-url", urlInput.value);
     }
+}
