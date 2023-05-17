@@ -623,6 +623,7 @@ h6 {
     flex-direction: row;
     height: fit-content;
     flex-direction: row;
+    margin-top: -5vh;
 }
 
 #graph-left-legend {
@@ -630,6 +631,10 @@ h6 {
     margin: 0;
     left: 0;
     background-color: #444444;
+    min-height: 75vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 #graph-bottom-legend {
@@ -647,8 +652,9 @@ h6 {
     position: absolute;
     width: calc(100% - 10vh - 3vh);
     left: 11.5vh;
+    top: 1.5vh;
     background-color:#272727;
-    height: calc(100% - 0vh);
+    height: calc(100% - 3vh);
 }
 
 .graph-tick-container {
@@ -673,6 +679,7 @@ h6 {
     border-radius: 10000000000000000px;
     transition: background-color 0.15s;
     transition: background-color 0.15s;
+    z-index: 100;
 }
 
 .graph-dot:hover {
@@ -687,7 +694,8 @@ h6 {
 
 .dot-popup {
     position: absolute;
-    width: fit-content;
+    min-width: fit-content;
+    white-space: nowrap;
     font-size: 2vh;
     padding: 0vh 0.5vh 0vh 0.5vh;
     border:#5c5c5c solid 0.35vh;
@@ -705,6 +713,13 @@ h6 {
     background-color: rgb(22, 113, 152);
     width: 0.5%;
     height: 100%;
+}
+
+#graph-average-horizontal {
+    position: absolute;
+    background-color: rgb(22, 113, 152);
+    height: 0.5%;
+    width: 100%;
 }
 
 

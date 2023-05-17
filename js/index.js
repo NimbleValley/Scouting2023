@@ -309,6 +309,19 @@ function setUpGraph() {
     graphContainer.style.display = "flex";
     rawTable.innerHTML = "";
 
+    var tempTwo = document.createElement("select");
+    tempTwo.id = "graph-category-select-two";
+    tempTwo.addEventListener("input", doGraph);
+    tempTwo.style.width = "30vh";
+    tempTwo.style.marginRight = "5vh";
+    for (var i = 1; i < TEAM_FIELDS.length; i++) {
+        var op = document.createElement("option");
+        op.text = TEAM_FIELDS[i];
+        op.value = i;
+        tempTwo.append(op);
+    }
+    rawTable.appendChild(tempTwo);
+
     var temp = document.createElement("select");
     temp.id = "graph-number-select";
     temp.style.width = "20vh";
@@ -338,25 +351,13 @@ function setUpGraph() {
     }
     rawTable.appendChild(tempT);
 
-    var tempTwo = document.createElement("select");
-    tempTwo.id = "graph-category-select-two";
-    tempTwo.addEventListener("input", doGraph);
-    tempTwo.style.width = "30vh";
-    tempTwo.style.marginLeft = "5vh";
-    for (var i = 1; i < TEAM_FIELDS.length; i++) {
-        var op = document.createElement("option");
-        op.text = TEAM_FIELDS[i];
-        op.value = i;
-        tempTwo.append(op);
-    }
-    rawTable.appendChild(tempTwo);
-
     doGraph();
 }
+
 function doGraph() {
     var graphMode = parseInt(document.getElementById("graph-number-select").value);
 
-    if(graphMode == 2) {
+    if (graphMode == 2) {
         document.getElementById("graph-category-select-two").style.display = "block";
     } else {
         document.getElementById("graph-category-select-two").style.display = "none";
@@ -371,6 +372,15 @@ function doGraph() {
     var lower_bound = sortedGraphColumn[0];
     var upper_bound = sortedGraphColumn[sortedGraphColumn.length - 1];
 
+    if (graphMode == 2) {
+        var secondGraphColumn = document.getElementById("graph-category-select-two").value;
+        var secondSortedGraphColumn = JSON.parse(JSON.stringify(TEAM_COLUMNS));
+        secondSortedGraphColumn = secondSortedGraphColumn[secondGraphColumn].sort(function (a, b) { return b - a });
+
+        var second_lower_bound = secondSortedGraphColumn[0];
+        var second_upper_bound = secondSortedGraphColumn[secondSortedGraphColumn.length - 1];
+    }
+
     var leftContainer = document.createElement("div");
     leftContainer.id = "graph-left-legend";
 
@@ -383,6 +393,9 @@ function doGraph() {
     var tempAverageVertical = document.createElement("div");
     tempAverageVertical.id = "graph-average-vertical";
 
+    var tempAverageHorizontal = document.createElement("div");
+    tempAverageHorizontal.id = "graph-average-horizontal";
+
     for (var i = 0; i < TEAMS.length; i++) {
         var tempGraphLine = document.createElement("div");
         tempGraphLine.className = "graph-line";
@@ -391,12 +404,10 @@ function doGraph() {
                                             <div class="graph-inner-line"></div>
                                         </div>
                                     `;
-        var tempLeft = document.createElement("h6");
-
         if (graphMode == 1) {
+            var tempLeft = document.createElement("h6");
             tempLeft.innerText = `${TEAMS[i]}`;
-        } else {
-            tempLeft.innerText = `${i}`;
+            leftContainer.appendChild(tempLeft);
         }
 
         var tempDot = document.createElement("div");
@@ -405,7 +416,11 @@ function doGraph() {
 
         var tempDotPopup = document.createElement("div");
         tempDotPopup.className = "dot-popup";
-        tempDotPopup.innerText = TEAMS[i] + "\n" + TEAM_COLUMNS[graphColumn][i];
+        if (graphMode == 1) {
+            tempDotPopup.innerText = TEAMS[i] + "\n" + TEAM_COLUMNS[graphColumn][i];
+        } else {
+            tempDotPopup.innerText = TEAMS[i] + "\n" + TEAM_COLUMNS[graphColumn][i] + ", " + TEAM_COLUMNS[secondGraphColumn][i];
+        }
         tempDot.appendChild(tempDotPopup);
 
         var tempTick = document.createElement("div");
@@ -416,18 +431,32 @@ function doGraph() {
         tempDot.style.top = `${0}vh`;
         tempDot.id = i;
 
-        leftContainer.appendChild(tempLeft);
         tickContainer.appendChild(tempDot);
         //graphContainer.appendChild(tempGraphLine);
     }
 
+    if (graphMode == 2) {
+        for (var i = 0; i < 5; i++) {
+            var tempLeft = document.createElement("h6");
+            tempLeft.innerText = `${((second_upper_bound - second_lower_bound) * (i / 4)) + second_lower_bound}`;
+            leftContainer.appendChild(tempLeft);
+        }
+
+    }
+
     for (var i = 0; i < 5; i++) {
         var tempBottom = document.createElement("h6");
-        tempBottom.innerText = `${i}`;
+        tempBottom.innerText = `${((upper_bound - lower_bound) * (i / 4)) + lower_bound}`;
         bottomContainer.appendChild(tempBottom);
     }
 
     tickContainer.appendChild(tempAverageVertical);
+    if (graphMode == 2) {
+        tickContainer.appendChild(tempAverageHorizontal);
+    } else {
+        tempAverageHorizontal.style.display = "none";
+    }
+
     graphContainer.appendChild(leftContainer);
     graphContainer.appendChild(tickContainer);
     graphContainer.appendChild(bottomContainer);
@@ -439,16 +468,32 @@ function doGraph() {
         console.log(upper_bound + ", " + lower_bound + ", " + TEAM_COLUMNS[graphColumn][i]);
         var percentage = (TEAM_COLUMNS[graphColumn][i] - lower_bound) / (upper_bound - lower_bound);
         console.log(percentage);
-        dots[i].style.top = `${(graphTickContainer.offsetHeight * ((parseInt(dots[i].id) + 0) / (dots.length))) + (window.innerHeight * (1 / 100))}px`;
-        dots[i].style.left = `${(graphTickContainer.offsetWidth * percentage) - (window.innerHeight * (1 / 100))}px`;
+        if (graphMode == 1) {
+            dots[i].style.top = `${(graphTickContainer.offsetHeight * ((parseInt(dots[i].id) + 0) / (dots.length - 1))) - (window.innerHeight * (1 / 100))}px`;
+        } else {
+            var secondPercentage = (TEAM_COLUMNS[secondGraphColumn][i] - second_lower_bound) / (second_upper_bound - second_lower_bound);
+            dots[i].style.top = `${(graphTickContainer.offsetHeight * secondPercentage) - (window.innerHeight * (1 / 100))}px`;
+        }
+        dots[i].style.left = `${(graphTickContainer.offsetWidth * percentage) + (i*7.5) - (window.innerHeight * (1 / 100))}px`;
     }
 
     var avgVertical = 0;
     for (var i = 0; i < sortedGraphColumn.length; i++) {
         avgVertical += sortedGraphColumn[i];
     }
+
     avgVertical /= sortedGraphColumn.length;
     tempAverageVertical.style.left = `${(graphTickContainer.offsetWidth * ((avgVertical - lower_bound) / (upper_bound - lower_bound))) - (window.innerHeight * (1 / 100))}px`;
+
+    if (graphMode == 2) {
+        var avgHorizontal = 0;
+        for (var i = 0; i < secondSortedGraphColumn.length; i++) {
+            avgHorizontal += secondSortedGraphColumn[i];
+        }
+        avgHorizontal /= secondSortedGraphColumn.length;
+
+        tempAverageHorizontal.style.top = `${(graphTickContainer.offsetHeight * ((avgHorizontal - second_lower_bound) / (second_upper_bound - second_lower_bound))) - (window.innerHeight * (1 / 100))}px`;
+    }
 }
 
 function setUpTeamOveralls() {
