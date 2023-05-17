@@ -599,7 +599,7 @@ h4 {
 
 h6 {
     text-align: center;
-    width: 7.5vh;
+    min-width: 3vh;
     font-size: 2vh;
     margin: 0;
     height: fit-content;
@@ -619,7 +619,7 @@ h6 {
     margin-left: calc(2.5vw + 30vh);
     top: 0;
     width: calc(95vw - 30vh);
-    background-color: #444444;
+    background-color:#272727;
     flex-direction: row;
     height: fit-content;
     flex-direction: row;
@@ -629,6 +629,7 @@ h6 {
     width: 10vh;
     margin: 0;
     left: 0;
+    background-color: #444444;
 }
 
 #graph-bottom-legend {
@@ -644,8 +645,8 @@ h6 {
 
 #graph-tick-container {
     position: absolute;
-    width: calc(100% - 10vh - 0vh);
-    left: 10vh;
+    width: calc(100% - 10vh - 3vh);
+    left: 11.5vh;
     background-color:#272727;
     height: calc(100% - 0vh);
 }
@@ -690,12 +691,13 @@ h6 {
     font-size: 2vh;
     padding: 0vh 0.5vh 0vh 0.5vh;
     border:#5c5c5c solid 0.35vh;
-    background-color: #a3a3a3;
+    background-color: #b3abab;
     z-index: 1000000;
     display: none;
     margin-right: 2vh;
     right: 0;
     text-align: right;
+    text-align: center;
 }
 
 #graph-average-vertical {

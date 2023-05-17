@@ -322,6 +322,7 @@ function setUpGraph() {
         op.value = i + 1;
         temp.append(op);
     }
+    temp.addEventListener("input", doGraph);
     rawTable.appendChild(temp);
 
     var tempT = document.createElement("select");
@@ -337,9 +338,30 @@ function setUpGraph() {
     }
     rawTable.appendChild(tempT);
 
+    var tempTwo = document.createElement("select");
+    tempTwo.id = "graph-category-select-two";
+    tempTwo.addEventListener("input", doGraph);
+    tempTwo.style.width = "30vh";
+    tempTwo.style.marginLeft = "5vh";
+    for (var i = 1; i < TEAM_FIELDS.length; i++) {
+        var op = document.createElement("option");
+        op.text = TEAM_FIELDS[i];
+        op.value = i;
+        tempTwo.append(op);
+    }
+    rawTable.appendChild(tempTwo);
+
     doGraph();
 }
 function doGraph() {
+    var graphMode = parseInt(document.getElementById("graph-number-select").value);
+
+    if(graphMode == 2) {
+        document.getElementById("graph-category-select-two").style.display = "block";
+    } else {
+        document.getElementById("graph-category-select-two").style.display = "none";
+    }
+
     graphContainer.innerHTML = "";
 
     var graphColumn = document.getElementById("graph-category-select").value;
@@ -370,7 +392,12 @@ function doGraph() {
                                         </div>
                                     `;
         var tempLeft = document.createElement("h6");
-        tempLeft.innerText = `${TEAMS[i]}`;
+
+        if (graphMode == 1) {
+            tempLeft.innerText = `${TEAMS[i]}`;
+        } else {
+            tempLeft.innerText = `${i}`;
+        }
 
         var tempDot = document.createElement("div");
         tempDot.className = "graph-dot";
@@ -378,7 +405,7 @@ function doGraph() {
 
         var tempDotPopup = document.createElement("div");
         tempDotPopup.className = "dot-popup";
-        tempDotPopup.innerText = TEAMS[i];
+        tempDotPopup.innerText = TEAMS[i] + "\n" + TEAM_COLUMNS[graphColumn][i];
         tempDot.appendChild(tempDotPopup);
 
         var tempTick = document.createElement("div");
