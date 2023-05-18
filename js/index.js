@@ -26,6 +26,8 @@ var gridNodes = document.getElementsByClassName("node-item");
 var previousGridScrollX = 0;
 var previousGridScrollY = 0;
 
+var previousTeamComment = -1;
+
 if (localStorage.getItem("spreadsheet-url") == null || localStorage.getItem("spreadsheet-url") == "") {
     urlInput.value = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqII95Z0qCbWjGeG_NiYPiiNxOLCPTRbHnpo-3fIAquhIigYd6tTTryEUYAvuqQTr1eGZ4W-VKWkFX/pub?gid=0&single=true&output=csv";
 } else {
@@ -719,11 +721,24 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
                 //console.log(RECORDS[i][s]);
                 var tempCol = cols[s];
                 var temp = tempCol.children[i + 1];
+                if (team) {
+                    temp.classList[1] = i;
+                }
+                console.log(temp.classList);
                 if (field[s].includes("Placement")) {
                     temp.innerText = "{ Show Grid }";
                     temp.id = i;
                     temp.onclick = function () { showGrid(this.id, this.classList[1], sortedRows) }
                 } else {
+                    if (team) {
+                        if (s == 0 || s == TEAM_COLUMNS.length - 1) {
+                            for (var q = 0; q < sortedRows.length; q++) {
+                                if (sortedRows[i][0] == TEAMS[q]) {
+                                    temp.id = q;
+                                }
+                            }
+                        }
+                    }
                     temp.innerText = sortedRows[i][s];
                 }
             }
@@ -932,12 +947,15 @@ function getTeamData() {
             //console.log(average / teamRows.length);
             var tempData = document.createElement("div");
             tempData.className = "data-value";
+            tempData.classList.add(i);
+            tempData.id = i;
             if (c == dataToKeep.length - 1 || c == 0) {
                 if (c != 0) {
                     tempData.innerText = "See Comments";
                 } else {
                     tempData.innerText = Math.floor(average / teamRows.length * 10) / 10;
                 }
+
                 TEAM_COLUMNS[c][i] = "";
                 TEAM_ROWS[i][c] = "";
                 for (var q = 0; q < RECORDS.length; q++) {
@@ -947,14 +965,18 @@ function getTeamData() {
                         TEAM_ROWS[i][c] += RECORDS[q][FIELDS.indexOf("Comments")] + "\n";
                     }
                 }
-                tempData.onclick = function () { alert(TEAM_COLUMNS[TEAM_FIELDS.indexOf("Comments")][this.id]) };
                 tempData.addEventListener("click", function () {
-                    setRowHighlight(this.id, true);
+                    setRowHighlight(parseInt(this.classList[1]), true);
+                    if (this.id == previousTeamComment) {
+                        closeTeamComments(this.id, parseInt(this.classList[1]), this);
+                    } else {
+                        openTeamComments(this.id, parseInt(this.classList[1]), this);
+                    }
                 });
             } else {
                 tempData.innerText = Math.floor(average / teamRows.length * 10) / 10;
                 tempData.addEventListener("click", function () {
-                    setRowHighlight(this.id, false);
+                    setRowHighlight(parseInt(this.classList[1]), false);
                 });
             }
             tempData.id = i;
@@ -967,8 +989,50 @@ function getTeamData() {
     }
     //console.log(TEAM_ROWS);
     for (var i = 0; i < dataToKeep.length - 1; i++) {
-        document.getElementsByClassName("column")[i].children[0].onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), TEAM_ROWS, TEAM_COLUMNS, TEAM_FIELDS, true, true) };
+        document.getElementsByClassName("column")[i].children[0].onclick = function () {
+            var originalRows = JSON.parse(JSON.stringify(TEAM_ROWS));
+            (sortColumn(this.classList[1], detectCharacter(this.id), TEAM_ROWS, TEAM_COLUMNS, TEAM_FIELDS, true, true));
+            /*for (var i = 0; i < TEAMS.length; i++) {
+                for (var i = 0; i < )
+                    if (TEAM_ROWS[i][TEAM_INDEX] == originalTeam) {
+                        this.id = i;
+                        alert(i);
+                    }
+            }*/
+        };
     }
+}
+
+function openTeamComments(id, oldId, element) {
+    //alert(TEAM_COLUMNS[TEAM_FIELDS.indexOf("Comments")][id]);
+
+    var commentLength = TEAM_ROWS[id][TEAM_FIELDS.indexOf("Comments")].split(/\r\n|\r|\n/).length - 1;
+
+    var cols = document.getElementsByClassName("column");
+
+    for (var i = 0; i < cols.length; i++) {
+        if (cols[i].children[parseInt(oldId) + 1] != element) {
+            cols[i].children[parseInt(oldId) + 1].style.paddingBottom = `${commentLength * 3.8}vh`;
+        }
+    }
+    var tempComment = document.createElement("div");
+    tempComment.innerText = TEAM_ROWS[id][TEAM_FIELDS.indexOf("Comments")];
+    element.appendChild(tempComment);
+    previousTeamComment = id;
+}
+
+function closeTeamComments(id, oldId, element) {
+    //alert(TEAM_COLUMNS[TEAM_FIELDS.indexOf("Comments")][id]);
+    var cols = document.getElementsByClassName("column");
+    for (var i = 0; i < cols.length; i++) {
+        if (cols[i].children[parseInt(oldId) + 1] != element) {
+            cols[i].children[parseInt(oldId) + 1].style.paddingBottom = `0`;
+        }
+    }
+    var tempText = TEAMS[id];
+    element.innerHTML = "";
+    element.innerText = tempText;
+    previousTeamComment = -1;
 }
 
 function getTBA(url, type) {
