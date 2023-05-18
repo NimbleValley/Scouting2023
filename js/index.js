@@ -23,6 +23,8 @@ var firstGraph = true;
 
 const frcGrid = document.getElementById("grid-frc");
 var gridNodes = document.getElementsByClassName("node-item");
+var previousGridScrollX = 0;
+var previousGridScrollY = 0;
 
 if (localStorage.getItem("spreadsheet-url") == null || localStorage.getItem("spreadsheet-url") == "") {
     urlInput.value = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqII95Z0qCbWjGeG_NiYPiiNxOLCPTRbHnpo-3fIAquhIigYd6tTTryEUYAvuqQTr1eGZ4W-VKWkFX/pub?gid=0&single=true&output=csv";
@@ -169,20 +171,23 @@ function getData() {
                 var temp = document.createElement("div");
                 temp.className = "data-value";
                 temp.id = i;
-                temp.addEventListener("click", function () {
-                    setRowHighlight(this.id);
-                });
                 if (FIELDS[s].includes("Placement")) {
                     temp.innerText = "{ Show Grid }";
                     temp.classList.add(s);
                     temp.onclick = function () { showGrid(this.id, this.classList[1], RECORDS) }
+                    temp.addEventListener("click", function () {
+                        setRowHighlight(this.id, true);
+                    });
                 } else {
                     temp.innerText = RECORDS[i][s];
+                    temp.addEventListener("click", function () {
+                        setRowHighlight(this.id, false);
+                    });
                 }
                 rawTable.children[s].appendChild(temp);
             }
         }
-        setUpGraph();
+        getTeamData();
     });
 }
 
@@ -231,23 +236,26 @@ function resetRaw() {
             var temp = document.createElement("div");
             temp.className = "data-value";
             temp.id = i;
-            temp.addEventListener("click", function () {
-                setRowHighlight(this.id);
-            });
             if (FIELDS[s].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
                 temp.id = i;
                 temp.classList.add(s);
                 temp.onclick = function () { showGrid(this.id, this.classList[1], RECORDS) }
+                temp.addEventListener("click", function () {
+                    setRowHighlight(this.id, true);
+                });
             } else {
                 temp.innerText = RECORDS[i][s];
+                temp.addEventListener("click", function () {
+                    setRowHighlight(this.id, false);
+                });
             }
             rawTable.children[s].appendChild(temp);
         }
     }
 }
 
-function setRowHighlight(row) {
+function setRowHighlight(row, always) {
     var cols = document.getElementsByClassName("column");
     for (var c = 0; c < cols.length; c++) {
         for (var i = 1; i < cols[c].children.length; i++) {
@@ -255,7 +263,7 @@ function setRowHighlight(row) {
         }
     }
 
-    if (localStorage.getItem("previousHighlightRow") != row) {
+    if (localStorage.getItem("previousHighlightRow") != row || always) {
         localStorage.setItem("previousHighlightRow", row);
         for (var c = 0; c < cols.length; c++) {
             for (var i = 1; i < cols[c].children.length; i++) {
@@ -271,6 +279,11 @@ function setRowHighlight(row) {
 }
 
 function showGrid(recordNum, colNum, record) {
+    // I can't deal with sticky I gave up haha
+    previousGridScrollX = window.scrollX;
+    previousGridScrollY = window.scrollY;
+    window.scrollTo(0, 0);
+    // Very clean code, great use of sticky
     breakdownLines.style.display = "none";
     graphContainer.style.display = "none";
     body.style.overflow = "hidden";
@@ -296,6 +309,8 @@ function showGrid(recordNum, colNum, record) {
 function hideGrid() {
     body.style.overflow = "auto";
     frcGrid.style.display = "none";
+    // The impossible sticky strikes again :(
+    window.scrollTo(previousGridScrollX, previousGridScrollY);
 }
 
 function setUpGraph() {
@@ -320,6 +335,9 @@ function setUpGraph() {
         op.value = i;
         tempTwo.append(op);
     }
+    if (localStorage.getItem("graph-two") != null) {
+        tempTwo.value = localStorage.getItem("graph-two");
+    }
     rawTable.appendChild(tempTwo);
 
     var temp = document.createElement("select");
@@ -335,6 +353,11 @@ function setUpGraph() {
         op.value = i + 1;
         temp.append(op);
     }
+
+    if (localStorage.getItem("graph-mode") != null) {
+        temp.value = localStorage.getItem("graph-mode");
+    }
+
     temp.addEventListener("input", doGraph);
     rawTable.appendChild(temp);
 
@@ -350,6 +373,10 @@ function setUpGraph() {
         tempT.append(op);
     }
     rawTable.appendChild(tempT);
+
+    if (localStorage.getItem("graph-one") != null) {
+        tempT.value = localStorage.getItem("graph-one");
+    }
 
     doGraph();
 }
@@ -413,6 +440,9 @@ function doGraph() {
         var tempDot = document.createElement("div");
         tempDot.className = "graph-dot";
         tempDot.id = TEAMS[i];
+        tempDot.style.left = 0;
+        tempDot.style.top = 0;
+        tempDot.style.scale = 0.5;
 
         var tempDotPopup = document.createElement("div");
         tempDotPopup.className = "dot-popup";
@@ -469,12 +499,14 @@ function doGraph() {
         var percentage = (TEAM_COLUMNS[graphColumn][i] - lower_bound) / (upper_bound - lower_bound);
         console.log(percentage);
         if (graphMode == 1) {
-            dots[i].style.top = `${(graphTickContainer.offsetHeight * ((parseInt(dots[i].id) + 0) / (dots.length - 1))) - (window.innerHeight * (1 / 100))}px`;
+            dots[i].style.top = `${(graphTickContainer.offsetHeight * ((parseInt(dots[i].id) + 0) / (dots.length - 1))) + (((i + 1) % 2) * 12) - (window.innerHeight * (1 / 100))}px`;
         } else {
             var secondPercentage = (TEAM_COLUMNS[secondGraphColumn][i] - second_lower_bound) / (second_upper_bound - second_lower_bound);
-            dots[i].style.top = `${(graphTickContainer.offsetHeight * secondPercentage) - (window.innerHeight * (1 / 100))}px`;
+            dots[i].style.top = `${(graphTickContainer.offsetHeight * secondPercentage) + (((i + 1) % 2) * 12) - (window.innerHeight * (1 / 100))}px`;
         }
-        dots[i].style.left = `${(graphTickContainer.offsetWidth * percentage) + (i*7.5) - (window.innerHeight * (1 / 100))}px`;
+        // I'm so clever I thought of the solution on the walk home from school with mod
+        dots[i].style.left = `${(graphTickContainer.offsetWidth * percentage) + ((i % 2) * 12) - (window.innerHeight * (1 / 100))}px`;
+        dots[i].style.scale = 1;
     }
 
     var avgVertical = 0;
@@ -494,6 +526,10 @@ function doGraph() {
 
         tempAverageHorizontal.style.top = `${(graphTickContainer.offsetHeight * ((avgHorizontal - second_lower_bound) / (second_upper_bound - second_lower_bound))) - (window.innerHeight * (1 / 100))}px`;
     }
+
+    localStorage.setItem("graph-mode", document.getElementById("graph-number-select").value);
+    localStorage.setItem("graph-one", document.getElementById("graph-category-select").value);
+    localStorage.setItem("graph-two", document.getElementById("graph-category-select-two").value);
 }
 
 function setUpTeamOveralls() {
@@ -644,7 +680,7 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
         } else if (direction % 3 == 1) {
             sortedColumn = sortedColumn[colNum].sort(function (a, b) { return b - a });
         } else {
-            console.log(team);
+            //console.log(team);
             if (team) {
                 getTeamData();
             } else {
@@ -692,6 +728,7 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
                 }
             }
         }
+        // This code is a mess
 
     } else {
         console.log("Sad");
@@ -865,7 +902,6 @@ function getTeamData() {
         temp.classList.add(`${(i)}`);
         //console.log(temp.classList);
         //temp.classList.add(h - 1);
-        temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), teamRows, TEAM_COLUMNS, TEAM_FIELDS, true) };
         tempC.appendChild(temp);
 
         rawTable.appendChild(tempC);
@@ -896,19 +932,42 @@ function getTeamData() {
             //console.log(average / teamRows.length);
             var tempData = document.createElement("div");
             tempData.className = "data-value";
-            tempData.innerText = Math.floor(average / teamRows.length * 10) / 10;
+            if (c == dataToKeep.length - 1 || c == 0) {
+                if (c != 0) {
+                    tempData.innerText = "See Comments";
+                } else {
+                    tempData.innerText = Math.floor(average / teamRows.length * 10) / 10;
+                }
+                TEAM_COLUMNS[c][i] = "";
+                TEAM_ROWS[i][c] = "";
+                for (var q = 0; q < RECORDS.length; q++) {
+                    if (RECORDS[q][TEAM_INDEX] == TEAMS[i]) {
+                        //console.log(RECORDS[q][FIELDS.indexOf("Comments")]);
+                        TEAM_COLUMNS[c][i] += RECORDS[q][FIELDS.indexOf("Comments")] + "\n";
+                        TEAM_ROWS[i][c] += RECORDS[q][FIELDS.indexOf("Comments")] + "\n";
+                    }
+                }
+                tempData.onclick = function () { alert(TEAM_COLUMNS[TEAM_FIELDS.indexOf("Comments")][this.id]) };
+                tempData.addEventListener("click", function () {
+                    setRowHighlight(this.id, true);
+                });
+            } else {
+                tempData.innerText = Math.floor(average / teamRows.length * 10) / 10;
+                tempData.addEventListener("click", function () {
+                    setRowHighlight(this.id, false);
+                });
+            }
             tempData.id = i;
-            tempData.addEventListener("click", function () {
-                setRowHighlight(this.id);
-            });
             rawTable.children[c].appendChild(tempData);
-            TEAM_COLUMNS[c][i] = Math.floor(average / teamRows.length * 10) / 10;
-            TEAM_ROWS[i][c] = Math.floor(average / teamRows.length * 10) / 10;
+            if (c != dataToKeep.length - 1) {
+                TEAM_COLUMNS[c][i] = Math.floor(average / teamRows.length * 10) / 10;
+                TEAM_ROWS[i][c] = Math.floor(average / teamRows.length * 10) / 10;
+            }
         }
     }
     //console.log(TEAM_ROWS);
-    for (var i = 0; i < dataToKeep.length; i++) {
-        document.getElementsByClassName("column")[i].children[0].onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), TEAM_ROWS, TEAM_COLUMNS, TEAM_FIELDS, true) };
+    for (var i = 0; i < dataToKeep.length - 1; i++) {
+        document.getElementsByClassName("column")[i].children[0].onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), TEAM_ROWS, TEAM_COLUMNS, TEAM_FIELDS, true, true) };
     }
 }
 

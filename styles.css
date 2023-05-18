@@ -310,10 +310,10 @@ option {
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.596);
     position: sticky;
-    top: 0;
+    top: 0vh;
     z-index: 10000;
     left: 0;
-    margin: 0;
+    margin-top: 0vh;
     display: none;
     align-items: center;
     flex-wrap: wrap;
@@ -635,6 +635,8 @@ h6 {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border-top-left-radius: 0.75vh;
+    border-bottom-left-radius: 0.75vh;
 }
 
 #graph-bottom-legend {
@@ -646,6 +648,8 @@ h6 {
     background-color: #444444;
     display: flex;
     justify-content: space-between;
+    border-bottom-left-radius: 0.75vh;
+    border-bottom-right-radius: 0.75vh;
 }
 
 #graph-tick-container {
@@ -655,6 +659,7 @@ h6 {
     top: 1.5vh;
     background-color:#272727;
     height: calc(100% - 3vh);
+    border-top-right-radius: 0.75vh;
 }
 
 .graph-tick-container {
@@ -680,6 +685,8 @@ h6 {
     transition: background-color 0.15s;
     transition: background-color 0.15s;
     z-index: 100;
+    transition: left 0.4s, top 0.4s, scale 0.4s;
+    transition-timing-function: ease-out;
 }
 
 .graph-dot:hover {
@@ -710,16 +717,33 @@ h6 {
 
 #graph-average-vertical {
     position: absolute;
-    background-color: rgb(22, 113, 152);
+    background-color: rgb(155, 91, 38);
     width: 0.5%;
     height: 100%;
+    animation: averageFade ease-in-out 3s infinite;
 }
 
 #graph-average-horizontal {
     position: absolute;
-    background-color: rgb(22, 113, 152);
+    background-color: rgb(155, 91, 38);
     height: 0.5%;
     width: 100%;
+    animation: averageFade ease-in-out 3s infinite;
+}
+
+@keyframes averageFade {
+    0% {
+        background-color: rgb(48, 46, 44);
+    }
+    30% {
+        background-color: rgb(155, 91, 38);
+    }
+    70% {
+        background-color: rgb(155, 91, 38);
+    }
+    100% {
+        background-color: rgb(48, 46, 44);
+    }
 }
 
 
