@@ -99,6 +99,17 @@ h3 {
     font-weight: lighter;
 }
 
+.team-comments {
+    font-size: 2vh;
+    max-width: 50vh;
+    white-space: normal;
+    word-wrap: break-word;
+    padding: 1vh;
+    background-color: #3b3838;
+    border-bottom-left-radius: 0.75vh;
+    border-bottom-right-radius: 0.75vh;
+}
+
 #open-sidebar {
     background-color: #1a1919;
     width: 5vh;

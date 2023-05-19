@@ -277,7 +277,6 @@ function setRowHighlight(row, always) {
     } else {
         localStorage.setItem("previousHighlightRow", -1);
     }
-
 }
 
 function showGrid(recordNum, colNum, record) {
@@ -717,7 +716,11 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
 
         var cols = document.getElementsByClassName("column");
         for (var i = 0; i < records.length; i++) {
-            for (var s = 0; s < records[i].length - 1; s++) {
+            var sub = 0;
+            if(team) {
+                sub = 1;
+            }
+            for (var s = 0; s < records[i].length-sub; s++) {
                 //console.log(RECORDS[i][s]);
                 var tempCol = cols[s];
                 var temp = tempCol.children[i + 1];
@@ -731,7 +734,7 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
                     temp.onclick = function () { showGrid(this.id, this.classList[1], sortedRows) }
                 } else {
                     if (team) {
-                        if (s == 0 || s == TEAM_COLUMNS.length - 1) {
+                        if (s == 0) {
                             for (var q = 0; q < sortedRows.length; q++) {
                                 if (sortedRows[i][0] == TEAMS[q]) {
                                     temp.id = q;
@@ -880,9 +883,6 @@ function getTeamData() {
             TEAM_FIELDS.push(FIELDS[i]);
         }
     }
-    dataToKeep[dCounter] = -5;
-    dCounter++;
-    TEAM_FIELDS.push("Comments");
     console.log(dataToKeep);
 
     TEAMS = [];
@@ -907,7 +907,7 @@ function getTeamData() {
         var temp = document.createElement("div");
         var text = document.createElement("h3");
         if (dataToKeep[i] == -5) {
-            text.innerText = "Comments";
+            //text.innerText = "Comments";
         } else {
             text.innerText = FIELDS[dataToKeep[i] + 1];
         }
@@ -922,7 +922,7 @@ function getTeamData() {
         rawTable.appendChild(tempC);
     }
 
-    for (var g = 0; g < dataToKeep.length; g++) {
+    for (var g = 0; g < dataToKeep.length+1; g++) {
         TEAM_COLUMNS[g] = new Array();
     }
 
@@ -949,25 +949,16 @@ function getTeamData() {
             tempData.className = "data-value";
             tempData.classList.add(i);
             tempData.id = i;
-            if (c == dataToKeep.length - 1 || c == 0) {
+            if (c == 0) {
                 if (c != 0) {
-                    tempData.innerText = "See Comments";
+                    //tempData.innerText = "See Comments";
                 } else {
                     tempData.innerText = Math.floor(average / teamRows.length * 10) / 10;
                 }
 
-                TEAM_COLUMNS[c][i] = "";
-                TEAM_ROWS[i][c] = "";
-                for (var q = 0; q < RECORDS.length; q++) {
-                    if (RECORDS[q][TEAM_INDEX] == TEAMS[i]) {
-                        //console.log(RECORDS[q][FIELDS.indexOf("Comments")]);
-                        TEAM_COLUMNS[c][i] += RECORDS[q][FIELDS.indexOf("Comments")] + "\n";
-                        TEAM_ROWS[i][c] += RECORDS[q][FIELDS.indexOf("Comments")] + "\n";
-                    }
-                }
                 tempData.addEventListener("click", function () {
                     setRowHighlight(parseInt(this.classList[1]), true);
-                    if (this.id == previousTeamComment) {
+                    if (this.children.length > 0) {
                         closeTeamComments(this.id, parseInt(this.classList[1]), this);
                     } else {
                         openTeamComments(this.id, parseInt(this.classList[1]), this);
@@ -981,17 +972,47 @@ function getTeamData() {
             }
             tempData.id = i;
             rawTable.children[c].appendChild(tempData);
-            if (c != dataToKeep.length - 1) {
+            // Flashback to 2023 charged up lol
+            if (true) {
                 TEAM_COLUMNS[c][i] = Math.floor(average / teamRows.length * 10) / 10;
                 TEAM_ROWS[i][c] = Math.floor(average / teamRows.length * 10) / 10;
             }
         }
+        var tempComment = ""
+        for (var q = 0; q < RECORDS.length; q++) {
+            if (RECORDS[q][TEAM_INDEX] == TEAMS[i]) {
+                //console.log(RECORDS[q][FIELDS.indexOf("Comments")]);
+                tempComment += RECORDS[q][FIELDS.indexOf("Comments")] + "\n";
+            }
+        }
+        TEAM_ROWS[i].push(tempComment);
+        TEAM_COLUMNS[dataToKeep.length].push(tempComment);
+        console.log(TEAM_COLUMNS)
     }
     //console.log(TEAM_ROWS);
-    for (var i = 0; i < dataToKeep.length - 1; i++) {
+    for (var i = 0; i < dataToKeep.length; i++) {
         document.getElementsByClassName("column")[i].children[0].onclick = function () {
-            var originalRows = JSON.parse(JSON.stringify(TEAM_ROWS));
-            (sortColumn(this.classList[1], detectCharacter(this.id), TEAM_ROWS, TEAM_COLUMNS, TEAM_FIELDS, true, true));
+            var commentsPreviouslyOpenedId = [];
+            var commentsPreviouslyOpenedClass = [];
+            var cols = document.getElementsByClassName("column");
+            for (var i = 0; i < TEAMS.length; i++) {
+                if (cols[0].children[i + 1].children.length > 0) {
+                    commentsPreviouslyOpenedId.push(cols[0].children[i + 1].id);
+                    commentsPreviouslyOpenedClass.push(cols[0].children[i + 1].classList[1]);
+                    closeTeamComments(cols[0].children[i + 1].id, parseInt(cols[0].children[i + 1].classList[1]), cols[0].children[i + 1]);
+                }
+                for (var c = 0; c < cols.length; c++) {
+                    cols[c].children[i + 1].style.backgroundColor = "#4d4e4e00";
+                }
+            }
+            sortColumn(this.classList[1], detectCharacter(1), TEAM_ROWS, TEAM_COLUMNS, TEAM_FIELDS, true, true);
+            for (var i = 0; i < TEAMS.length; i++) {
+                if (commentsPreviouslyOpenedId.includes(cols[0].children[i + 1].id)) {
+                    var tempIndex = commentsPreviouslyOpenedId.indexOf(cols[0].children[i + 1].id);
+                    console.log(tempIndex);
+                    openTeamComments(cols[0].children[i + 1].id, parseInt(cols[0].children[i + 1].classList[1]), cols[0].children[i + 1]);
+                }
+            }
             /*for (var i = 0; i < TEAMS.length; i++) {
                 for (var i = 0; i < )
                     if (TEAM_ROWS[i][TEAM_INDEX] == originalTeam) {
@@ -1006,18 +1027,23 @@ function getTeamData() {
 function openTeamComments(id, oldId, element) {
     //alert(TEAM_COLUMNS[TEAM_FIELDS.indexOf("Comments")][id]);
 
-    var commentLength = TEAM_ROWS[id][TEAM_FIELDS.indexOf("Comments")].split(/\r\n|\r|\n/).length - 1;
+    var commentLength = TEAM_ROWS[id][TEAM_FIELDS.length].split(/\r\n|\r|\n/).length - 1;
 
     var cols = document.getElementsByClassName("column");
 
+    var tempComment = document.createElement("div");
+    tempComment.innerText = TEAM_ROWS[id][TEAM_COLUMNS.length-1];
+    tempComment.classList.add("team-comments");
+    element.appendChild(tempComment);
+
     for (var i = 0; i < cols.length; i++) {
         if (cols[i].children[parseInt(oldId) + 1] != element) {
-            cols[i].children[parseInt(oldId) + 1].style.paddingBottom = `${commentLength * 3.8}vh`;
+            cols[i].children[parseInt(oldId) + 1].style.paddingBottom = `${tempComment.offsetHeight * 1 + (window.innerHeight * (0.8 / 100))}px`;
+        }
+        if (cols[i].children[parseInt(oldId) + 1] == element) {
         }
     }
-    var tempComment = document.createElement("div");
-    tempComment.innerText = TEAM_ROWS[id][TEAM_FIELDS.indexOf("Comments")];
-    element.appendChild(tempComment);
+    cols[0].children[parseInt(oldId) + 1].style.setProperty("border", "0.5vh solid #a8652d", "important");
     previousTeamComment = id;
 }
 
@@ -1033,6 +1059,7 @@ function closeTeamComments(id, oldId, element) {
     element.innerHTML = "";
     element.innerText = tempText;
     previousTeamComment = -1;
+    cols[0].children[parseInt(oldId) + 1].style.setProperty("border", "0vh solid #a8652d", "important");
 }
 
 function getTBA(url, type) {
