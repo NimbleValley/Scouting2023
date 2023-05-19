@@ -28,6 +28,20 @@ var previousGridScrollY = 0;
 
 var previousTeamComment = -1;
 
+const sideButtons = document.getElementsByClassName("side-button");
+for(var i = 1; i < sideButtons.length-1; i ++) {
+    sideButtons[i].addEventListener("click", function() {
+        removeActive();
+        this.classList.add("active");
+    });
+}
+
+function removeActive() {
+    for(var i = 0; i < sideButtons.length; i ++) {
+        sideButtons[i].classList = "side-button";
+    }
+}
+
 if (localStorage.getItem("spreadsheet-url") == null || localStorage.getItem("spreadsheet-url") == "") {
     urlInput.value = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqII95Z0qCbWjGeG_NiYPiiNxOLCPTRbHnpo-3fIAquhIigYd6tTTryEUYAvuqQTr1eGZ4W-VKWkFX/pub?gid=0&single=true&output=csv";
 } else {
@@ -49,6 +63,14 @@ var COLUMNS = new Array();
 var TEAM_COLUMNS = new Array();
 var TEAM_ROWS = new Array();
 var TEAMS = new Array();
+var TEAMS_FLIPPED = new Array();
+
+const pickListContainer = document.getElementById("pick-list-container");
+pickListContainer.style.display = "none";
+new Sortable(pickListContainer, {
+    animation: 150,
+    ghostClass: 'sortable-ghost'
+});
 
 var TBA_EVENT_KEYS;
 var TBA_EVENT_NAMES = new Array();
@@ -76,8 +98,11 @@ const oprHeaders = ["Team", "CCWMS", "DPR", "OPR"];
 getData();
 
 function getData() {
+    removeActive();
+    sideButtons[1].classList.add("active");
     breakdownLines.style.display = "none";
     graphContainer.style.display = "none";
+    pickListContainer.style.display = "none";
     CSV.fetch({
         //url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNEBYTlOcDv1NuaCd5U-55q2czmUc-HgvNKnaRDxkkL9J39MD_ht2-6GKY4jX3bipv7dONBcUVCpU_/pub?gid=1955868836&single=true&output=csv'
         url: urlInput.value
@@ -87,6 +112,7 @@ function getData() {
         DATA = dataset;
         FIELDS = dataset.fields;
         RECORDS = dataset.records;
+        TEAMS_FLIPPED = [];
         //Delete Time stamps
         for (var i = 0; i < RECORDS.length; i++) {
             RECORDS[i].splice(0, 1);
@@ -168,6 +194,11 @@ function getData() {
 
         for (var i = 0; i < RECORDS.length; i++) {
             for (var s = 0; s < RECORDS[i].length; s++) {
+                if (FIELDS[s] == "Flip") {
+                    if (RECORDS[i][s] == "Yes") {
+                        TEAMS_FLIPPED.push(RECORDS[i][TEAM_INDEX]);
+                    }
+                }
                 COLUMNS[s][i] = RECORDS[i][s];
                 //console.log(RECORDS[i][s]);
                 var temp = document.createElement("div");
@@ -189,14 +220,18 @@ function getData() {
                 rawTable.children[s].appendChild(temp);
             }
         }
-        getTeamData();
+        console.log(TEAMS_FLIPPED);
+        setUpPickList();
     });
 }
 
 function resetRaw() {
     breakdownLines.style.display = "none";
     graphContainer.style.display = "none";
+    pickListContainer.style.display = "none";
+
     rawTable.innerHTML = "";
+    TEAMS_FLIPPED = [];
 
     for (var h = 0; h < FIELDS.length; h++) {
         COLUMNS[h] = new Array();
@@ -233,11 +268,18 @@ function resetRaw() {
 
     for (var i = 0; i < RECORDS.length; i++) {
         for (var s = 0; s < RECORDS[i].length; s++) {
+            if (FIELDS[s] == "Flip") {
+                if (RECORDS[i][s] == "Yes") {
+                    TEAMS_FLIPPED.push(RECORDS[i][TEAM_INDEX]);
+                }
+            }
             COLUMNS[s][i] = RECORDS[i][s];
             //console.log(RECORDS[i][s]);
             var temp = document.createElement("div");
             temp.className = "data-value";
             temp.id = i;
+            if (s == TEAM_INDEX) {
+            }
             if (FIELDS[s].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
                 temp.id = i;
@@ -287,6 +329,8 @@ function showGrid(recordNum, colNum, record) {
     // Very clean code, great use of sticky
     breakdownLines.style.display = "none";
     graphContainer.style.display = "none";
+    pickListContainer.style.display = "none";
+
     body.style.overflow = "hidden";
     frcGrid.style.display = "flex";
 
@@ -316,6 +360,8 @@ function hideGrid() {
 
 function setUpGraph() {
     breakdownLines.style.display = "none";
+    pickListContainer.style.display = "none";
+
 
     if (TEAMS.length < 1) {
         getTeamData();
@@ -535,6 +581,8 @@ function doGraph() {
 
 function setUpTeamOveralls() {
     graphContainer.style.display = "none";
+    pickListContainer.style.display = "none";
+
     breakdownLines.innerHTML = "";
     rawTable.innerHTML = "";
     var temp = document.createElement("select");
@@ -587,6 +635,8 @@ function openTeamOveralls() {
 
     breakdownLines.style.display = "flex";
     graphContainer.style.display = "none";
+    pickListContainer.style.display = "none";
+
 
     //console.log(TEAM_COLUMNS);
     var overallData = [];
@@ -717,10 +767,10 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
         var cols = document.getElementsByClassName("column");
         for (var i = 0; i < records.length; i++) {
             var sub = 0;
-            if(team) {
+            if (team) {
                 sub = 1;
             }
-            for (var s = 0; s < records[i].length-sub; s++) {
+            for (var s = 0; s < records[i].length - sub; s++) {
                 //console.log(RECORDS[i][s]);
                 var tempCol = cols[s];
                 var temp = tempCol.children[i + 1];
@@ -861,9 +911,35 @@ function refreshData() {
     getData();
 }
 
+function setUpPickList() {
+    breakdownLines.style.display = "none";
+    graphContainer.style.display = "none";
+    rawTable.innerHTML = "";
+    pickListContainer.style.display = "block";
+
+    if(TEAMS.length < 1) {
+        getTeamData();
+        setUpPickList();
+    }
+
+    pickListContainer.innerHTML = "";
+    for(var i = 0; i < TEAMS.length; i ++) {
+        var tempTeam = document.createElement("div");
+        tempTeam.className = "pick-list-team";
+        
+        var tempTeamText = document.createElement("h7");
+        tempTeamText.innerText = TEAMS[i];
+
+        tempTeam.appendChild(tempTeamText);
+        pickListContainer.appendChild(tempTeam);
+    }
+}
+
 function getTeamData() {
     breakdownLines.style.display = "none";
     graphContainer.style.display = "none";
+    pickListContainer.style.display = "none";
+
     TABLE_TYPE = "team";
     rawTable.innerHTML = "";
     TEAM_COLUMNS = [];
@@ -922,7 +998,7 @@ function getTeamData() {
         rawTable.appendChild(tempC);
     }
 
-    for (var g = 0; g < dataToKeep.length+1; g++) {
+    for (var g = 0; g < dataToKeep.length + 1; g++) {
         TEAM_COLUMNS[g] = new Array();
     }
 
@@ -1032,7 +1108,7 @@ function openTeamComments(id, oldId, element) {
     var cols = document.getElementsByClassName("column");
 
     var tempComment = document.createElement("div");
-    tempComment.innerText = TEAM_ROWS[id][TEAM_COLUMNS.length-1];
+    tempComment.innerText = TEAM_ROWS[id][TEAM_COLUMNS.length - 1];
     tempComment.classList.add("team-comments");
     element.appendChild(tempComment);
 
@@ -1064,6 +1140,9 @@ function closeTeamComments(id, oldId, element) {
 
 function getTBA(url, type) {
     breakdownLines.style.display = "none";
+    pickListContainer.style.display = "none";
+    graphContainer.style.display = "none";
+
     fetch(url, options)
         .then((response) => response.json())
         .then((json) => {

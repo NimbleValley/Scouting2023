@@ -110,6 +110,40 @@ h3 {
     border-bottom-right-radius: 0.75vh;
 }
 
+#pick-list-container {
+    position: absolute;
+    left: 35vh;
+    top: 5vh;
+    width: calc((100% * 0.5) - 35vh);
+    height: fit-content;
+    background-color:#272727;
+    display: flex;
+    padding: 1vh;
+    padding-top: 0vh;
+    border-radius: 0.75vh;
+}
+
+.pick-list-team {
+    background-color: #5b5b5b;
+    font-size: 2.5vh;
+    color: white;
+    margin-top: 1vh;
+    padding: 0.5vh;
+    border-radius: 0.5vh;transition: background-color 0.15s;
+}
+
+.pick-list-team:hover {
+    background-color:#333333;
+}
+
+.sortable-ghost {
+    background-color: chocolate;
+}
+
+.pick-list-team:hover {
+    cursor: move;
+}
+
 #open-sidebar {
     background-color: #1a1919;
     width: 5vh;
@@ -166,7 +200,7 @@ p {
     margin-right: auto;
     margin-top: 1.5vh;
     font-weight: bolder;
-    transition: background-color 0.15s, scale 0.15s, text-shadow 0.15s;
+    transition: background-color 0.15s, scale 0.15s, text-shadow 0.15s, box-shadow 0.15s, border 0.15s;
     text-align: center;
     border: 0.5vh solid #444444;
     text-shadow: #6c676700 0vh 0vh 1vh;
@@ -175,6 +209,8 @@ p {
 .side-button:hover {
     cursor: pointer;
     text-shadow: #000000 0vh 0vh 1vh;
+    border: 0.5vh solid #444444;
+    box-shadow: none !important;
 }
 
 .side-button::after {
@@ -214,7 +250,8 @@ p {
 }
 
 .active {
-    background-color: #797979;
+    border: 0.5vh solid rgb(189, 95, 33);
+    box-shadow: inset 0 0 1vh 0.25vh rgb(189, 95, 33);
 }
 
 #settings {
