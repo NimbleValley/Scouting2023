@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="100mm"
+   height="100mm"
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   sodipodi:docname="flip.svg"
+   inkscape:export-filename="..\..\..\Downloads\Scouting2023-main\Scouting2023-main\svg\flip.svg"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.025259"
+     inkscape:cx="118.50665"
+     inkscape:cy="168.73786"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g3482" />
+  <defs
+     id="defs2">
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect3233"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,9.2604167,0,1 @ F,0,0,1,0,9.2604167,0,1 @ F,0,0,1,0,9.2604167,0,1 @ F,0,0,1,0,9.2604167,0,1"
+       unit="px"
+       method="auto"
+       mode="F"
+       radius="35"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <color-profile
+       name="Agfa-:-Swop-Standard"
+       xlink:href="../../../../../../../../../../../../Windows/system32/spool/drivers/color/RSWOP.icm"
+       id="color-profile5180" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#c45000;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 92.127473,84.842726 54.681785,14.637298 A 4.9388455,4.9388455 179.99802 0 0 45.966158,14.6376 L 8.5193404,84.856854 a 5.5555068,5.5555068 59.03067 0 0 4.9028856,8.169676 l 27.641046,-0.0043 46.16188,-0.0072 a 5.5570392,5.5570392 120.95839 0 0 4.902321,-8.172268 z"
+       id="path292-2-2"
+       sodipodi:nodetypes="ccccc"
+       inkscape:path-effect="#path-effect3233"
+       inkscape:original-d="M 96.485569,93.013547 50.323689,6.4664773 4.1618099,93.027977 50.323689,93.020762 Z" />
+    <g
+       id="g3482"
+       transform="matrix(1.1771536,0,0,1.1771536,-10.028117,-12.632424)">
+      <g
+         id="g3241"
+         transform="translate(5.4193625,0.77419465)">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+           d="M 25.290358,81.290437 59.612987,52.129105"
+           id="path3235" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+           d="m 43.87103,65.806544 4.387101,13.161309 16.258088,0.516131 4.903234,-8.000013"
+           id="path3237" />
+      </g>
+      <circle
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:7.64214;stroke-linecap:square;stroke-linejoin:round;stroke-dasharray:none;paint-order:stroke markers fill"
+         id="path3297-2"
+         cx="51.393757"
+         cy="51.768322"
+         r="5.5220795" />
+      <circle
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:7.64214;stroke-linecap:square;stroke-linejoin:round;stroke-dasharray:none;paint-order:stroke markers fill"
+         id="path3297-2-5"
+         cx="32.634022"
+         cy="67.511345"
+         r="5.5220795" />
+    </g>
+  </g>
+</svg>

@@ -29,15 +29,15 @@ var previousGridScrollY = 0;
 var previousTeamComment = -1;
 
 const sideButtons = document.getElementsByClassName("side-button");
-for(var i = 1; i < sideButtons.length-1; i ++) {
-    sideButtons[i].addEventListener("click", function() {
+for (var i = 1; i < sideButtons.length - 1; i++) {
+    sideButtons[i].addEventListener("click", function () {
         removeActive();
         this.classList.add("active");
     });
 }
 
 function removeActive() {
-    for(var i = 0; i < sideButtons.length; i ++) {
+    for (var i = 0; i < sideButtons.length; i++) {
         sideButtons[i].classList = "side-button";
     }
 }
@@ -917,20 +917,50 @@ function setUpPickList() {
     rawTable.innerHTML = "";
     pickListContainer.style.display = "block";
 
-    if(TEAMS.length < 1) {
+    if (TEAMS.length < 1) {
         getTeamData();
         setUpPickList();
     }
 
     pickListContainer.innerHTML = "";
-    for(var i = 0; i < TEAMS.length; i ++) {
+    for (var i = 0; i < TEAMS.length; i++) {
         var tempTeam = document.createElement("div");
         tempTeam.className = "pick-list-team";
-        
+
         var tempTeamText = document.createElement("h7");
         tempTeamText.innerText = TEAMS[i];
 
+        var warnings = [];
+        for (var w = 0; w < 2; w++) {
+            let tempWarning = document.createElement("div");
+            tempWarning.className = "warning-container";
+            let tempWarningText = document.createElement("div");
+            tempWarningText.className = "warning-popup";
+            tempWarning.appendChild(tempWarningText);
+            warnings.push(tempWarning);
+        }
+        console.log(warnings);
+        if (TEAMS_FLIPPED.includes(TEAMS[i])) {
+            warnings[0].style.backgroundImage = "url('svg/flip.svg')";
+            let counter = 0;
+            for (var x = 0; x < TEAMS_FLIPPED.length; x++) {
+                if (TEAMS_FLIPPED[x] == TEAMS[i]) {
+                    counter++;
+                }
+            }
+            if (counter == 1) {
+                warnings[0].children[0].innerText = counter + " Flip";
+            } else {
+                warnings[0].children[0].innerText = counter + " Flips";
+            }
+        } else {
+            warnings[0].children[0].innerText = "Didn't flip";
+        }
+
         tempTeam.appendChild(tempTeamText);
+        for (var w = 0; w < warnings.length; w++) {
+            tempTeam.appendChild(warnings[w]);
+        }
         pickListContainer.appendChild(tempTeam);
     }
 }
