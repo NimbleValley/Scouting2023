@@ -64,12 +64,22 @@ var TEAM_COLUMNS = new Array();
 var TEAM_ROWS = new Array();
 var TEAMS = new Array();
 var TEAMS_FLIPPED = new Array();
+var TEAMS_COMMS = new Array();
+var TEAMS_DISABLED = new Array();
+var TEAMS_DUMB = new Array();
+var TEAMS_RECKLESS = new Array();
 
 const pickListContainer = document.getElementById("pick-list-container");
+const innerPickListContainer = document.getElementById("inner-pick-list-container");
 pickListContainer.style.display = "none";
-new Sortable(pickListContainer, {
+new Sortable(innerPickListContainer, {
     animation: 150,
     ghostClass: 'sortable-ghost'
+});
+
+const pickListScaleSlider = document.getElementById("pick-list-scale");
+pickListScaleSlider.addEventListener("input", function() {
+    innerPickListContainer.style.setProperty("font-size", (pickListScaleSlider.value) + "vh", "important");
 });
 
 var TBA_EVENT_KEYS;
@@ -113,6 +123,11 @@ function getData() {
         FIELDS = dataset.fields;
         RECORDS = dataset.records;
         TEAMS_FLIPPED = [];
+        TEAMS_COMMS = [];
+        TEAMS_DISABLED = [];
+        TEAMS_DUMB = [];
+        TEAMS_RECKLESS = [];
+
         //Delete Time stamps
         for (var i = 0; i < RECORDS.length; i++) {
             RECORDS[i].splice(0, 1);
@@ -199,6 +214,26 @@ function getData() {
                         TEAMS_FLIPPED.push(RECORDS[i][TEAM_INDEX]);
                     }
                 }
+                if (FIELDS[s] == "Lost Comms") {
+                    if (RECORDS[i][s] == "Yes") {
+                        TEAMS_COMMS.push(RECORDS[i][TEAM_INDEX]);
+                    }
+                }
+                if (FIELDS[s] == "Disabled") {
+                    if (RECORDS[i][s] == "Yes") {
+                        TEAMS_DISABLED.push(RECORDS[i][TEAM_INDEX]);
+                    }
+                }
+                if (FIELDS[s].includes("Unintelligent")) {
+                    if (RECORDS[i][s] == "Yes") {
+                        TEAMS_DUMB.push(RECORDS[i][TEAM_INDEX]);
+                    }
+                }
+                if (FIELDS[s] == "Reckless") {
+                    if (RECORDS[i][s] == "Yes") {
+                        TEAMS_RECKLESS.push(RECORDS[i][TEAM_INDEX]);
+                    }
+                }
                 COLUMNS[s][i] = RECORDS[i][s];
                 //console.log(RECORDS[i][s]);
                 var temp = document.createElement("div");
@@ -220,7 +255,7 @@ function getData() {
                 rawTable.children[s].appendChild(temp);
             }
         }
-        console.log(TEAMS_FLIPPED);
+        console.log(TEAMS_COMMS);
         setUpPickList();
     });
 }
@@ -232,6 +267,10 @@ function resetRaw() {
 
     rawTable.innerHTML = "";
     TEAMS_FLIPPED = [];
+    TEAMS_COMMS = [];
+    TEAMS_DISABLED = [];
+    TEAMS_DUMB = [];
+    TEAMS_RECKLESS = [];
 
     for (var h = 0; h < FIELDS.length; h++) {
         COLUMNS[h] = new Array();
@@ -271,6 +310,26 @@ function resetRaw() {
             if (FIELDS[s] == "Flip") {
                 if (RECORDS[i][s] == "Yes") {
                     TEAMS_FLIPPED.push(RECORDS[i][TEAM_INDEX]);
+                }
+            }
+            if (FIELDS[s] == "Lost Comms") {
+                if (RECORDS[i][s] == "Yes") {
+                    TEAMS_COMMS.push(RECORDS[i][TEAM_INDEX]);
+                }
+            }
+            if (FIELDS[s] == "Disabled") {
+                if (RECORDS[i][s] == "Yes") {
+                    TEAMS_DISABLED.push(RECORDS[i][TEAM_INDEX]);
+                }
+            }
+            if (FIELDS[s].includes("Unintelligent")) {
+                if (RECORDS[i][s] == "Yes") {
+                    TEAMS_DUMB.push(RECORDS[i][TEAM_INDEX]);
+                }
+            }
+            if (FIELDS[s] == "Reckless") {
+                if (RECORDS[i][s] == "Yes") {
+                    TEAMS_RECKLESS.push(RECORDS[i][TEAM_INDEX]);
                 }
             }
             COLUMNS[s][i] = RECORDS[i][s];
@@ -469,6 +528,10 @@ function doGraph() {
 
     var tempAverageHorizontal = document.createElement("div");
     tempAverageHorizontal.id = "graph-average-horizontal";
+
+    /*window.addEventListener("resize", function() {
+        doGraph();
+    });*/
 
     for (var i = 0; i < TEAMS.length; i++) {
         var tempGraphLine = document.createElement("div");
@@ -922,7 +985,7 @@ function setUpPickList() {
         setUpPickList();
     }
 
-    pickListContainer.innerHTML = "";
+    innerPickListContainer.innerHTML = "";
     for (var i = 0; i < TEAMS.length; i++) {
         var tempTeam = document.createElement("div");
         tempTeam.className = "pick-list-team";
@@ -931,17 +994,24 @@ function setUpPickList() {
         tempTeamText.innerText = TEAMS[i];
 
         var warnings = [];
-        for (var w = 0; w < 2; w++) {
+        /*for (var w = 0; w < 3; w++) {
             let tempWarning = document.createElement("div");
             tempWarning.className = "warning-container";
             let tempWarningText = document.createElement("div");
             tempWarningText.className = "warning-popup";
             tempWarning.appendChild(tempWarningText);
             warnings.push(tempWarning);
-        }
-        console.log(warnings);
+        }*/
+
+        tempTeam.appendChild(tempTeamText);
+
         if (TEAMS_FLIPPED.includes(TEAMS[i])) {
-            warnings[0].style.backgroundImage = "url('svg/flip.svg')";
+            let tempWarning = document.createElement("div");
+            tempWarning.className = "warning-container";
+            let tempWarningText = document.createElement("div");
+            tempWarningText.className = "warning-popup";
+            tempWarning.appendChild(tempWarningText);
+            tempWarning.style.backgroundImage = "url('svg/flip.svg')";
             let counter = 0;
             for (var x = 0; x < TEAMS_FLIPPED.length; x++) {
                 if (TEAMS_FLIPPED[x] == TEAMS[i]) {
@@ -949,19 +1019,98 @@ function setUpPickList() {
                 }
             }
             if (counter == 1) {
-                warnings[0].children[0].innerText = counter + " Flip";
+                tempWarningText.innerText = counter + " Flip";
             } else {
-                warnings[0].children[0].innerText = counter + " Flips";
+                tempWarningText.innerText = counter + " Flips";
             }
-        } else {
-            warnings[0].children[0].innerText = "Didn't flip";
+            tempTeam.appendChild(tempWarning)
         }
 
-        tempTeam.appendChild(tempTeamText);
-        for (var w = 0; w < warnings.length; w++) {
-            tempTeam.appendChild(warnings[w]);
+        if (TEAMS_COMMS.includes(TEAMS[i])) {
+            let tempWarning = document.createElement("div");
+            tempWarning.className = "warning-container";
+            let tempWarningText = document.createElement("div");
+            tempWarningText.className = "warning-popup";
+            tempWarning.appendChild(tempWarningText);
+            tempWarning.style.backgroundImage = "url('svg/comms.svg')";
+            let counter = 0;
+            for (var x = 0; x < TEAMS_COMMS.length; x++) {
+                if (TEAMS_COMMS[x] == TEAMS[i]) {
+                    counter++;
+                }
+            }
+            if (counter == 1) {
+                tempWarningText.innerText = counter + " Comm Lost";
+            } else {
+                tempWarningText.innerText = counter + " Comms Lost";
+            }
+            tempTeam.appendChild(tempWarning)
         }
-        pickListContainer.appendChild(tempTeam);
+
+        if (TEAMS_DISABLED.includes(TEAMS[i])) {
+            let tempWarning = document.createElement("div");
+            tempWarning.className = "warning-container";
+            let tempWarningText = document.createElement("div");
+            tempWarningText.className = "warning-popup";
+            tempWarning.appendChild(tempWarningText);
+            tempWarning.style.backgroundImage = "url('svg/disabled.svg')";
+            let counter = 0;
+            for (var x = 0; x < TEAMS_DISABLED.length; x++) {
+                if (TEAMS_DISABLED[x] == TEAMS[i]) {
+                    counter++;
+                }
+            }
+            if (counter == 1) {
+                tempWarningText.innerText = counter + " Time Disabled";
+            } else {
+                tempWarningText.innerText = counter + " Times Disabled";
+            }
+            tempTeam.appendChild(tempWarning)
+        }
+
+        if (TEAMS_DUMB.includes(TEAMS[i])) {
+            let tempWarning = document.createElement("div");
+            tempWarning.className = "warning-container";
+            let tempWarningText = document.createElement("div");
+            tempWarningText.className = "warning-popup";
+            tempWarning.appendChild(tempWarningText);
+            tempWarning.style.backgroundImage = "url('svg/dumb.svg')";
+            let counter = 0;
+            for (var x = 0; x < TEAMS_DUMB.length; x++) {
+                if (TEAMS_DUMB[x] == TEAMS[i]) {
+                    counter++;
+                }
+            }
+            if (counter == 1) {
+                tempWarningText.innerText = counter + " Dumb Report";
+            } else {
+                tempWarningText.innerText = counter + " Dumb Reports";
+            }
+            tempTeam.appendChild(tempWarning)
+        }
+
+        if (TEAMS_RECKLESS.includes(TEAMS[i])) {
+            let tempWarning = document.createElement("div");
+            tempWarning.className = "warning-container";
+            let tempWarningText = document.createElement("div");
+            tempWarningText.className = "warning-popup";
+            tempWarning.appendChild(tempWarningText);
+            tempWarning.style.backgroundImage = "url('svg/reckless.svg')";
+            let counter = 0;
+            for (var x = 0; x < TEAMS_RECKLESS.length; x++) {
+                if (TEAMS_RECKLESS[x] == TEAMS[i]) {
+                    counter++;
+                }
+            }
+            if (counter == 1) {
+                tempWarningText.innerText = counter + " Reckles Report";
+            } else {
+                tempWarningText.innerText = counter + " Reckless Reports";
+            }
+            tempTeam.appendChild(tempWarning)
+        }
+
+        innerPickListContainer.appendChild(tempTeam);
     }
 }
 

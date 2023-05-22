@@ -113,23 +113,30 @@ h3 {
 #pick-list-container {
     position: absolute;
     left: 35vh;
+}
+
+#inner-pick-list-container {
+    position: absolute;
     top: 5vh;
     width: calc((100% * 0.5) - 35vh);
+    min-width: 40vh;
     height: fit-content;
-    background-color:#272727;
+    background-color: #272727;
     display: flex;
     padding: 1vh;
     padding-top: 0vh;
     border-radius: 0.75vh;
+    display: block;
+    font-size: 2.5vh !important;
 }
 
 .pick-list-team {
     background-color: #5b5b5b;
-    font-size: 2.5vh;
     color: white;
     margin-top: 1vh;
     padding: 0.5vh;
-    border-radius: 0.5vh;transition: background-color 0.15s;
+    border-radius: 0.5vh;
+    transition: background-color 0.15s;
     height: 4vh;
     display: flex;
     align-items: center;
@@ -137,7 +144,7 @@ h3 {
 }
 
 .pick-list-team:hover {
-    background-color:#333333;
+    background-color: #333333;
 }
 
 .sortable-ghost {
@@ -157,6 +164,7 @@ h3 {
     margin-right: 2vh;
     background-size: contain;
     transition: filter 0.15s;
+    min-width: 4vh;
 }
 
 .warning-container:hover {
@@ -164,7 +172,7 @@ h3 {
     filter: brightness(1.25);
 }
 
-.warning-container:hover > .warning-popup {
+.warning-container:hover>.warning-popup {
     display: block;
 }
 
@@ -179,6 +187,38 @@ h3 {
     background-color: #333333;
     padding: 0.25vh;
     border-radius: 0.25vh;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: calc((100% * 0.5) - 35vh);
+    min-width: 40vh;
+    height: 2vh;
+    border-radius: 0.5vh;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    padding: 0;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 2.5vh;
+    height: 2.5vh;
+    border-radius: 50%;
+    background: #d35d0e;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 1vh;
+    height: 1vh;
+    border-radius: 50%;
+    background: #d35d0e;
+    cursor: pointer;
 }
 
 #open-sidebar {
@@ -528,19 +568,19 @@ h2 {
     width: 10vh;
     font-size: 2vh;
     padding: 0vh 0.5vh 0vh 0.5vh;
-    border:#5c5c5c solid 0.35vh;
+    border: #5c5c5c solid 0.35vh;
     background-color: #a3a3a3;
     z-index: 1000000;
     display: none;
     margin-left: 13vh;
 }
 
-.line-container:hover > .breakdown-popup {
+.line-container:hover>.breakdown-popup {
     display: block;
     animation: fade-in 0.25s;
 }
 
-.line-container:hover > .breakdown-line {
+.line-container:hover>.breakdown-line {
     scale: 1.25 1;
 }
 
@@ -608,7 +648,7 @@ h2 {
     0% {
         background-position: 0% 125%;
     }
-    
+
     100% {
         background-position: 0% 0%;
     }
@@ -618,7 +658,7 @@ h2 {
     0% {
         background-position: 0% 100%;
     }
-    
+
     100% {
         background-position: 0% 225%;
     }
@@ -708,7 +748,7 @@ h6 {
     margin-left: calc(2.5vw + 30vh);
     top: 0;
     width: calc(95vw - 30vh);
-    background-color:#272727;
+    background-color: #272727;
     flex-direction: row;
     height: fit-content;
     flex-direction: row;
@@ -746,7 +786,7 @@ h6 {
     width: calc(100% - 10vh - 3vh);
     left: 11.5vh;
     top: 1.5vh;
-    background-color:#272727;
+    background-color: #272727;
     height: calc(100% - 3vh);
     border-top-right-radius: 0.75vh;
 }
@@ -766,14 +806,14 @@ h6 {
 }
 
 .graph-dot {
-    width: 2vh;
-    height: 2vh;
+    width: 2.25vh;
+    height: 2.25vh;
     background-color: rgb(220, 73, 5);
     position: absolute;
     border-radius: 10000000000000000px;
     transition: background-color 0.15s;
     transition: background-color 0.15s;
-    z-index: 100;
+    z-index: 5;
     transition: left 0.4s, top 0.4s, scale 0.4s;
     transition-timing-function: ease-out;
 }
@@ -781,9 +821,10 @@ h6 {
 .graph-dot:hover {
     cursor: pointer;
     background-color: rgb(189, 46, 11);
+    z-index: 100;
 }
 
-.graph-dot:hover > .dot-popup {
+.graph-dot:hover>.dot-popup {
     display: block;
     animation: fade-in-dot 0.25s;
 }
@@ -794,7 +835,7 @@ h6 {
     white-space: nowrap;
     font-size: 2vh;
     padding: 0vh 0.5vh 0vh 0.5vh;
-    border:#5c5c5c solid 0.35vh;
+    border: #5c5c5c solid 0.35vh;
     background-color: #b3abab;
     z-index: 1000000;
     display: none;
@@ -824,12 +865,15 @@ h6 {
     0% {
         background-color: rgb(48, 46, 44);
     }
+
     30% {
         background-color: rgb(155, 91, 38);
     }
+
     70% {
         background-color: rgb(155, 91, 38);
     }
+
     100% {
         background-color: rgb(48, 46, 44);
     }
