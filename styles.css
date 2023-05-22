@@ -83,9 +83,10 @@ body {
     border-radius: 0.5vw;
     font-weight: bolder;
     color: white;
-    transition: background-color 0.25s;
+    transition: background-color 0.25s, height 0.15s;
     background-color: #4d4e4e00;
     z-index: 10;
+    height: fit-content;
 }
 
 .data-value:hover {
@@ -113,27 +114,30 @@ h3 {
 #pick-list-container {
     position: absolute;
     left: 35vh;
+    height: fit-content;
+    align-items: start;
+    width: 100%;
 }
 
 #inner-pick-list-container {
-    position: absolute;
-    top: 5vh;
-    width: calc((100% * 0.5) - 35vh);
+    position: relative;
+    margin-top: 0vh;
+    width: calc((100% * 0.6) - 35vh);
     min-width: 40vh;
+    row-gap: 1vh;
     height: fit-content;
     background-color: #272727;
-    display: flex;
     padding: 1vh;
-    padding-top: 0vh;
+    padding-top: 1vh;
     border-radius: 0.75vh;
-    display: block;
+    display: flex;
+    flex-direction: column;
     font-size: 2.5vh !important;
 }
 
 .pick-list-team {
     background-color: #5b5b5b;
     color: white;
-    margin-top: 1vh;
     padding: 0.5vh;
     border-radius: 0.5vh;
     transition: background-color 0.15s;
@@ -164,7 +168,6 @@ h3 {
     margin-right: 2vh;
     background-size: contain;
     transition: filter 0.15s;
-    min-width: 4vh;
 }
 
 .warning-container:hover {
@@ -189,11 +192,111 @@ h3 {
     border-radius: 0.25vh;
 }
 
+.pick-list-control-panel {
+    width: 4vh;
+    height: 4vh;
+    background-color:#2b2b2b;
+    border-radius: 0.5vh;
+    margin-left: auto;
+    z-index: 10;
+}
+
+.pick-list-toggle-control-panel {
+    width: 15vh;
+    display: flex;
+    justify-content: space-around;
+    background-color: #1b1b1b;
+    border-radius: 1vh;
+    align-items: center;
+    z-index: 100;
+    display: none;
+    margin-left: -11.25vh;
+}
+
+.pick-list-control-panel:hover {
+    cursor: pointer;
+}
+
+.pick-list-control-panel:hover > .pick-list-toggle-control-panel {
+    display: flex;
+}
+
+.pick-list-green-button {
+    width: 3.25vh;
+    height: 3.25vh;
+    background-color: green;
+    border: 0.5vh solid limegreen;
+    margin-left: auto;
+    margin-right: 0;
+    border-radius: 100000000px;
+    filter: brightness(1);
+    transition: filter 0.15s;
+}
+
+.pick-list-green-button:hover {
+    filter: brightness(1.5);
+    cursor: pointer;
+}
+
+.pick-list-yellow-button {
+    width: 3.25vh;
+    height: 3.25vh;
+    background-color: yellow;
+    border: 0.5vh solid goldenrod;
+    margin-left: 2vh;
+    margin-right: 0;
+    border-radius: 100000000px;
+    filter: brightness(1);
+    transition: filter 0.15s;
+}
+
+.pick-list-yellow-button:hover {
+    filter: brightness(1.5);
+    cursor: pointer;
+}
+
+.pick-list-red-button {
+    width: 3.25vh;
+    height: 3.25vh;
+    background-color: red;
+    border: 0.5vh solid rgb(205, 45, 9);
+    margin-left: 2vh;
+    margin-right: 0;
+    border-radius: 100000000px;
+    filter: brightness(1);
+    transition: filter 0.15s;
+}
+
+.pick-list-red-button:hover {
+    filter: brightness(1.5);
+    cursor: pointer;
+}
+
+.pick-list-info-button {
+    font-style: italic;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #444444;
+    width: 4vh;
+    margin-left: 2vh;
+    height: auto;
+    border-radius: 0.5vh;
+    text-align: center;
+    margin-right: 2vh;
+    transition: background-color 0.25s;
+}
+
+.pick-list-info-button:hover {
+    cursor: pointer;
+    background-color: #272727;
+}
+
 .slider {
+    position: sticky;
     -webkit-appearance: none;
-    width: calc((100% * 0.5) - 35vh);
+    appearance: none;
+    width: calc((100% * 0.6) - 35vh);
     min-width: 40vh;
-    height: 2vh;
+    height: 1vh;
     border-radius: 0.5vh;
     background: #d3d3d3;
     outline: none;
@@ -206,8 +309,8 @@ h3 {
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 2.5vh;
-    height: 2.5vh;
+    width: 2.75vh;
+    height: 2.75vh;
     border-radius: 50%;
     background: #d35d0e;
     cursor: pointer;

@@ -77,9 +77,21 @@ new Sortable(innerPickListContainer, {
     ghostClass: 'sortable-ghost'
 });
 
+localStorage.setItem("previousHighlightRow", -1);
+
 const pickListScaleSlider = document.getElementById("pick-list-scale");
-pickListScaleSlider.addEventListener("input", function() {
-    innerPickListContainer.style.setProperty("font-size", (pickListScaleSlider.value) + "vh", "important");
+pickListScaleSlider.addEventListener("input", function () {
+    var pickListTeams = document.getElementsByClassName("pick-list-team");
+    var warnings = document.getElementsByClassName("warning-container");
+    //innerPickListContainer.style.scale = pickListScaleSlider.value;
+    for (var i = 0; i < pickListTeams.length; i++) {
+        pickListTeams[i].style.height = pickListScaleSlider.value + "vh";
+    }
+
+    for (var i = 0; i < warnings.length; i++) {
+        warnings[i].style.height = pickListScaleSlider.value + "vh";
+        warnings[i].style.width = pickListScaleSlider.value + "vh";
+    }
 });
 
 var TBA_EVENT_KEYS;
@@ -861,6 +873,20 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
         }
         // This code is a mess
 
+        if (team) {
+            if (parseInt(localStorage.getItem("previousHighlightRow")) != -1) {
+                var previousTeam = TEAM_ROWS[parseInt(localStorage.getItem("previousHighlightRow"))][0];
+                var originalHighlight = localStorage.getItem("previousHighlightRow");
+                console.log(previousTeam);
+                for (var i = 0; i < sortedRows.length; i++) {
+                    if (sortedRows[i][0] == previousTeam) {
+                        setRowHighlight(i, true);
+                        localStorage.setItem("previousHighlightRow", originalHighlight);
+                    }
+                }
+            }
+        }
+
     } else {
         console.log("Sad");
     }
@@ -1110,6 +1136,56 @@ function setUpPickList() {
             tempTeam.appendChild(tempWarning)
         }
 
+        var tempControlPanel = document.createElement("div");
+        tempControlPanel.className = "pick-list-control-panel";
+
+        var toggleControlPanel = document.createElement("div");
+        toggleControlPanel.className = "pick-list-toggle-control-panel";
+
+        tempControlPanel.appendChild(toggleControlPanel);
+
+        var tempGreemButton = document.createElement("div");
+        tempGreemButton.className = "pick-list-green-button";
+        tempGreemButton.innerText = "";
+        tempGreemButton.id = i;
+        tempGreemButton.onclick = function () {
+            getTeamData();
+            setRowHighlight(this.id, true);
+        }
+        toggleControlPanel.appendChild(tempGreemButton);
+
+        var tempYellowButton = document.createElement("div");
+        tempYellowButton.className = "pick-list-yellow-button";
+        tempYellowButton.innerText = "";
+        tempYellowButton.id = i;
+        tempYellowButton.onclick = function () {
+            getTeamData();
+            setRowHighlight(this.id, true);
+        }
+        toggleControlPanel.appendChild(tempYellowButton);
+
+        var tempRedButton = document.createElement("div");
+        tempRedButton.className = "pick-list-red-button";
+        tempRedButton.innerText = "";
+        tempRedButton.id = i;
+        tempRedButton.onclick = function () {
+            getTeamData();
+            setRowHighlight(this.id, true);
+        }
+        toggleControlPanel.appendChild(tempRedButton);
+
+        tempTeam.appendChild(tempControlPanel);
+
+        var tempInfoButton = document.createElement("div");
+        tempInfoButton.className = "pick-list-info-button";
+        tempInfoButton.innerText = "i";
+        tempInfoButton.id = i;
+        tempInfoButton.onclick = function () {
+            getTeamData();
+            setRowHighlight(this.id, true);
+        }
+        tempTeam.appendChild(tempInfoButton);
+
         innerPickListContainer.appendChild(tempTeam);
     }
 }
@@ -1277,6 +1353,8 @@ function getTeamData() {
             }*/
         };
     }
+    setRowHighlight(parseInt(localStorage.getItem("previousHighlightRow")), true);
+    //localStorage.setItem("previousHighlightRow", originalHighlight);
 }
 
 function openTeamComments(id, oldId, element) {
