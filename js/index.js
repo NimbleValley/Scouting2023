@@ -50,7 +50,7 @@ if (localStorage.getItem("spreadsheet-url") == null || localStorage.getItem("spr
 
 const rawTable = document.getElementById("data-table");
 //API Fetch Response
-var DATA;
+var DATA = new Array();
 //Headers
 var FIELDS = new Array();
 
@@ -68,9 +68,11 @@ var TEAMS_COMMS = new Array();
 var TEAMS_DISABLED = new Array();
 var TEAMS_DUMB = new Array();
 var TEAMS_RECKLESS = new Array();
+var TEAM_COLORS = new Array();
 
 const pickListContainer = document.getElementById("pick-list-container");
 const innerPickListContainer = document.getElementById("inner-pick-list-container");
+const teamColors = ["green", "yellow", "red"];
 pickListContainer.style.display = "none";
 new Sortable(innerPickListContainer, {
     animation: 150,
@@ -1008,6 +1010,9 @@ function setUpPickList() {
 
     if (TEAMS.length < 1) {
         getTeamData();
+        for (var i = 0; i < TEAMS.length; i++) {
+            TEAM_COLORS[i] = 0;
+        }
         setUpPickList();
     }
 
@@ -1144,13 +1149,36 @@ function setUpPickList() {
 
         tempControlPanel.appendChild(toggleControlPanel);
 
+        tempControlPanel.addEventListener("click", function (event) {
+            if (event.target.className == "pick-list-control-panel") {
+                var toggles = document.getElementsByClassName("pick-list-control-panel");
+                for (var i = 0; i < toggles.length; i++) {
+                    if (this != toggles[i]) {
+                        toggles[i].children[0].style.display = "none";
+                    }
+                }
+                if (this.children[0].style.display != "flex") {
+                    this.children[0].style.display = "flex";
+                } else {
+                    this.children[0].style.display = "none";
+                }
+            }
+        });
+
         var tempGreemButton = document.createElement("div");
         tempGreemButton.className = "pick-list-green-button";
         tempGreemButton.innerText = "";
         tempGreemButton.id = i;
         tempGreemButton.onclick = function () {
-            getTeamData();
-            setRowHighlight(this.id, true);
+            document.getElementsByClassName("pick-list-yellow-button")[this.id].style.backgroundColor = "";
+            document.getElementsByClassName("pick-list-red-button")[this.id].style.backgroundColor = "";
+            if (TEAM_COLORS[this.id] == 1) {
+                TEAM_COLORS[this.id] = 0;
+                this.style.backgroundColor = "";
+            } else {
+                TEAM_COLORS[this.id] = 1;
+                this.style.backgroundColor = teamColors[0];
+            }
         }
         toggleControlPanel.appendChild(tempGreemButton);
 
@@ -1159,8 +1187,15 @@ function setUpPickList() {
         tempYellowButton.innerText = "";
         tempYellowButton.id = i;
         tempYellowButton.onclick = function () {
-            getTeamData();
-            setRowHighlight(this.id, true);
+            document.getElementsByClassName("pick-list-green-button")[this.id].style.backgroundColor = "";
+            document.getElementsByClassName("pick-list-red-button")[this.id].style.backgroundColor = "";
+            if (TEAM_COLORS[this.id] == 2) {
+                TEAM_COLORS[this.id] = 0;
+                this.style.backgroundColor = "";
+            } else {
+                TEAM_COLORS[this.id] = 2;
+                this.style.backgroundColor = teamColors[1];
+            }
         }
         toggleControlPanel.appendChild(tempYellowButton);
 
@@ -1169,8 +1204,15 @@ function setUpPickList() {
         tempRedButton.innerText = "";
         tempRedButton.id = i;
         tempRedButton.onclick = function () {
-            getTeamData();
-            setRowHighlight(this.id, true);
+            document.getElementsByClassName("pick-list-yellow-button")[this.id].style.backgroundColor = "";
+            document.getElementsByClassName("pick-list-green-button")[this.id].style.backgroundColor = "";
+            if (TEAM_COLORS[this.id] == 3) {
+                TEAM_COLORS[this.id] = 0;
+                this.style.backgroundColor = "";
+            } else {
+                TEAM_COLORS[this.id] = 3;
+                this.style.backgroundColor = teamColors[2];
+            }
         }
         toggleControlPanel.appendChild(tempRedButton);
 
@@ -1191,6 +1233,7 @@ function setUpPickList() {
 }
 
 function getTeamData() {
+
     breakdownLines.style.display = "none";
     graphContainer.style.display = "none";
     pickListContainer.style.display = "none";
@@ -1222,6 +1265,11 @@ function getTeamData() {
         if (!TEAMS.includes(RECORDS[i][TEAM_INDEX]) && RECORDS[i][TEAM_INDEX] != null && RECORDS[i][TEAM_INDEX] != "?") {
             TEAMS[tCounter] = RECORDS[i][TEAM_INDEX];
             tCounter++;
+        }
+    }
+    if(TEAMS.length != TEAM_COLORS.length) {
+        for(var i = 0; i < TEAM_COLORS.length; i ++) {
+            TEAM_COLORS[i] = 0;
         }
     }
     TEAMS.sort((a, b) => a - b);
@@ -1300,6 +1348,11 @@ function getTeamData() {
                 tempData.addEventListener("click", function () {
                     setRowHighlight(parseInt(this.classList[1]), false);
                 });
+            }
+            console.log(TEAM_COLORS);
+            if(TEAM_COLORS[i] != 0) {
+                tempData.style.setProperty("background-color", `${teamColors[TEAM_COLORS[i]]}`, "important");
+                console.log(TEAM_COLORS[i]);
             }
             tempData.id = i;
             rawTable.children[c].appendChild(tempData);

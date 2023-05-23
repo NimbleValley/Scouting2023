@@ -199,18 +199,37 @@ h3 {
     border-radius: 0.5vh;
     margin-left: auto;
     z-index: 10;
+    text-align: center;
+}
+
+.pick-list-control-panel::after {
+    content: "...";
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    transition: transform 0.15s;
+    line-height: 2.7vh;
+}
+
+.pick-list-control-panel:hover::after {
+    transform: rotate(90deg);
 }
 
 .pick-list-toggle-control-panel {
+    position: absolute;
     width: 15vh;
     display: flex;
     justify-content: space-around;
-    background-color: #1b1b1b;
+    background-color:#1b1b1b;
     border-radius: 1vh;
     align-items: center;
     z-index: 100;
     display: none;
-    margin-left: -11.25vh;
+    margin-left: -15vh;
+    padding: 0.25vh;
 }
 
 .pick-list-control-panel:hover {
@@ -218,17 +237,13 @@ h3 {
 }
 
 .pick-list-control-panel:hover > .pick-list-toggle-control-panel {
-    display: flex;
 }
 
 .pick-list-green-button {
-    width: 3.25vh;
-    height: 3.25vh;
-    background-color: green;
+    width: 2.5vh;
+    height: 2.5vh;
     border: 0.5vh solid limegreen;
-    margin-left: auto;
-    margin-right: 0;
-    border-radius: 100000000px;
+    border-radius: 1vh;
     filter: brightness(1);
     transition: filter 0.15s;
 }
@@ -239,13 +254,10 @@ h3 {
 }
 
 .pick-list-yellow-button {
-    width: 3.25vh;
-    height: 3.25vh;
-    background-color: yellow;
+    width: 2.5vh;
+    height: 2.5vh;
     border: 0.5vh solid goldenrod;
-    margin-left: 2vh;
-    margin-right: 0;
-    border-radius: 100000000px;
+    border-radius: 1vh;
     filter: brightness(1);
     transition: filter 0.15s;
 }
@@ -256,13 +268,10 @@ h3 {
 }
 
 .pick-list-red-button {
-    width: 3.25vh;
-    height: 3.25vh;
-    background-color: red;
+    width: 2.5vh;
+    height: 2.5vh;
     border: 0.5vh solid rgb(205, 45, 9);
-    margin-left: 2vh;
-    margin-right: 0;
-    border-radius: 100000000px;
+    border-radius: 1vh;
     filter: brightness(1);
     transition: filter 0.15s;
 }
@@ -287,7 +296,7 @@ h3 {
 
 .pick-list-info-button:hover {
     cursor: pointer;
-    background-color: #272727;
+    background-color: chocolate;
 }
 
 .slider {
