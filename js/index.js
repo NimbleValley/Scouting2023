@@ -70,13 +70,19 @@ var TEAMS_DUMB = new Array();
 var TEAMS_RECKLESS = new Array();
 var TEAM_COLORS = new Array();
 
+var PICK_LIST = new Array();
+var PICK_LIST_OBJECTS = new Array();
+
 const pickListContainer = document.getElementById("pick-list-container");
 const innerPickListContainer = document.getElementById("inner-pick-list-container");
 const teamColors = ["green", "yellow", "red"];
 pickListContainer.style.display = "none";
 new Sortable(innerPickListContainer, {
     animation: 150,
-    ghostClass: 'sortable-ghost'
+    ghostClass: 'sortable-ghost',
+    onUpdate: function (/**Event*/evt) {
+        console.log(evt);
+    }
 });
 
 localStorage.setItem("previousHighlightRow", -1);
@@ -120,6 +126,26 @@ const GRID_INDEX = 4;
 const oprHeaders = ["Team", "CCWMS", "DPR", "OPR"];
 
 getData();
+getPickList();
+
+function getPickList() {
+    CSV.fetch({
+        //url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNEBYTlOcDv1NuaCd5U-55q2czmUc-HgvNKnaRDxkkL9J39MD_ht2-6GKY4jX3bipv7dONBcUVCpU_/pub?gid=1955868836&single=true&output=csv'
+        url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQBOgllZqto92BsubFi-w9Fx0t8M3Qycv_1MhTDZ_bgGzw7KOACWde-AbUF6ujgTG9oGt7ZvUlP9RAZ/pub?gid=0&single=true&output=csv'
+    }
+    ).done(function (dataset) {
+        PICK_LIST = dataset.records;
+        PICK_LIST_OBJECTS = [];
+        for (var i = 0; i < PICK_LIST.length; i++) {
+            PICK_LIST_OBJECTS[i] = new PickListTeam(PICK_LIST[i][0], PICK_LIST[i][1], PICK_LIST[i][2]);
+        }
+        TEAM_COLORS = [];
+        for (var i = 0; i < PICK_LIST_OBJECTS.length; i++) {
+            TEAM_COLORS[i] = 0;
+        }
+        console.log(PICK_LIST_OBJECTS);
+    });
+}
 
 function getData() {
     removeActive();
@@ -854,7 +880,7 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
                 if (team) {
                     temp.classList[1] = i;
                 }
-                console.log(temp.classList);
+                //console.log(temp.classList);
                 if (field[s].includes("Placement")) {
                     temp.innerText = "{ Show Grid }";
                     temp.id = i;
@@ -870,6 +896,14 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
                         }
                     }
                     temp.innerText = sortedRows[i][s];
+                    temp.style.color = "white";
+                    if (team) {
+                        console.log(TEAMS.indexOf(sortedRows[i][0]));
+                        if (PICK_LIST_OBJECTS[TEAMS.indexOf(sortedRows[i][0]).getColor()] != 0) {
+                            temp.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[TEAMS.indexOf(sortedRows[i][0]).getColor()-1]]}`, "important");
+                            //console.log(tempData.style.backgroundColor);
+                        }
+                    }
                 }
             }
         }
@@ -1267,11 +1301,7 @@ function getTeamData() {
             tCounter++;
         }
     }
-    if(TEAMS.length != TEAM_COLORS.length) {
-        for(var i = 0; i < TEAM_COLORS.length; i ++) {
-            TEAM_COLORS[i] = 0;
-        }
-    }
+
     TEAMS.sort((a, b) => a - b);
     console.log(TEAMS);
 
@@ -1349,10 +1379,10 @@ function getTeamData() {
                     setRowHighlight(parseInt(this.classList[1]), false);
                 });
             }
-            console.log(TEAM_COLORS);
-            if(TEAM_COLORS[i] != 0) {
-                tempData.style.setProperty("background-color", `${teamColors[TEAM_COLORS[i]]}`, "important");
-                console.log(TEAM_COLORS[i]);
+            console.log(TEAM_COLORS[i]);
+            if (PICK_LIST_OBJECTS[i].getColor() != 0) {
+                tempData.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[i].getColor() - 1]}`, "important");
+                console.log(tempData.style.backgroundColor);
             }
             tempData.id = i;
             rawTable.children[c].appendChild(tempData);
