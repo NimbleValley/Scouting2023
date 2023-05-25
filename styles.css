@@ -236,9 +236,6 @@ h3 {
     cursor: pointer;
 }
 
-.pick-list-control-panel:hover > .pick-list-toggle-control-panel {
-}
-
 .pick-list-green-button {
     width: 2.5vh;
     height: 2.5vh;
@@ -297,6 +294,34 @@ h3 {
 .pick-list-info-button:hover {
     cursor: pointer;
     background-color: chocolate;
+}
+
+#sync-pick-list-button {
+    position: sticky;
+    height: 5vh;
+    width: 20vh;
+    height: 10vh;
+    border: 0.75vh solid chocolate;
+    border-radius: 1vh;
+    background-color: transparent;
+    right: 2vh;
+    margin-right: 0;
+    top: 0;
+    font-weight: bold;
+    float: right;
+    color: rgb(247, 125, 37);
+    max-width: 30vh;
+    margin: 2vh;
+    margin-right: 2vh;
+    font-size: 5vh;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+#sync-pick-list-button:hover {
+    cursor: pointer;
+    background-color: chocolate;
+    color: #2b2b2b;
 }
 
 .slider {
