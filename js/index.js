@@ -73,9 +73,12 @@ var PICK_LIST = new Array();
 var PICK_LIST_TEAM_KEY = new Array();
 var PICK_LIST_OBJECTS = new Array();
 
+var PICK_LIST_ORDER = new Array();
+
 const pickListContainer = document.getElementById("pick-list-container");
 const innerPickListContainer = document.getElementById("inner-pick-list-container");
-const teamColors = ["limegreen", "gold", "red"];
+const teamColors = ["limegreen", "gold", "#fa1616"];
+const pickListColors = ["#458a30", "#8a8130", "#8a3230"];
 pickListContainer.style.display = "none";
 new Sortable(innerPickListContainer, {
     animation: 150,
@@ -139,25 +142,27 @@ function getPickList() {
         for (var i = 0; i < PICK_LIST.length; i++) {
             PICK_LIST_OBJECTS[i] = new PickListTeam(PICK_LIST[i][0], PICK_LIST[i][1], PICK_LIST[i][2]);
             PICK_LIST_TEAM_KEY.push(PICK_LIST[i][1]);
+            PICK_LIST_ORDER.push(PICK_LIST[i][1]);
         }
-        if(PICK_LIST_OBJECTS.length != TEAMS.length) {
-            if(PICK_LIST_OBJECTS.length == 0) {
-                
+        if (PICK_LIST_OBJECTS.length != TEAMS.length) {
+            if (PICK_LIST_OBJECTS.length == 0) {
+
             } else {
                 var pickListTeamsIncluded = [];
-                for(var p = 0; p < PICK_LIST_OBJECTS.length; p ++) {
+                for (var p = 0; p < PICK_LIST_OBJECTS.length; p++) {
                     pickListTeamsIncluded.push(PICK_LIST_OBJECTS[p].getTeam());
                 }
                 console.log(PICK_LIST_OBJECTS[i]);
-                for(var i = 0; i < TEAMS.length; i ++) {
-                    if(!pickListTeamsIncluded.includes(TEAMS[i])) {
-                        PICK_LIST_OBJECTS.push(new PickListTeam(PICK_LIST_OBJECTS.length, TEAMS[i], 3));
+                for (var i = 0; i < TEAMS.length; i++) {
+                    if (!pickListTeamsIncluded.includes(TEAMS[i])) {
+                        PICK_LIST_OBJECTS.push(new PickListTeam(PICK_LIST_OBJECTS.length, TEAMS[i], 0));
                         PICK_LIST_TEAM_KEY.push(TEAMS[i]);
+                        PICK_LIST_ORDER.push(TEAMS[i]);
                     }
                 }
             }
         }
-        console.log(PICK_LIST_TEAM_KEY);
+        console.log(PICK_LIST_ORDER);
     });
 }
 
@@ -199,7 +204,7 @@ function getData() {
         FIELDS.push("Points");
 
         for (var i = 0; i < RECORDS.length; i++) {
-            if(!TEAMS.includes(RECORDS[i][0])) {
+            if (!TEAMS.includes(RECORDS[i][0])) {
                 TEAMS[TEAMS.length] = RECORDS[i][0];
             }
         }
@@ -921,8 +926,8 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
                     temp.style.color = "white";
                     if (team) {
                         console.log(TEAMS.indexOf(sortedRows[i][0]));
-                        if (PICK_LIST_OBJECTS[  PICK_LIST_TEAM_KEY.indexOf(TEAMS[  TEAMS.indexOf(sortedRows[i][0])  ])    ].getColor() != 0) {
-                            temp.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[  PICK_LIST_TEAM_KEY.indexOf(TEAMS[  TEAMS.indexOf(sortedRows[i][0])  ])    ].getColor()-1]}`, "important");
+                        if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[TEAMS.indexOf(sortedRows[i][0])])].getColor() != 0) {
+                            temp.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[TEAMS.indexOf(sortedRows[i][0])])].getColor() - 1]}`, "important");
                             //console.log(tempData.style.backgroundColor);
                         }
                     }
@@ -1064,21 +1069,14 @@ function setUpPickList() {
     rawTable.innerHTML = "";
     pickListContainer.style.display = "block";
 
-    if (TEAMS.length < 1) {
-        getTeamData();
-        for (var i = 0; i < TEAMS.length; i++) {
-            TEAM_COLORS[i] = 0;
-        }
-        setUpPickList();
-    }
-
     innerPickListContainer.innerHTML = "";
     for (var i = 0; i < TEAMS.length; i++) {
         var tempTeam = document.createElement("div");
         tempTeam.className = "pick-list-team";
+        tempTeam.id = i;
 
         var tempTeamText = document.createElement("h7");
-        tempTeamText.innerText = TEAMS[i];
+        tempTeamText.innerText = PICK_LIST_OBJECTS[i].getTeam();
 
         var warnings = [];
         /*for (var w = 0; w < 3; w++) {
@@ -1092,7 +1090,7 @@ function setUpPickList() {
 
         tempTeam.appendChild(tempTeamText);
 
-        if (TEAMS_FLIPPED.includes(TEAMS[i])) {
+        if (TEAMS_FLIPPED.includes(PICK_LIST_OBJECTS[i].getTeam())) {
             let tempWarning = document.createElement("div");
             tempWarning.className = "warning-container";
             let tempWarningText = document.createElement("div");
@@ -1101,7 +1099,7 @@ function setUpPickList() {
             tempWarning.style.backgroundImage = "url('svg/flip.svg')";
             let counter = 0;
             for (var x = 0; x < TEAMS_FLIPPED.length; x++) {
-                if (TEAMS_FLIPPED[x] == TEAMS[i]) {
+                if (TEAMS_FLIPPED[x] == PICK_LIST_OBJECTS[i].getTeam()) {
                     counter++;
                 }
             }
@@ -1113,7 +1111,7 @@ function setUpPickList() {
             tempTeam.appendChild(tempWarning)
         }
 
-        if (TEAMS_COMMS.includes(TEAMS[i])) {
+        if (TEAMS_COMMS.includes(PICK_LIST_OBJECTS[i].getTeam())) {
             let tempWarning = document.createElement("div");
             tempWarning.className = "warning-container";
             let tempWarningText = document.createElement("div");
@@ -1122,7 +1120,7 @@ function setUpPickList() {
             tempWarning.style.backgroundImage = "url('svg/comms.svg')";
             let counter = 0;
             for (var x = 0; x < TEAMS_COMMS.length; x++) {
-                if (TEAMS_COMMS[x] == TEAMS[i]) {
+                if (TEAMS_COMMS[x] == PICK_LIST_OBJECTS[i].getTeam()) {
                     counter++;
                 }
             }
@@ -1134,7 +1132,7 @@ function setUpPickList() {
             tempTeam.appendChild(tempWarning)
         }
 
-        if (TEAMS_DISABLED.includes(TEAMS[i])) {
+        if (TEAMS_DISABLED.includes(PICK_LIST_OBJECTS[i].getTeam())) {
             let tempWarning = document.createElement("div");
             tempWarning.className = "warning-container";
             let tempWarningText = document.createElement("div");
@@ -1143,7 +1141,7 @@ function setUpPickList() {
             tempWarning.style.backgroundImage = "url('svg/disabled.svg')";
             let counter = 0;
             for (var x = 0; x < TEAMS_DISABLED.length; x++) {
-                if (TEAMS_DISABLED[x] == TEAMS[i]) {
+                if (TEAMS_DISABLED[x] == PICK_LIST_OBJECTS[i].getTeam()) {
                     counter++;
                 }
             }
@@ -1155,7 +1153,7 @@ function setUpPickList() {
             tempTeam.appendChild(tempWarning)
         }
 
-        if (TEAMS_DUMB.includes(TEAMS[i])) {
+        if (TEAMS_DUMB.includes(PICK_LIST_OBJECTS[i].getTeam())) {
             let tempWarning = document.createElement("div");
             tempWarning.className = "warning-container";
             let tempWarningText = document.createElement("div");
@@ -1164,7 +1162,7 @@ function setUpPickList() {
             tempWarning.style.backgroundImage = "url('svg/dumb.svg')";
             let counter = 0;
             for (var x = 0; x < TEAMS_DUMB.length; x++) {
-                if (TEAMS_DUMB[x] == TEAMS[i]) {
+                if (TEAMS_DUMB[x] == PICK_LIST_OBJECTS[i].getTeam()) {
                     counter++;
                 }
             }
@@ -1176,7 +1174,7 @@ function setUpPickList() {
             tempTeam.appendChild(tempWarning)
         }
 
-        if (TEAMS_RECKLESS.includes(TEAMS[i])) {
+        if (TEAMS_RECKLESS.includes(PICK_LIST_OBJECTS[i].getTeam())) {
             let tempWarning = document.createElement("div");
             tempWarning.className = "warning-container";
             let tempWarningText = document.createElement("div");
@@ -1185,7 +1183,7 @@ function setUpPickList() {
             tempWarning.style.backgroundImage = "url('svg/reckless.svg')";
             let counter = 0;
             for (var x = 0; x < TEAMS_RECKLESS.length; x++) {
-                if (TEAMS_RECKLESS[x] == TEAMS[i]) {
+                if (TEAMS_RECKLESS[x] == PICK_LIST_OBJECTS[i].getTeam()) {
                     counter++;
                 }
             }
@@ -1218,6 +1216,8 @@ function setUpPickList() {
                 } else {
                     this.children[0].style.display = "none";
                 }
+            } else {
+
             }
         });
 
@@ -1225,15 +1225,24 @@ function setUpPickList() {
         tempGreemButton.className = "pick-list-green-button";
         tempGreemButton.innerText = "";
         tempGreemButton.id = i;
+        if (PICK_LIST_OBJECTS[i].getColor() == 1) {
+            tempGreemButton.style.backgroundColor = teamColors[0];
+        }
         tempGreemButton.onclick = function () {
             document.getElementsByClassName("pick-list-yellow-button")[this.id].style.backgroundColor = "";
             document.getElementsByClassName("pick-list-red-button")[this.id].style.backgroundColor = "";
-            if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[this.id])].getColor() == 1) {
-                PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[this.id])].setColor(0);
+            if (PICK_LIST_OBJECTS[this.id].getColor() == 1) {
+                PICK_LIST_OBJECTS[this.id].setColor(0);
                 this.style.backgroundColor = "";
             } else {
-                PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[this.id])].setColor(1);
+                PICK_LIST_OBJECTS[this.id].setColor(1);
                 this.style.backgroundColor = teamColors[0];
+            }
+            let tempClickedTeam = document.getElementsByClassName("pick-list-team")[this.id];
+            if (PICK_LIST_OBJECTS[this.id].getColor() == 0) {
+                tempClickedTeam.style.backgroundColor = "#5b5b5b";
+            } else {
+                tempClickedTeam.style.backgroundColor = pickListColors[PICK_LIST_OBJECTS[this.id].getColor() - 1];
             }
         }
         toggleControlPanel.appendChild(tempGreemButton);
@@ -1242,15 +1251,24 @@ function setUpPickList() {
         tempYellowButton.className = "pick-list-yellow-button";
         tempYellowButton.innerText = "";
         tempYellowButton.id = i;
+        if (PICK_LIST_OBJECTS[i].getColor() == 2) {
+            tempYellowButton.style.backgroundColor = teamColors[1];
+        }
         tempYellowButton.onclick = function () {
             document.getElementsByClassName("pick-list-green-button")[this.id].style.backgroundColor = "";
             document.getElementsByClassName("pick-list-red-button")[this.id].style.backgroundColor = "";
-            if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[this.id])].getColor() == 2) {
-                PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[this.id])].setColor(0);
+            if (PICK_LIST_OBJECTS[this.id].getColor() == 2) {
+                PICK_LIST_OBJECTS[this.id].setColor(0);
                 this.style.backgroundColor = "";
             } else {
-                PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[this.id])].setColor(2);
+                PICK_LIST_OBJECTS[this.id].setColor(2);
                 this.style.backgroundColor = teamColors[1];
+            }
+            let tempClickedTeam = document.getElementsByClassName("pick-list-team")[this.id];
+            if (PICK_LIST_OBJECTS[this.id].getColor() == 0) {
+                tempClickedTeam.style.backgroundColor = "#5b5b5b";
+            } else {
+                tempClickedTeam.style.backgroundColor = pickListColors[PICK_LIST_OBJECTS[this.id].getColor() - 1];
             }
         }
         toggleControlPanel.appendChild(tempYellowButton);
@@ -1259,15 +1277,24 @@ function setUpPickList() {
         tempRedButton.className = "pick-list-red-button";
         tempRedButton.innerText = "";
         tempRedButton.id = i;
+        if (PICK_LIST_OBJECTS[i].getColor() == 3) {
+            tempRedButton.style.backgroundColor = teamColors[2];
+        }
         tempRedButton.onclick = function () {
             document.getElementsByClassName("pick-list-yellow-button")[this.id].style.backgroundColor = "";
             document.getElementsByClassName("pick-list-green-button")[this.id].style.backgroundColor = "";
-            if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[this.id])].getColor() == 3) {
-                PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[this.id])].setColor(0);
+            if (PICK_LIST_OBJECTS[this.id].getColor() == 3) {
+                PICK_LIST_OBJECTS[this.id].setColor(0);
                 this.style.backgroundColor = "";
             } else {
-                PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[this.id])].setColor(3);
+                PICK_LIST_OBJECTS[this.id].setColor(3);
                 this.style.backgroundColor = teamColors[2];
+            }
+            let tempClickedTeam = document.getElementsByClassName("pick-list-team")[this.id];
+            if (PICK_LIST_OBJECTS[this.id].getColor() == 0) {
+                tempClickedTeam.style.backgroundColor = "#5b5b5b";
+            } else {
+                tempClickedTeam.style.backgroundColor = pickListColors[PICK_LIST_OBJECTS[this.id].getColor() - 1];
             }
         }
         toggleControlPanel.appendChild(tempRedButton);
@@ -1283,6 +1310,10 @@ function setUpPickList() {
             setRowHighlight(this.id, true);
         }
         tempTeam.appendChild(tempInfoButton);
+
+        if (PICK_LIST_OBJECTS[i].getColor() != 0) {
+            tempTeam.style.backgroundColor = pickListColors[PICK_LIST_OBJECTS[i].getColor() - 1];
+        }
 
         innerPickListContainer.appendChild(tempTeam);
     }
@@ -1405,10 +1436,10 @@ function getTeamData() {
                     setRowHighlight(parseInt(this.classList[1]), false);
                 });
             }
-            console.log(PICK_LIST_OBJECTS)
+            //console.log(PICK_LIST_OBJECTS)
             if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[i])].getColor() != 0) {
                 tempData.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[i])].getColor() - 1]}`, "important");
-                console.log(tempData.style.backgroundColor);
+                //console.log(tempData.style.backgroundColor);
             }
             tempData.id = i;
             rawTable.children[c].appendChild(tempData);
