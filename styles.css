@@ -298,10 +298,9 @@ h3 {
 
 #sync-pick-list-button {
     position: sticky;
-    height: 5vh;
     width: 20vh;
-    height: 10vh;
-    border: 0.75vh solid chocolate;
+    height: 8vh;
+    border: 0.5vh solid rgb(173, 100, 48);
     border-radius: 1vh;
     background-color: transparent;
     right: 2vh;
@@ -309,18 +308,18 @@ h3 {
     top: 0;
     font-weight: bold;
     float: right;
-    color: rgb(247, 125, 37);
+    color: rgb(173, 100, 48);
     max-width: 30vh;
     margin: 2vh;
     margin-right: 2vh;
-    font-size: 5vh;
+    font-size: 4vh;
     font-family: 'Poppins', sans-serif;
     transition: background-color 0.15s, color 0.15s;
 }
 
 #sync-pick-list-button:hover {
     cursor: pointer;
-    background-color: chocolate;
+    background-color: rgb(173, 100, 48);
     color: #2b2b2b;
 }
 
