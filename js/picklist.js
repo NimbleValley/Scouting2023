@@ -1,4 +1,4 @@
-const scriptPickListURL = "https://script.google.com/macros/s/AKfycbwvUpf9CMqOqlWLyW65qRk6K1_5qTTrpsgeF2cWbhIi_uwCWCS3qXcPmhs7zvnCM1XB/exec";
+const scriptPickListURL = "https://script.google.com/macros/s/AKfycbxpG_KDd0WtiQEjHKmSfUsTYCe1RvOYxp3wYv83hCpWYNRbk7F6WHLl2JoPgvcxQVqB/exec";
 const pickListSync = document.getElementById("sync-pick-list-button");
 const pickListForm = document.getElementById("pick-list-form");
 
@@ -19,14 +19,19 @@ const toFormData = (f => f(f))(h => f => f(x => h(h)(f)(x)))(f => fd => pk => d 
 
 pickListForm.addEventListener("submit",  e => {
     var formData = new FormData();
+    var indexes = [];
+    var numbers = [];
+    var colors = [];
+    for(var i = 0; i < PICK_LIST_OBJECTS.length; i ++) {
+        indexes[i] = PICK_LIST_OBJECTS[i].getIndex();
+        numbers[i] = PICK_LIST_OBJECTS[i].getTeam();
+        colors[i] = PICK_LIST_OBJECTS[i].getColor();
+    }
     
-    formData.append("Index", 1);
-    formData.append("Team Number", 930);
-    formData.append("Color", 1);
-
-    formData.append("Index", 2);
-    formData.append("Team Number", 3197);
-    formData.append("Color", 3);
+    formData.append("Index", indexes);
+    formData.append("Team Number", numbers);
+    formData.append("Color", colors);
+    
 
     //Object.keys(data).forEach(key => formData.append(key, data[key]));
     for (let key of formData.keys()) {

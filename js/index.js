@@ -83,8 +83,33 @@ pickListContainer.style.display = "none";
 new Sortable(innerPickListContainer, {
     animation: 150,
     ghostClass: 'sortable-ghost',
-    onUpdate: function (/**Event*/evt) {
-        console.log(evt);
+    onUpdate: function (event) {
+        console.log(event.oldIndex);
+        let oldObject = PICK_LIST_OBJECTS[event.oldIndex];
+        let oldKey = PICK_LIST_TEAM_KEY[event.oldIndex];
+        let green = document.getElementsByClassName("pick-list-green-button");
+        let yellow = document.getElementsByClassName("pick-list-yellow-button");
+        let red = document.getElementsByClassName("pick-list-red-button");
+        for(var i = 0; i < Math.abs(event.oldIndex - event.newIndex); i ++) {
+            if(event.oldIndex > event.newIndex) {
+                PICK_LIST_OBJECTS[event.oldIndex - i] = PICK_LIST_OBJECTS[event.oldIndex - i - 1];
+                PICK_LIST_TEAM_KEY[event.oldIndex - i] = PICK_LIST_TEAM_KEY[event.oldIndex - i - 1];
+                green[event.oldIndex - i].id = parseInt(green[event.oldIndex - i].id) + 1;
+                yellow[event.oldIndex - i].id = parseInt(yellow[event.oldIndex - i].id) + 1;
+                red[event.oldIndex - i].id = parseInt(red[event.oldIndex - i].id) + 1;
+            } else {
+                PICK_LIST_OBJECTS[event.oldIndex + i] = PICK_LIST_OBJECTS[event.oldIndex + i + 1];
+                PICK_LIST_TEAM_KEY[event.oldIndex + i] = PICK_LIST_TEAM_KEY[event.oldIndex + i + 1];
+                green[event.oldIndex + i].id = parseInt(green[event.oldIndex + i].id) - 1;
+                yellow[event.oldIndex + i].id = parseInt(yellow[event.oldIndex + i].id) - 1;
+                red[event.oldIndex + i].id = parseInt(red[event.oldIndex + i].id) - 1;
+            }
+        }
+        PICK_LIST_OBJECTS[event.newIndex] = oldObject;
+        PICK_LIST_TEAM_KEY[event.newIndex] = oldKey;
+        green[event.newIndex].id = event.newIndex;
+        yellow[event.newIndex].id = event.newIndex;
+        red[event.newIndex].id = event.newIndex;
     }
 });
 
@@ -131,12 +156,26 @@ const oprHeaders = ["Team", "CCWMS", "DPR", "OPR"];
 getData();
 
 function getPickList() {
+    rawTable.innerHTML = "<h5>Loading...</h5>"
     CSV.fetch({
         //url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNEBYTlOcDv1NuaCd5U-55q2czmUc-HgvNKnaRDxkkL9J39MD_ht2-6GKY4jX3bipv7dONBcUVCpU_/pub?gid=1955868836&single=true&output=csv'
         url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQBOgllZqto92BsubFi-w9Fx0t8M3Qycv_1MhTDZ_bgGzw7KOACWde-AbUF6ujgTG9oGt7ZvUlP9RAZ/pub?gid=0&single=true&output=csv'
     }
     ).done(function (dataset) {
-        PICK_LIST = dataset.records;
+        var tempIndex = [];
+        var tempNum = [];
+        var tempColor = [];
+        console.log(dataset);
+        if (dataset.records.length != 0) {
+            tempIndex = dataset.records[0][0].match(/\d+/g);
+            tempNum = dataset.records[0][1].match(/\d+/g);
+            tempColor = dataset.records[0][2].match(/\d+/g);
+        }
+        PICK_LIST = [];
+        for (var i = 0; i < tempIndex.length; i++) {
+            PICK_LIST[i] = new Array(tempIndex[i], tempNum[i], tempColor[i]);
+        }
+        console.log(PICK_LIST);
         PICK_LIST_OBJECTS = [];
         PICK_LIST_TEAM_KEY = [];
         for (var i = 0; i < PICK_LIST.length; i++) {
@@ -144,25 +183,23 @@ function getPickList() {
             PICK_LIST_TEAM_KEY.push(PICK_LIST[i][1]);
             PICK_LIST_ORDER.push(PICK_LIST[i][1]);
         }
-        if (PICK_LIST_OBJECTS.length != TEAMS.length) {
-            if (PICK_LIST_OBJECTS.length == 0) {
-
-            } else {
-                var pickListTeamsIncluded = [];
-                for (var p = 0; p < PICK_LIST_OBJECTS.length; p++) {
-                    pickListTeamsIncluded.push(PICK_LIST_OBJECTS[p].getTeam());
-                }
-                console.log(PICK_LIST_OBJECTS[i]);
-                for (var i = 0; i < TEAMS.length; i++) {
-                    if (!pickListTeamsIncluded.includes(TEAMS[i])) {
-                        PICK_LIST_OBJECTS.push(new PickListTeam(PICK_LIST_OBJECTS.length, TEAMS[i], 0));
-                        PICK_LIST_TEAM_KEY.push(TEAMS[i]);
-                        PICK_LIST_ORDER.push(TEAMS[i]);
-                    }
+        console.log(PICK_LIST_TEAM_KEY);
+        if (PICK_LIST_OBJECTS.length != TEAMS.length || PICK_LIST_OBJECTS.length == 0) {
+            var pickListTeamsIncluded = [];
+            console.log(TEAMS);
+            for (var p = 0; p < PICK_LIST_OBJECTS.length; p++) {
+                pickListTeamsIncluded.push(PICK_LIST_OBJECTS[p].getTeam());
+            }
+            for (var i = 0; i < TEAMS.length; i++) {
+                if (!pickListTeamsIncluded.includes(TEAMS[i])) {
+                    PICK_LIST_OBJECTS.push(new PickListTeam(PICK_LIST_OBJECTS.length, TEAMS[i], 0));
+                    PICK_LIST_TEAM_KEY.push(TEAMS[i]);
+                    PICK_LIST_ORDER.push(TEAMS[i]);
                 }
             }
         }
         console.log(PICK_LIST_ORDER);
+        resetRaw();
     });
 }
 
@@ -925,9 +962,9 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
                     temp.innerText = sortedRows[i][s];
                     temp.style.color = "white";
                     if (team) {
-                        console.log(TEAMS.indexOf(sortedRows[i][0]));
-                        if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[TEAMS.indexOf(sortedRows[i][0])])].getColor() != 0) {
-                            temp.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[TEAMS.indexOf(sortedRows[i][0])])].getColor() - 1]}`, "important");
+                        console.log(PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(sortedRows[i][0]))].color);
+                        if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(sortedRows[i][0]))].getColor() != 0) {
+                            temp.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(sortedRows[i][0]))].getColor() - 1]}`, "important");
                             //console.log(tempData.style.backgroundColor);
                         }
                     }
@@ -1244,6 +1281,7 @@ function setUpPickList() {
             } else {
                 tempClickedTeam.style.backgroundColor = pickListColors[PICK_LIST_OBJECTS[this.id].getColor() - 1];
             }
+            console.log(this.id);
         }
         toggleControlPanel.appendChild(tempGreemButton);
 
@@ -1436,9 +1474,9 @@ function getTeamData() {
                     setRowHighlight(parseInt(this.classList[1]), false);
                 });
             }
-            //console.log(PICK_LIST_OBJECTS)
-            if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[i])].getColor() != 0) {
-                tempData.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(TEAMS[i])].getColor() - 1]}`, "important");
+            console.log(PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))]);
+            if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))].getColor() != 0) {
+                tempData.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))].getColor() - 1]}`, "important");
                 //console.log(tempData.style.backgroundColor);
             }
             tempData.id = i;
