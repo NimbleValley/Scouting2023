@@ -70,7 +70,7 @@ class PickListTeam {
     }
 
     getTeam() {
-        return this.number;
+        return parseInt(this.number);
     }
 
     getColor() {

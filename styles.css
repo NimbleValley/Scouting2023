@@ -148,7 +148,7 @@ h3 {
 }
 
 .pick-list-team:hover {
-    background-color: #333333;
+    background-color: #333333 !important;
 }
 
 .sortable-ghost {
