@@ -360,7 +360,7 @@ h3 {
 #open-sidebar {
     background-color: #1a1919;
     width: 5vh;
-    height: 100vh;
+    height: calc(100vh - 1.5vh);
     left: 0vh;
     top: 0vh;
     margin-top: 0vh;
@@ -390,7 +390,7 @@ p {
     position: sticky;
     background-color: black;
     width: 30vh;
-    height: 100vh;
+    height: calc(100vh - 1.5vh);
     z-index: 100;
     display: flex;
     justify-content: flex-start;
@@ -400,6 +400,7 @@ p {
 
 #side-button-container {
     width: 25vh;
+    height: calc(100vh - 1.5vh);
 }
 
 .side-button {

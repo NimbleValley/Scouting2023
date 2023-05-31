@@ -160,7 +160,7 @@ const oprHeaders = ["Team", "CCWMS", "DPR", "OPR"];
 getData();
 
 function getPickList() {
-    rawTable.innerHTML = "<h5>Loading...</h5>"
+    rawTable.innerHTML = "<h5>Fetching Pick List...</h5>";
     CSV.fetch({
         //url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNEBYTlOcDv1NuaCd5U-55q2czmUc-HgvNKnaRDxkkL9J39MD_ht2-6GKY4jX3bipv7dONBcUVCpU_/pub?gid=1955868836&single=true&output=csv'
         url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQBOgllZqto92BsubFi-w9Fx0t8M3Qycv_1MhTDZ_bgGzw7KOACWde-AbUF6ujgTG9oGt7ZvUlP9RAZ/pub?gid=0&single=true&output=csv'
@@ -204,6 +204,14 @@ function getPickList() {
         }
         console.log(PICK_LIST_ORDER);
         resetRaw();
+    }).catch(error => {
+        console.log(error);
+        alert('Terrible Error :(.');
+        let montyWindow = window.open("", "Error Report");
+        montyWindow.document.body.innerHTML = `<h3>${error}</h3>`;
+        if(error == "TypeError: Failed to fetch") {
+            montyWindow.document.body.innerHTML = `<h3>Check Internet Connection: ${error}</h3>`;
+        }
     });
 }
 
@@ -213,11 +221,13 @@ function getData() {
     breakdownLines.style.display = "none";
     graphContainer.style.display = "none";
     pickListContainer.style.display = "none";
+    rawTable.innerHTML = "<h5>Fetching Spreadsheet...</h5>";
     CSV.fetch({
         //url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNEBYTlOcDv1NuaCd5U-55q2czmUc-HgvNKnaRDxkkL9J39MD_ht2-6GKY4jX3bipv7dONBcUVCpU_/pub?gid=1955868836&single=true&output=csv'
         url: urlInput.value
     }
     ).done(function (dataset) {
+        rawTable.innerHTML = "";
         //console.log(dataset.records);
         DATA = dataset;
         FIELDS = dataset.fields;
@@ -365,6 +375,14 @@ function getData() {
             }
         }
         getPickList();
+    }).catch(error => {
+        console.log(error);
+        alert('Terrible Error :(.');
+        let montyWindow = window.open("", "Error Report");
+        montyWindow.document.body.innerHTML = `<h3>${error}</h3>`;
+        if(error == "TypeError: Failed to fetch") {
+            montyWindow.document.body.innerHTML = `<h3>Check Internet Connection: ${error}</h3>`;
+        }
     });
 }
 
@@ -445,6 +463,10 @@ function resetRaw() {
             var temp = document.createElement("div");
             temp.className = "data-value";
             temp.id = i;
+            console.log(RECORDS[i][TEAM_INDEX])
+            if(PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() != 0) {
+                temp.style.color = teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() - 1];
+            }
             if (FIELDS[s].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
                 temp.id = i;
@@ -963,7 +985,7 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
                     }
                     temp.innerText = sortedRows[i][s];
                     temp.style.color = "white";
-                    if (team) {
+                    if (true) {
                         console.log(PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(sortedRows[i][0]))].color);
                         if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(sortedRows[i][0]))].getColor() != 0) {
                             temp.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(sortedRows[i][0]))].getColor() - 1]}`, "important");

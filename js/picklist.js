@@ -18,6 +18,9 @@ const toFormData = (f => f(f))(h => f => f(x => h(h)(f)(x)))(f => fd => pk => d 
   })(new FormData())()
 
 pickListForm.addEventListener("submit",  e => {
+    if(prompt("Password") != "team3197stovepiper") {
+        return;
+    }
     var formData = new FormData();
     var indexes = [];
     var numbers = [];
@@ -45,7 +48,13 @@ pickListForm.addEventListener("submit",  e => {
             alert('Success!', response);
         })
         .catch(error => {
-            alert('Terrible Error :(.', error.message);
+            console.log(error);
+            alert('Terrible Error :(.');
+            let montyWindow = window.open("", "Error Report");
+            montyWindow.document.body.innerHTML = `<h3>${error}</h3>`;
+            if(error == "TypeError: Failed to fetch") {
+                montyWindow.document.body.innerHTML = `<h3>Check Internet Connection: ${error}</h3>`;
+            }
         });
 });
 
