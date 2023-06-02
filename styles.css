@@ -195,7 +195,7 @@ h3 {
 .pick-list-control-panel {
     width: 4vh;
     height: 4vh;
-    background-color:#2b2b2b;
+    background-color: #2b2b2b;
     border-radius: 0.5vh;
     margin-left: auto;
     z-index: 10;
@@ -223,7 +223,7 @@ h3 {
     width: 15vh;
     display: flex;
     justify-content: space-around;
-    background-color:#1b1b1b;
+    background-color: #1b1b1b;
     border-radius: 1vh;
     align-items: center;
     z-index: 100;
@@ -662,6 +662,38 @@ h2 {
 
 #team-overall-select {
     width: 30vh;
+    height: 8vh;
+}
+
+h8 {
+    font-size: 5vh;
+    color: #1a1919;
+}
+
+#overall-grid {
+    display: grid;
+    grid-template-columns: 55vh 1fr;
+    grid-template-rows: 1fr 5fr;
+    grid-column-gap: 2vh;
+    grid-row-gap: 2vh;
+    margin-left: 34vh;
+    top: 0;
+    margin-top: -8vh;
+}
+
+#breakdown-data-container {
+    height: 100%;
+    display: flex;
+}
+
+.breakdown-data {
+    background-color: rosybrown;
+    width: 12vh;
+    margin-right: 1vh;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #breakdown-lines-container {
@@ -669,7 +701,6 @@ h2 {
     width: fit-content;
     height: 65vh;
     background-color: #171717;
-    margin-left: 34vh;
     justify-content: space-around;
     align-items: center;
     padding: 1vh;
