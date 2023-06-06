@@ -826,12 +826,16 @@ function setUpTeamOveralls() {
         breakdownLines.appendChild(tempContainer);
     }
 
-    var breakdownData = document.createElement("div");
+    let breakdownData = document.createElement("div");
     breakdownData.id = "breakdown-data-container";
+
+    let feedbackContainer = document.createElement("div");
+    feedbackContainer.id = "feedback-container";
     
     overallGrid.appendChild(temp);
     overallGrid.appendChild(breakdownData);
     overallGrid.appendChild(breakdownLines);
+    overallGrid.appendChild(feedbackContainer);
     document.body.appendChild(overallGrid);
 }
 
@@ -880,13 +884,53 @@ function openTeamOveralls() {
 
     let breakdownDataContainer = document.getElementById("breakdown-data-container");
     breakdownDataContainer.innerHTML = "";
-    for(var i = 0; i < TEAM_COLUMNS.length; i ++) {
-        let tempData = document.createElement("h8");
-        tempData.className = "breakdown-data";
-        tempData.innerText = "17";
+    for(var i = 1; i < TEAM_COLUMNS.length-1; i ++) {
+        let tempDataContainer = document.createElement("div");
+        tempDataContainer.className = "breakdown-data";
 
-        breakdownDataContainer.appendChild(tempData);
+        let tempData = document.createElement("h8");
+        tempData.innerText = TEAM_ROWS[TEAMS.indexOf(parseInt(document.getElementById("team-overall-select").value))][i];
+
+        let tempDataTitle = document.createElement("h9");
+        tempDataTitle.innerText = TEAM_FIELDS[i];
+
+        tempDataContainer.appendChild(tempDataTitle);
+        tempDataContainer.appendChild(tempData);
+        breakdownDataContainer.appendChild(tempDataContainer);
     }
+    let tempFeedbackContainer = document.getElementById("feedback-container");
+    tempFeedbackContainer.innerHTML = "";
+
+    let tempWarningContainer = document.createElement("div");
+    tempWarningContainer.id = "breakdown-warning-container";
+
+    let tempWarningTitle = document.createElement("p");
+    tempWarningTitle.className = "breakdown-warning-text";
+    tempWarningTitle.style.fontWeight = "bold";
+    tempWarningTitle.style.scale = "1.5";
+    tempWarningTitle.style.textDecoration = "underline";
+    tempWarningTitle.innerText = "Issues:";
+    tempWarningContainer.appendChild(tempWarningTitle);
+
+    let warningTypes = ["Flip/s", "Comm Issue/s", "Disabled", "Unintelligent", "Reckless"];
+    let compiledWarnings = [TEAMS_FLIPPED, TEAMS_COMMS, TEAMS_DISABLED, TEAMS_DUMB, TEAMS_RECKLESS];
+    for(var w = 0; w < warningTypes.length; w ++) {
+        let tempWarningText = document.createElement("p");
+        tempWarningText.className = "breakdown-warning-text";
+        tempWarningText.innerText = "0 " + warningTypes[w];
+        if(compiledWarnings[w].includes(parseInt(document.getElementById("team-overall-select").value))) {
+            let numOccurances = 0;
+            for(var t = 0; t < compiledWarnings[w].length; t ++) {
+                if(compiledWarnings[w][t] == parseInt(document.getElementById("team-overall-select").value)) {
+                    numOccurances ++;
+                }
+            }
+            tempWarningText.innerText = numOccurances + " " + warningTypes[w];
+        }
+        tempWarningContainer.appendChild(tempWarningText);
+    }
+
+    tempFeedbackContainer.appendChild(tempWarningContainer);
 }
 
 function getSortedIndex(colNum, team, records, columns) {
