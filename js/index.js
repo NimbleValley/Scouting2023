@@ -206,7 +206,7 @@ function getPickList() {
             }
         }
         console.log(PICK_LIST_ORDER);
-        openTeamOveralls();
+        //openTeamOveralls();
     }).catch(error => {
         console.log(error);
         alert('Terrible Error :(.');
