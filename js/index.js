@@ -864,7 +864,7 @@ function doGraph() {
 
         for(var i = 0; i < 5; i ++) {
             let tempBottom = document.createElement("h6");
-            tempBottom.innerText = ((i/4) * sortedTempRecords[sortedTempRecords.length-1] - sortedTempRecords[0]) + sortedTempRecords[0];
+            tempBottom.innerText = ((i/4) * (sortedTempRecords[sortedTempRecords.length-1] - sortedTempRecords[0])) + sortedTempRecords[0];
             bottomContainer.appendChild(tempBottom);
         }
 
