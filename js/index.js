@@ -207,7 +207,8 @@ function getPickList() {
         }
         console.log(PICK_LIST_ORDER);
         //openTeamOveralls();
-        resetRaw();
+        setUpTeamOveralls();
+        openTeamOveralls();
     }).catch(error => {
         console.log(error);
         alert('Terrible Error :(.');
@@ -713,6 +714,7 @@ function doGraph() {
             tempDot.style.left = 0;
             tempDot.style.top = 0;
             tempDot.style.scale = 0.5;
+            tempDot.innerHTML = `<p>${TEAMS[i]}</p>`
 
             var tempDotPopup = document.createElement("div");
             tempDotPopup.className = "dot-popup";
@@ -771,13 +773,13 @@ function doGraph() {
             var percentage = (TEAM_COLUMNS[graphColumn][i] - lower_bound) / (upper_bound - lower_bound);
             console.log(percentage);
             if (graphMode == 1) {
-                dots[i].style.top = `${(graphTickContainer.offsetHeight * ((parseInt(dots[i].id) + 0) / (dots.length - 1))) + (((i + 1) % 2) * 12) - (window.innerHeight * (1 / 100))}px`;
+                dots[i].style.top = `${(graphTickContainer.offsetHeight * ((parseInt(dots[i].id) + 0) / (dots.length - 1))) + (((i + 1) % 2) * 16) - (window.innerHeight * (1 / 100))}px`;
             } else {
                 var secondPercentage = (TEAM_COLUMNS[secondGraphColumn][i] - second_lower_bound) / (second_upper_bound - second_lower_bound);
-                dots[i].style.top = `${(graphTickContainer.offsetHeight * secondPercentage) + (((i + 1) % 2) * 12) - (window.innerHeight * (1 / 100))}px`;
+                dots[i].style.top = `${(graphTickContainer.offsetHeight * secondPercentage) - (((i + 1) % 3) * 16) - (window.innerHeight * (1 / 100))}px`;
             }
             // I'm so clever I thought of the solution on the walk home from school with mod
-            dots[i].style.left = `${(graphTickContainer.offsetWidth * percentage) + ((i % 2) * 12) - (window.innerHeight * (1 / 100))}px`;
+            dots[i].style.left = `${(graphTickContainer.offsetWidth * percentage) + ((i % 4) * 16) - (window.innerHeight * (1 / 100))}px`;
             dots[i].style.scale = 1;
         }
 
@@ -813,6 +815,8 @@ function doGraph() {
         }
         console.log(team_record_values);
 
+        let sortedTempRecords = JSON.parse(JSON.stringify(team_record_values)).sort(function (a, b) { return a - b });;
+
         // More dots
         for (var i = 0; i < team_record_values.length; i++) {
             /*var tempGraphLine = document.createElement("div");
@@ -846,6 +850,9 @@ function doGraph() {
             graphContainer.appendChild(bottomContainer);
 
             tempDot.style.top = `${(document.getElementById("graph-tick-container").offsetHeight * ((i) / (team_record_values.length-1))) - (window.innerHeight * (1 / 100))}px`;
+            tempDot.style.left = document.getElementById("graph-tick-container").offsetWidth * ((team_record_values[i] - sortedTempRecords[0])/(sortedTempRecords[sortedTempRecords.length-1] - sortedTempRecords[0])) + "px";
+
+            console.log((sortedTempRecords))
 
             tickContainer.appendChild(tempDot);
             //graphContainer.appendChild(tempGraphLine);
@@ -855,8 +862,16 @@ function doGraph() {
             leftContainer.appendChild(tempLeft);
         }
 
+        for(var i = 0; i < 5; i ++) {
+            let tempBottom = document.createElement("h6");
+            tempBottom.innerText = ((i/4) * sortedTempRecords[sortedTempRecords.length-1] - sortedTempRecords[0]) + sortedTempRecords[0];
+            bottomContainer.appendChild(tempBottom);
+        }
 
+        tempAverageVertical.style.left = `${(document.getElementById("graph-tick-container").offsetWidth * ((TEAM_ROWS[TEAMS.indexOf(parseInt(document.getElementById("graph-category-select-team").value))][graphColumn] - sortedTempRecords[0]) / (sortedTempRecords[sortedTempRecords.length-1] - sortedTempRecords[0]))) - (window.innerHeight * (1 / 100))}px`;
+        document.getElementById("graph-tick-container").appendChild(tempAverageVertical);
 
+        localStorage.setItem("graph-team", document.getElementById("graph-category-select-team").value);
 
     }
 
@@ -880,6 +895,7 @@ function setUpTeamOveralls() {
     var temp = document.createElement("select");
     temp.id = "team-overall-select";
     temp.addEventListener("input", openTeamOveralls);
+
     for (var i = 0; i < TEAMS.length; i++) {
         var op = document.createElement("option");
         op.text = TEAMS[i];
@@ -1020,6 +1036,29 @@ function openTeamOveralls() {
     }
 
     tempFeedbackContainer.appendChild(tempWarningContainer);
+    
+    let tempGridContainer = document.createElement("div");
+    tempGridContainer.id = "breakdown-grid-container";
+
+    let tempGridHighContainer = document.createElement("div");
+    tempGridHighContainer.className = "breakdown-grid-row-container";
+
+    let tempGridMidContainer = document.createElement("div");
+    tempGridMidContainer.className = "breakdown-grid-row-container";
+
+    let tempGridLowContainer = document.createElement("div");
+    tempGridLowContainer.className = "breakdown-grid-row-container";
+
+    for(var i = 0; i < 5; i ++) {
+        let tempCube = document.createElement("div");
+        tempCube.className = "breakdown-grid-cone";
+        tempGridHighContainer.appendChild(tempCube);
+    }
+    
+    tempGridContainer.appendChild(tempGridHighContainer);
+    tempGridContainer.appendChild(tempGridMidContainer);
+    tempGridContainer.appendChild(tempGridLowContainer);
+    tempFeedbackContainer.appendChild(tempGridContainer);
 }
 
 function getSortedIndex(colNum, team, records, columns) {
