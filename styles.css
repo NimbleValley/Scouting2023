@@ -12,6 +12,10 @@ body {
     --card-color: rgb(23, 23, 23);
 }
 
+::selection {
+    background: rgb(194, 110, 0);
+}
+
 /* RAW TABLE*/
 
 #data-table {
@@ -83,7 +87,7 @@ body {
     border-radius: 0.5vw;
     font-weight: bolder;
     color: white;
-    transition: background-color 0.25s, height 0.15s;
+    transition: background-color 0.25s, height 0.15s, text-shadow 0.15s;
     background-color: #4d4e4e00;
     z-index: 10;
     height: fit-content;
@@ -92,6 +96,7 @@ body {
 .data-value:hover {
     cursor: pointer;
     background-color: #333333 !important;
+    text-shadow: #171717 0px 0px 1vh;
 }
 
 h3 {
@@ -677,7 +682,6 @@ h9 {
 
 #overall-grid {
     position: absolute;
-    display: grid;
     grid-template-columns: 55vh 1fr;
     grid-template-rows: 1fr 5fr;
     grid-column-gap: 2vh;
@@ -833,6 +837,53 @@ h9 {
     border-right: 2vh solid transparent;
     border-bottom: 6vh solid rgb(255, 217, 0);
     border-radius: 1vh;
+}
+
+#breakdown-auto-container {
+    display: flex;
+    flex-direction: column;
+    width: 64vh;
+    height: 36vh;
+    border-radius: 0.5vh;
+    background-color: #171717;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#breakdown-grid-auto-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#breakdown-comment-container {
+    flex-direction: column;
+    width: 64vh;
+    height: 66vh;
+    border-radius: 0.5vh;
+    background-color: #171717;
+    justify-content: space-evenly;
+    overflow: scroll;
+    color: white;
+    padding: 2vh;
+    font-size: 3.5vh;
+    text-align: center;
+    font-weight: bold;
+}
+
+.breakdown-comment {
+    color: white;
+    padding: 2vh;
+    font-size: 2.5vh;
+    text-align: left;
+    text-decoration: none;
+    font-weight: normal;
+}
+
+#auto-pie-chart {
+    height: 30vh;
+    width: 30vh;
+    background-color: orange;
 }
 
 @keyframes fade-in {
