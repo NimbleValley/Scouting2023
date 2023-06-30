@@ -881,9 +881,8 @@ h9 {
 }
 
 #auto-pie-chart {
-    height: 30vh;
-    width: 30vh;
     background-color: orange;
+    position: absolute;
 }
 
 @keyframes fade-in {

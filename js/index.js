@@ -1275,7 +1275,7 @@ function openTeamOveralls() {
             //console.log('y');
             let tempComment = document.createElement("h1");
             tempComment.className = "breakdown-comment";
-            tempComment.innerText = RECORDS[i][27];
+            tempComment.innerText = RECORDS[i][29];
             tempCommentContainer.appendChild(tempComment);
             //commentText = commentText + "\n" + "\n" + RECORDS[i][27];
         }
@@ -1287,11 +1287,24 @@ function openTeamOveralls() {
     tempGridContainer.appendChild(tempGridLowContainer);
     tempFeedbackContainer.appendChild(tempGridAutoContainer);
     tempFeedbackContainer.appendChild(tempCommentContainer);
+
+    let team_auto_types = [];
+    let team_auto_success = [];
+
+    // Tele loop
+    for (var g = 0; g < RECORDS.length; g++) {
+        if (RECORDS[g][TEAM_INDEX] == document.getElementById("team-overall-select").value) {
+            team_auto_types.push(RECORDS[g][27]);
+            team_auto_success.push(RECORDS[g][28]);
+        }
+    }
+
+    runAutoPie(team_auto_types, team_auto_success);
 }
 
 function getSortedIndex(colNum, team, records, columns) {
     var sortedColumn = JSON.parse(JSON.stringify(columns));
-    //console.log(sortedColumn);
+    //console.log(sortedColumn[colNum]);
     sortedColumn = sortedColumn[colNum].sort(function (a, b) { return a - b });
     //console.log(sortedColumn);
 
