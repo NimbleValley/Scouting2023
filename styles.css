@@ -776,13 +776,14 @@ h9 {
 
 .breakdown-popup {
     position: absolute;
-    width: 10vh;
+    width: fit-content;
     font-size: 2vh;
     padding: 0vh 0.5vh 0vh 0.5vh;
     border: #5c5c5c solid 0.35vh;
     background-color: #a3a3a3;
     z-index: 1000000;
     display: none;
+    white-space: nowrap;
     margin-left: 13vh;
 }
 
@@ -841,7 +842,6 @@ h9 {
 
 #breakdown-auto-container {
     display: flex;
-    flex-direction: column;
     width: 64vh;
     height: 36vh;
     border-radius: 0.5vh;
@@ -866,7 +866,7 @@ h9 {
     overflow: scroll;
     color: white;
     padding: 2vh;
-    font-size: 3.5vh;
+    font-size: 3.75vh;
     text-align: center;
     font-weight: bold;
 }
@@ -880,9 +880,17 @@ h9 {
     font-weight: normal;
 }
 
-#auto-pie-chart {
-    background-color: orange;
-    position: absolute;
+#breakdown-auto-values-container {
+    height: 100%;
+    width: 30vh;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column-reverse;
+}
+
+.auto-breakdown-description {
+    color: white;
+    font-size: 2.5vh;
 }
 
 @keyframes fade-in {

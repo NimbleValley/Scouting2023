@@ -208,15 +208,14 @@ function getPickList() {
             for (var i = 0; i < TEAMS.length; i++) {
                 if (!pickListTeamsIncluded.includes(TEAMS[i])) {
                     PICK_LIST_OBJECTS.push(new PickListTeam(PICK_LIST_OBJECTS.length, TEAMS[i], 0));
-                    PICK_LIST_TEAM_KEY.push(TEAMS[i]);
-                    PICK_LIST_ORDER.push(TEAMS[i]);
+                    PICK_LIST_TEAM_KEY.push(String(TEAMS[i]));
+                    PICK_LIST_ORDER.push(String(TEAMS[i]));
                 }
             }
         }
-        console.log(PICK_LIST_ORDER);
+        console.log(PICK_LIST_TEAM_KEY);
         //openTeamOveralls();
-        setUpTeamOveralls();
-        openTeamOveralls();
+        resetRaw();
     }).catch(error => {
         console.log(error);
         alert('Terrible Error :(.');
@@ -295,11 +294,11 @@ function getData() {
         }
 
         for (var i = 0; i < RECORDS.length; i++) {
-            RECORDS[i].push(RECORDS[i][7] + RECORDS[i][8] + RECORDS[i][9] + RECORDS[i][15] + RECORDS[i][16] + RECORDS[i][17]);
+            RECORDS[i].push(RECORDS[i][7] + RECORDS[i][8] + RECORDS[i][9] + RECORDS[i][16] + RECORDS[i][17] + RECORDS[i][18]);
         }
 
         for (var i = 0; i < RECORDS.length; i++) {
-            RECORDS[i].push((RECORDS[i][7] * 6) + (RECORDS[i][8] * 4) + (RECORDS[i][9] * 3) + (RECORDS[i][15] * 5) + (RECORDS[i][16] * 3) + (RECORDS[i][17] * 2));
+            RECORDS[i].push((RECORDS[i][7] * 6) + (RECORDS[i][8] * 4) + (RECORDS[i][9] * 3) + (RECORDS[i][16] * 5) + (RECORDS[i][17] * 3) + (RECORDS[i][18] * 2));
         }
 
         for (var i = 0; i < RECORDS.length; i++) {
@@ -477,9 +476,13 @@ function resetRaw() {
             var temp = document.createElement("div");
             temp.className = "data-value";
             temp.id = i;
-            console.log(RECORDS[i][TEAM_INDEX])
-            if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() != 0) {
-                temp.style.color = teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() - 1];
+            console.log(RECORDS[i][TEAM_INDEX]);
+            if (PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX])) != -1) {
+                if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() != 0) {
+                    temp.style.color = teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() - 1];
+                }
+            } else {
+               alert("Team not found in pick list :(");
             }
             if (FIELDS[s].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
@@ -784,10 +787,10 @@ function doGraph() {
                 dots[i].style.top = `${(graphTickContainer.offsetHeight * ((parseInt(dots[i].id) + 0) / (dots.length - 1))) + (((i + 1) % 2) * 16) - (window.innerHeight * (1 / 100))}px`;
             } else {
                 var secondPercentage = (TEAM_COLUMNS[secondGraphColumn][i] - second_lower_bound) / (second_upper_bound - second_lower_bound);
-                dots[i].style.top = `${(graphTickContainer.offsetHeight * secondPercentage) - (((i + 1) % 3) * 16) - (window.innerHeight * (1 / 100))}px`;
+                dots[i].style.top = `${(graphTickContainer.offsetHeight * secondPercentage) + (((i + 1) % 3) * 12) - (window.innerHeight * (1 / 100))}px`;
             }
             // I'm so clever I thought of the solution on the walk home from school with mod
-            dots[i].style.left = `${(graphTickContainer.offsetWidth * percentage) + ((i % 4) * 16) - (window.innerHeight * (1 / 100))}px`;
+            dots[i].style.left = `${(graphTickContainer.offsetWidth * percentage) - ((i % 4) * 4) - (window.innerHeight * (1 / 100))}px`;
             dots[i].style.scale = 1;
         }
 
@@ -1179,9 +1182,9 @@ function openTeamOveralls() {
     for (var i = 0; i < numHighCubes; i++) {
         let tempGP = document.createElement("div");
         tempGP.className = "breakdown-grid-cube";
-        if(i + 1 >= numHighCubes) {
-            if(i + 1 > numHighCubes) {
-                tempGP.style.scale = `${(numHighCubes * 100.0 % 100)/100.0} 1`;
+        if (i + 1 >= numHighCubes) {
+            if (i + 1 > numHighCubes) {
+                tempGP.style.scale = `${(numHighCubes * 100.0 % 100) / 100.0} 1`;
             }
         }
         tempGridHighContainer.appendChild(tempGP);
@@ -1190,23 +1193,23 @@ function openTeamOveralls() {
     for (var i = 0; i < numHighCones; i++) {
         let tempGP = document.createElement("div");
         tempGP.className = "breakdown-grid-cone";
-        if(i + 1 >= numHighCones) {
-            if(i + 1 > numHighCones) {
-                tempGP.style.scale = `${(numHighCones * 100.0 % 100)/100.0} 1`;
+        if (i + 1 >= numHighCones) {
+            if (i + 1 > numHighCones) {
+                tempGP.style.scale = `${(numHighCones * 100.0 % 100) / 100.0} 1`;
             }
         }
         tempGridHighContainer.appendChild(tempGP);
     }
     let tempHighText = document.createElement("h8");
-    tempHighText.innerHTML = `<span style="color: rgb(133, 85, 255)">${Math.round(numHighCubes * 100)/100}</span>, <span style="color: rgb(255, 217, 0)">${Math.round(numHighCones * 100) / 100}</span>`;
+    tempHighText.innerHTML = `<span style="color: rgb(133, 85, 255)">${Math.round(numHighCubes * 100) / 100}</span>, <span style="color: rgb(255, 217, 0)">${Math.round(numHighCones * 100) / 100}</span>`;
     tempGridHighContainer.appendChild(tempHighText);
 
     for (var i = 0; i < numMidCubes; i++) {
         let tempGP = document.createElement("div");
         tempGP.className = "breakdown-grid-cube";
-        if(i + 1 >= numMidCubes) {
-            if(i + 1 > numMidCubes) {
-                tempGP.style.scale = `${(numMidCubes * 100.0 % 100)/100.0} 1`;
+        if (i + 1 >= numMidCubes) {
+            if (i + 1 > numMidCubes) {
+                tempGP.style.scale = `${(numMidCubes * 100.0 % 100) / 100.0} 1`;
             }
         }
         tempGridMidContainer.appendChild(tempGP);
@@ -1215,24 +1218,24 @@ function openTeamOveralls() {
     for (var i = 0; i < numMidCones; i++) {
         let tempGP = document.createElement("div");
         tempGP.className = "breakdown-grid-cone";
-        if(i + 1 >= numMidCones) {
-            if(i + 1 > numMidCones) {
-                tempGP.style.scale = `${(numMidCones * 100.0 % 100)/100.0} 1`;
+        if (i + 1 >= numMidCones) {
+            if (i + 1 > numMidCones) {
+                tempGP.style.scale = `${(numMidCones * 100.0 % 100) / 100.0} 1`;
             }
         }
         tempGridMidContainer.appendChild(tempGP);
     }
 
     let tempMidText = document.createElement("h8");
-    tempMidText.innerHTML = `<span><span style="color: rgb(133, 85, 255)">${Math.round(numMidCubes * 100)/100}</span>, <span style="color: rgb(255, 217, 0)">${Math.round(numMidCones * 100)/100}</span></span>`;
+    tempMidText.innerHTML = `<span><span style="color: rgb(133, 85, 255)">${Math.round(numMidCubes * 100) / 100}</span>, <span style="color: rgb(255, 217, 0)">${Math.round(numMidCones * 100) / 100}</span></span>`;
     tempGridMidContainer.appendChild(tempMidText);
 
     for (var i = 0; i < numLowCubes; i++) {
         let tempGP = document.createElement("div");
         tempGP.className = "breakdown-grid-cube";
-        if(i + 1 >= numLowCubes) {
-            if(i + 1 > numLowCubes) {
-                tempGP.style.scale = `${(numLowCubes * 100.0 % 100)/100.0} 1`;
+        if (i + 1 >= numLowCubes) {
+            if (i + 1 > numLowCubes) {
+                tempGP.style.scale = `${(numLowCubes * 100.0 % 100) / 100.0} 1`;
             }
         }
         tempGridLowContainer.appendChild(tempGP);
@@ -1241,22 +1244,22 @@ function openTeamOveralls() {
     for (var i = 0; i < numLowCones; i++) {
         let tempGP = document.createElement("div");
         tempGP.className = "breakdown-grid-cone";
-        if(i + 1 >= numLowCones) {
-            if(i + 1 > numLowCones) {
-                tempGP.style.scale = `${(numLowCones * 100.0 % 100)/100.0} 1`;
+        if (i + 1 >= numLowCones) {
+            if (i + 1 > numLowCones) {
+                tempGP.style.scale = `${(numLowCones * 100.0 % 100) / 100.0} 1`;
             }
         }
         tempGridLowContainer.appendChild(tempGP);
     }
 
     let tempLowText = document.createElement("h8");
-    tempLowText.innerHTML = `<span style="color: rgb(133, 85, 255)">${Math.round(numLowCubes * 100)/100}</span>, <span style="color: rgb(255, 217, 0)">${Math.round(numLowCones * 100)/100}</span>`;
+    tempLowText.innerHTML = `<span style="color: rgb(133, 85, 255)">${Math.round(numLowCubes * 100) / 100}</span>, <span style="color: rgb(255, 217, 0)">${Math.round(numLowCones * 100) / 100}</span>`;
     tempGridLowContainer.appendChild(tempLowText);
 
     let tempGridAutoContainer = document.createElement("div");
     tempGridAutoContainer.id = "breakdown-grid-auto-container";
     tempGridAutoContainer.appendChild(tempGridContainer);
-    
+
     let tempAutoContainer = document.createElement("div");
     tempAutoContainer.id = "breakdown-auto-container";
     tempGridAutoContainer.appendChild(tempAutoContainer);
@@ -1270,12 +1273,12 @@ function openTeamOveralls() {
     tempCommentContainer.innerHTML = "<span style='text-decoration: underline'>Comments:</span>";
 
     //let commentText = "Comments: ";
-    for(var i = 0; i < RECORDS.length; i ++) {
-        if(RECORDS[i][TEAM_INDEX] == parseInt(document.getElementById("team-overall-select").value)) {
+    for (var i = 0; i < RECORDS.length; i++) {
+        if (RECORDS[i][TEAM_INDEX] == parseInt(document.getElementById("team-overall-select").value)) {
             //console.log('y');
             let tempComment = document.createElement("h1");
             tempComment.className = "breakdown-comment";
-            tempComment.innerText = RECORDS[i][29];
+            tempComment.innerText = RECORDS[i][28];
             tempCommentContainer.appendChild(tempComment);
             //commentText = commentText + "\n" + "\n" + RECORDS[i][27];
         }
@@ -1294,8 +1297,26 @@ function openTeamOveralls() {
     // Tele loop
     for (var g = 0; g < RECORDS.length; g++) {
         if (RECORDS[g][TEAM_INDEX] == document.getElementById("team-overall-select").value) {
-            team_auto_types.push(RECORDS[g][27]);
-            team_auto_success.push(RECORDS[g][28]);
+            let tempAuto = "A";
+            // CHANGE
+            let autoGP = parseInt(RECORDS[g][7]) + parseInt(RECORDS[g][8]) + parseInt(RECORDS[g][9]);
+            if (autoGP > 0) {
+                tempAuto += autoGP;
+                tempAuto += "p";
+            }
+            if (RECORDS[g][11] == "Yes") {
+                tempAuto += "C";
+            }
+            if (RECORDS[g][10] == "Yes" || autoGP > 1) {
+                tempAuto += "M";
+            }
+            team_auto_types.push(tempAuto);
+            if (RECORDS[g][15] == "Yes") {
+                team_auto_success.push(1);
+            } else {
+                team_auto_success.push(0);
+            }
+            console.log(tempAuto);
         }
     }
 
@@ -1954,9 +1975,11 @@ function getTeamData() {
                 });
             }
             //console.log(PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))]);
-            if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))].getColor() != 0) {
-                tempData.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))].getColor() - 1]}`, "important");
-                //console.log(tempData.style.backgroundColor);
+            if (PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i])) != -1) {
+                if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))].getColor() != 0) {
+                    tempData.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))].getColor() - 1]}`, "important");
+                    //console.log(tempData.style.backgroundColor);
+                }
             }
             tempData.id = i;
             rawTable.children[c].appendChild(tempData);
