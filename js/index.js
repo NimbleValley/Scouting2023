@@ -233,6 +233,7 @@ function getData() {
     breakdownLines.style.display = "none";
     graphContainer.style.display = "none";
     pickListContainer.style.display = "none";
+    overallGrid.style.display = "none";
     rawTable.innerHTML = "<h5>Fetching Spreadsheet...</h5>";
     CSV.fetch({
         //url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNEBYTlOcDv1NuaCd5U-55q2czmUc-HgvNKnaRDxkkL9J39MD_ht2-6GKY4jX3bipv7dONBcUVCpU_/pub?gid=1955868836&single=true&output=csv'
@@ -482,7 +483,7 @@ function resetRaw() {
                     temp.style.color = teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() - 1];
                 }
             } else {
-               alert("Team not found in pick list :(");
+                alert("Team not found in pick list :(");
             }
             if (FIELDS[s].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
@@ -560,6 +561,192 @@ function hideGrid() {
     frcGrid.style.display = "none";
     // The impossible sticky strikes again :(
     window.scrollTo(previousGridScrollX, previousGridScrollY);
+}
+
+function setUpCompare() {
+    getTeamData();
+
+    rawTable.innerHTML = "";
+    graphContainer.style.display = "none";
+    pickListContainer.style.display = "none";
+    overallGrid.style.display = "none";
+
+    let compareContainer = document.createElement("div");
+    compareContainer.id = "compare-container";
+
+    let compareHeaderContainer = document.createElement("div");
+    compareHeaderContainer.id = "compare-header-container";
+
+    let teamSelects = [];
+    for (var i = 0; i < 2; i++) {
+        let tempTeamSelect = document.createElement("select");
+        tempTeamSelect.className = "compare-team-select";
+        for (var t = 0; t < TEAMS.length; t++) {
+            let tempOption = document.createElement("option");
+            tempOption.value = String(TEAMS[t]);
+            tempOption.text = TEAMS[t];
+            tempTeamSelect.appendChild(tempOption);
+
+        }
+        if (localStorage.getItem(`compare-team-${i}`) != null && localStorage.getItem(`compare-team-${i}`) != "") {
+            tempTeamSelect.value = localStorage.getItem(`compare-team-${i}`);
+        }
+        teamSelects.push(tempTeamSelect);
+        tempTeamSelect.addEventListener("change", function () { doCompare(teamSelects, statContainers) });
+
+        compareHeaderContainer.appendChild(tempTeamSelect)
+    }
+
+    let compareDescriptionContainer = document.createElement("div");
+    compareDescriptionContainer.innerHTML = `<p style="font-weight: bold">Categories</p>`;
+    compareDescriptionContainer.id = "compare-description-container";
+    compareHeaderContainer.insertBefore(compareDescriptionContainer, compareHeaderContainer.childNodes[1]);
+
+    let statContainers = [];
+    for (var i = 0; i < TEAM_FIELDS.length - 1; i++) {
+        let tempStat = document.createElement("div");
+        tempStat.className = "stat-compare-container";
+
+        for (var t = 0; t < 2; t++) {
+            let tempStatNumber = document.createElement("p");
+            tempStatNumber.className = "compare-stat-number";
+            tempStatNumber.innerText = "?";
+            tempStat.appendChild(tempStatNumber);
+        }
+
+        let tempLineContainer = document.createElement("div");
+        tempLineContainer.className = "compare-line-container";
+
+        tempStatName = document.createElement("p");
+        tempStatName.className = "compare-stat-description";
+        tempStatName.innerText = TEAM_FIELDS[i+1];
+        tempLineContainer.appendChild(tempStatName);
+
+        tempStat.insertBefore(tempLineContainer, tempStat.childNodes[1]);
+
+        for (var l = 0; l < 2; l++) {
+            let tempInnerLine = document.createElement("div");
+            tempInnerLine.className = "compare-inner-line";
+            tempLineContainer.appendChild(tempInnerLine);
+        }
+
+        compareContainer.appendChild(tempStat);
+        statContainers.push(tempStat);
+    }
+
+    compareContainer.appendChild(compareHeaderContainer);
+    rawTable.appendChild(compareContainer);
+
+    doCompare(teamSelects, statContainers);
+}
+
+function doCompare(teamSelects, statContainers) {
+    let teamIndices = [];
+
+    for (var i = 0; i < teamSelects.length; i++) {
+        localStorage.setItem(`compare-team-${i}`, teamSelects[i].value);
+        console.log(localStorage.getItem(`compare-team-${i}`));
+        teamIndices.push(TEAMS.indexOf(parseInt(teamSelects[i].value)));
+    }
+
+    console.log(teamIndices);
+
+    for (var i = 0; i < statContainers.length; i++) {
+        let teamStats = [];
+
+        let tempNumbers = statContainers[i].getElementsByClassName("compare-stat-number");
+
+        for (var t = 0; t < tempNumbers.length; t++) {
+            tempNumbers[t].innerText = TEAM_COLUMNS[i + 1][teamIndices[t]];
+
+            if (TEAM_COLUMNS[i + 1][teamIndices[t]] == 0) {
+                teamStats.push(0.1);
+            } else {
+                teamStats.push(TEAM_COLUMNS[i + 1][teamIndices[t]]);
+            }
+        }
+
+        for (var l = 0; l < 2; l++) {
+            let tempLine = statContainers[i].getElementsByClassName("compare-inner-line")[l];
+            let minStat = JSON.parse(JSON.stringify(teamStats)).sort(function (a, b) { return b - a })[1];
+            let width = (teamStats[l] / minStat) * 50;
+            if (width >= 95) {
+                width = 95;
+            }
+            if (width > 50) {
+                tempLine.style.zIndex = 10;
+                tempNumbers[l].style.color = "lime";
+                tempNumbers[l].style.fontWeight = "bold";
+                tempNumbers[l].style.textShadow = "lime 0px 0px 0.75vh";
+                tempLine.classList.add(`compare-pulse-${l}`);
+            } else {
+                tempLine.style.zIndex = 0;
+                tempNumbers[l].style.color = "white";
+                tempNumbers[l].style.fontWeight = "normal";
+                tempNumbers[l].style.textShadow = "none";
+                tempLine.classList = "compare-inner-line";
+            } 
+            if(teamStats[0] == teamStats[1]) {
+                console.log(width);
+                tempLine.style.zIndex = 0;
+                tempNumbers[l].style.color = "#3d8eff";
+                tempNumbers[l].style.fontWeight = "bold";
+                tempNumbers[l].style.textShadow = "#006aff 0px 0px 0.75vh";
+            }
+            tempLine.style.width = `${width}%`;
+
+            if (l == 1) {
+                tempLine.style.right = 0;
+                tempLine.style.backgroundColor = "#ffc400";
+            }
+        }
+    }
+}
+
+function setUpMatches() {
+    rawTable.innerHTML = "";
+    graphContainer.style.display = "none";
+    pickListContainer.style.display = "none";
+    overallGrid.style.display = "none";
+
+    let matchSelect = document.createElement("select");
+
+    let matches = [];
+    matchSelect.id = "match-select";
+    matchSelect.addEventListener("change", doMatch);
+
+    for (var i = 0; i < RECORDS.length; i++) {
+        if (!matches.includes(RECORDS[i][2])) {
+            matches.push(parseInt(RECORDS[i][2]));
+        }
+    }
+
+    matches.sort(function (a, b) { return a - b });
+
+    for (var i = 0; i < matches.length; i++) {
+        let tempOption = document.createElement("option");
+        tempOption.value = String(matches[i]);
+        tempOption.text = matches[i];
+        matchSelect.appendChild(tempOption);
+    }
+
+    if (localStorage.getItem("match-number") != null) {
+        matchSelect.value = localStorage.getItem("match-number");
+    }
+
+    let field = document.createElement("div");
+    field.id = "match-field";
+
+    rawTable.appendChild(matchSelect);
+    rawTable.appendChild(field);
+
+    doMatch();
+}
+
+function doMatch() {
+    let matchSelect = document.getElementById("match-select");
+
+    localStorage.setItem("match-number", matchSelect.value);
 }
 
 function setUpGraph() {
@@ -784,13 +971,13 @@ function doGraph() {
             var percentage = (TEAM_COLUMNS[graphColumn][i] - lower_bound) / (upper_bound - lower_bound);
             console.log(percentage);
             if (graphMode == 1) {
-                dots[i].style.top = `${(graphTickContainer.offsetHeight * ((parseInt(dots[i].id) + 0) / (dots.length - 1))) + (((i + 1) % 2) * 16) - (window.innerHeight * (1 / 100))}px`;
+                dots[i].style.top = `${(graphTickContainer.offsetHeight * ((parseInt(dots[i].id) + 0) / (dots.length - 1))) + (((i + 1) % 2) * 0) - (window.innerHeight * (1 / 100))}px`;
             } else {
                 var secondPercentage = (TEAM_COLUMNS[secondGraphColumn][i] - second_lower_bound) / (second_upper_bound - second_lower_bound);
-                dots[i].style.top = `${(graphTickContainer.offsetHeight * secondPercentage) + (((i + 1) % 3) * 12) - (window.innerHeight * (1 / 100))}px`;
+                dots[i].style.top = `${(graphTickContainer.offsetHeight * secondPercentage) + (((i + 1) % 3) * 0) - (window.innerHeight * (1 / 100))}px`;
             }
             // I'm so clever I thought of the solution on the walk home from school with mod
-            dots[i].style.left = `${(graphTickContainer.offsetWidth * percentage) - ((i % 4) * 4) - (window.innerHeight * (1 / 100))}px`;
+            dots[i].style.left = `${(graphTickContainer.offsetWidth * percentage) - ((i % 4) * 0) - (window.innerHeight * (1 / 100))}px`;
             dots[i].style.scale = 1;
         }
 
