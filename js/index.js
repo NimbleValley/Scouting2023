@@ -685,7 +685,8 @@ function doCompare(teamSelects, statContainers) {
             }
             if (width > 50) {
                 tempLine.style.zIndex = 10;
-                tempNumbers[l].style.backgroundColor = "limegreen";
+                tempNumbers[l].style.backgroundColor = `rgba(50, 205, 50, ${(width-50) / 50})`;
+                tempNumbers[l].style.border = "solid 0.5vh limegreen";
                 tempNumbers[l].style.fontWeight = "bold";
                 tempNumbers[l].style.textShadow = "lime 0px 0px 0.75vh";
                 //tempLine.classList.add(`compare-pulse-${l}`);
@@ -695,6 +696,7 @@ function doCompare(teamSelects, statContainers) {
                 tempNumbers[l].style.fontWeight = "normal";
                 tempNumbers[l].style.textShadow = "none";
                 tempLine.classList = "compare-inner-line";
+                tempNumbers[l].style.border = "solid 0.5vh transparent";
             } 
             if(teamStats[0] == teamStats[1]) {
                 console.log(width);
@@ -702,6 +704,7 @@ function doCompare(teamSelects, statContainers) {
                 tempNumbers[l].style.backgroundColor = "#3d8eff";
                 tempNumbers[l].style.fontWeight = "bold";
                 tempNumbers[l].style.textShadow = "#006aff 0px 0px 0.75vh";
+                tempNumbers[l].style.border = "solid 0.5vh #3d8eff";
             }
             tempLine.style.width = `${width}%`;
 
