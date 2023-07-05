@@ -666,6 +666,16 @@ function doCompare(teamSelects, statContainers) {
             }
         }
 
+        if(teamStats[0] < 0) {
+            teamStats[1] += Math.abs(teamStats[0]);
+            teamStats[0] = 0.1;
+        }
+
+        if(teamStats[1] < 0) {
+            teamStats[0] += Math.abs(teamStats[1]);
+            teamStats[1] = 0.1;
+        }
+
         for (var l = 0; l < 2; l++) {
             let tempLine = statContainers[i].getElementsByClassName("compare-inner-line")[l];
             let minStat = JSON.parse(JSON.stringify(teamStats)).sort(function (a, b) { return b - a })[1];
@@ -675,13 +685,13 @@ function doCompare(teamSelects, statContainers) {
             }
             if (width > 50) {
                 tempLine.style.zIndex = 10;
-                tempNumbers[l].style.color = "lime";
+                tempNumbers[l].style.backgroundColor = "limegreen";
                 tempNumbers[l].style.fontWeight = "bold";
                 tempNumbers[l].style.textShadow = "lime 0px 0px 0.75vh";
-                tempLine.classList.add(`compare-pulse-${l}`);
+                //tempLine.classList.add(`compare-pulse-${l}`);
             } else {
                 tempLine.style.zIndex = 0;
-                tempNumbers[l].style.color = "white";
+                tempNumbers[l].style.backgroundColor = "transparent";
                 tempNumbers[l].style.fontWeight = "normal";
                 tempNumbers[l].style.textShadow = "none";
                 tempLine.classList = "compare-inner-line";
@@ -689,7 +699,7 @@ function doCompare(teamSelects, statContainers) {
             if(teamStats[0] == teamStats[1]) {
                 console.log(width);
                 tempLine.style.zIndex = 0;
-                tempNumbers[l].style.color = "#3d8eff";
+                tempNumbers[l].style.backgroundColor = "#3d8eff";
                 tempNumbers[l].style.fontWeight = "bold";
                 tempNumbers[l].style.textShadow = "#006aff 0px 0px 0.75vh";
             }
