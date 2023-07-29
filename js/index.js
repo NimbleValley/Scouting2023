@@ -483,7 +483,7 @@ function resetRaw() {
                     temp.style.color = teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() - 1];
                 }
             } else {
-                alert("Team not found in pick list :(");
+                //alert("Team not found in pick list :(");
             }
             if (FIELDS[s].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
