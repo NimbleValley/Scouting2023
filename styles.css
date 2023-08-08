@@ -1,6 +1,6 @@
 html,
 body {
-    background-color: rgb(36, 36, 41);
+    background-color: rgb(10, 10, 10);
     font-family: 'Poppins', sans-serif;
     margin: 0;
     display: inline;
@@ -19,8 +19,8 @@ body {
 /* RAW TABLE*/
 
 #data-table {
-    background-color: #444444;
-    border-radius: 1vh;
+    background-color: #3a3330;
+    border-radius: 0.5vh;
     width: fit-content;
     display: flex;
     justify-content: space-around;
@@ -95,7 +95,7 @@ body {
 .data-value:hover {
     cursor: pointer;
     background-color: #333333 !important;
-    text-shadow: #171717 0px 0px 1vh;
+    text-shadow: #161311 0px 0px 1vh;
 }
 
 h3 {
@@ -113,6 +113,7 @@ h3 {
     background-color: #3b3838;
     border-bottom-left-radius: 0.75vh;
     border-bottom-right-radius: 0.75vh;
+    font-weight: normal;
 }
 
 #pick-list-container {
@@ -532,7 +533,7 @@ select {
 select:hover {
     cursor: pointer;
     background-color: #bbbaba;
-    color: #171717;
+    color: #161311;
 }
 
 input {
@@ -550,17 +551,17 @@ input {
 input:hover {
     cursor: pointer;
     background-color: #bbbaba;
-    color: #171717;
+    color: #161311;
 }
 
 option {
-    color: #171717;
+    color: #161311;
     background-color: #bbbaba;
 }
 
 #settings-back {
     font-size: 5vh;
-    background-color: #171717;
+    background-color: #161311;
     transition: background-color 0.25s, scale 0.25s;
 }
 
@@ -709,7 +710,7 @@ h2 {
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
-    background-color: #1717174d;
+    background-color: #1613114d;
     padding: 0.5vh;
     margin-top: -0.5vh;
     transition: opacity 0.15s;
@@ -730,7 +731,7 @@ h2 {
 }
 
 .stat-compare-container:hover {
-    background-color: #171717;
+    background-color: #161311;
     cursor: pointer;
 }
 
@@ -821,7 +822,7 @@ h9 {
 
 #breakdown-warning-container {
     display: flex;
-    background-color: #171717;
+    background-color: #161311;
     height: 100%;
     width: 25vh;
     border-radius: 0.5vh;
@@ -845,7 +846,7 @@ h9 {
 }
 
 .breakdown-data {
-    background-color: #171717;
+    background-color: #161311;
     width: 12vh;
     margin-right: 1vh;
     height: 100%;
@@ -866,7 +867,7 @@ h9 {
     display: flex;
     width: fit-content;
     height: 65vh;
-    background-color: #171717;
+    background-color: #161311;
     justify-content: space-around;
     align-items: center;
     padding: 1vh;
@@ -934,7 +935,7 @@ h9 {
     width: 64vh;
     height: 33vh;
     border-radius: 0.5vh;
-    background-color: #171717;
+    background-color: #161311;
     justify-content: space-evenly;
     align-items: center;
 }
@@ -968,7 +969,7 @@ h9 {
     width: 64vh;
     height: 36vh;
     border-radius: 0.5vh;
-    background-color: #171717;
+    background-color: #161311;
     justify-content: space-evenly;
     align-items: center;
 }
@@ -984,7 +985,7 @@ h9 {
     width: 64vh;
     height: 66vh;
     border-radius: 0.5vh;
-    background-color: #171717;
+    background-color: #161311;
     justify-content: space-evenly;
     overflow: scroll;
     color: white;
@@ -1001,6 +1002,27 @@ h9 {
     text-align: left;
     text-decoration: none;
     font-weight: normal;
+}
+
+a {
+    padding: 2vh !important;
+    position: relative;
+    margin: 0;
+    color: rgb(255, 199, 95) !important;
+    font-weight: bold !important;
+}
+
+a:hover {
+    cursor: pointer;
+    color: rgb(255, 115, 0) !important;
+}
+
+#team-link-container {
+    position: absolute;
+    max-width: 60vh;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 #breakdown-auto-values-container {
@@ -1047,7 +1069,7 @@ h9 {
 .inner-breakdown-line {
     content: "";
     position: absolute;
-    background: linear-gradient(180deg, rgb(255, 183, 124) 0%, rgb(223, 29, 3) 7.5vh);
+    background: linear-gradient(180deg, rgb(238, 142, 64) 0%, rgb(223, 36, 3) 7.5vh);
     width: 2vh;
     height: 50%;
     left: 0;
@@ -1063,6 +1085,7 @@ h9 {
     width: fit-content;
     padding: 1vh;
     top: 0;
+    max-width: 50vh;
     animation: column-sort 2.5s ease-in-out infinite;
 }
 

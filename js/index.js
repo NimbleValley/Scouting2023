@@ -156,9 +156,9 @@ const options = {
         'X-TBA-Auth-Key': 'sBluV8DKQA0hTvJ2ABC9U3VDZunUGUSehxuDPvtNC8SQ3Q5XHvQVt0nm3X7cvP7j'
     }
 }
-
+const Year = new Date().getFullYear();
 //getTBA('https://www.thebluealliance.com/api/v3/events/2023/keys', 0);
-getTBA('https://www.thebluealliance.com/api/v3/events/2023', 1);
+getTBA(`https://www.thebluealliance.com/api/v3/events/${Year}`, 1);
 
 var TABLE_TYPE = "raw";
 
@@ -330,7 +330,7 @@ function getData() {
 
             col.className = "column";
             if (h % 2 == 1) {
-                col.style.backgroundColor = "#4d4e4e";
+                col.style.backgroundColor = "#4d473f";
             }
             col.appendChild(temp);
             rawTable.appendChild(col);
@@ -436,7 +436,7 @@ function resetRaw() {
 
         col.className = "column";
         if (h % 2 == 1) {
-            col.style.backgroundColor = "#4d4e4e";
+            col.style.backgroundColor = "#4d473f";
         }
         col.appendChild(temp);
         rawTable.appendChild(col);
@@ -508,7 +508,7 @@ function setRowHighlight(row, always) {
     var cols = document.getElementsByClassName("column");
     for (var c = 0; c < cols.length; c++) {
         for (var i = 1; i < cols[c].children.length; i++) {
-            cols[c].children[i].style.backgroundColor = "#4d4e4e00";
+            cols[c].children[i].style.backgroundColor = "#4d473f00";
         }
     }
 
@@ -1470,7 +1470,9 @@ function openTeamOveralls() {
 
     let tempCommentContainer = document.createElement("div");
     tempCommentContainer.id = "breakdown-comment-container";
-    tempCommentContainer.innerHTML = "<span style='text-decoration: underline'>Comments:</span>";
+    tempCommentContainer.innerHTML = "<span style='text-decoration: underline'>Comments & Videos:</span>";
+
+    getTeamMatchesTBA(`https://www.thebluealliance.com/api/v3/team/frc${document.getElementById("team-overall-select").value}/event/${document.getElementById("event-select").value}/matches`);
 
     //let commentText = "Comments: ";
     for (var i = 0; i < RECORDS.length; i++) {
@@ -1570,7 +1572,7 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
         for (var i = 0; i < cols.length; i++) {
             cols[i].style.background = "";
             if (i % 2 == 1) {
-                cols[i].style.background = "#4D4E4E";
+                cols[i].style.background = "#4d473f";
             }
         }
         if (direction % 3 == 0) {
@@ -2105,7 +2107,7 @@ function getTeamData() {
         tempC.className = "column";
 
         if (i % 2 == 1) {
-            tempC.style.backgroundColor = "#4d4e4e";
+            tempC.style.backgroundColor = "#4d473f";
         }
 
         var temp = document.createElement("div");
@@ -2213,7 +2215,7 @@ function getTeamData() {
                     closeTeamComments(cols[0].children[i + 1].id, parseInt(cols[0].children[i + 1].classList[1]), cols[0].children[i + 1]);
                 }
                 for (var c = 0; c < cols.length; c++) {
-                    cols[c].children[i + 1].style.backgroundColor = "#4d4e4e00";
+                    cols[c].children[i + 1].style.backgroundColor = "#4d473f00";
                 }
             }
             sortColumn(this.classList[1], detectCharacter(1), TEAM_ROWS, TEAM_COLUMNS, TEAM_FIELDS, true, true);
@@ -2275,6 +2277,34 @@ function closeTeamComments(id, oldId, element) {
     cols[0].children[parseInt(oldId) + 1].style.setProperty("border", "0vh solid #a8652d", "important");
 }
 
+function getTeamMatchesTBA(url) {
+    fetch(url, options)
+        .then((response) => response.json())
+        .then((json) => {
+            console.log(json);
+            let tempCommentContainer = document.getElementById("breakdown-comment-container");
+            let tempLinkContainer = document.createElement("div");
+            tempLinkContainer.id = "team-link-container";
+            for(var i = 0; i < json.length; i ++) {
+                let tempMatchText = document.createElement("a");
+                tempMatchText.className = "breakdown-comment";
+                tempMatchText.text = "Qual " + json[i].match_number;
+                if(json[i].videos.length > 0) {
+                    //console.log(json[i].videos[0].key);
+                    tempMatchText.href = `https://www.youtube.com/watch?v=${json[i].videos[0].key}`;
+                } else {
+                    tempMatchText.text = tempMatchText.text + "(No Video Found)";
+                }
+                if(i < json.length - 1) {
+                    tempMatchText.text = tempMatchText.text + ",";
+                }
+                tempMatchText.target = "_blank";
+                tempLinkContainer.appendChild(tempMatchText);
+            }
+            tempCommentContainer.appendChild(tempLinkContainer);
+        });
+}
+
 function getTBA(url, type) {
     breakdownLines.style.display = "none";
     pickListContainer.style.display = "none";
@@ -2327,7 +2357,7 @@ function getTBAOPRS(json) {
 
         col.className = "column";
         if (h % 2 == 0) {
-            col.style.backgroundColor = "#4d4e4e";
+            col.style.backgroundColor = "#4d473f";
         }
         col.appendChild(temp);
         rawTable.appendChild(col);
