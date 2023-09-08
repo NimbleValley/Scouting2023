@@ -19,7 +19,7 @@ body {
 /* RAW TABLE*/
 
 #data-table {
-    background-color: #3a3330;
+    background-color: #131313;
     border-radius: 0.5vh;
     width: fit-content;
     display: flex;
@@ -51,6 +51,7 @@ body {
     user-select: none;
     font-weight: 700;
     background-color: #333333;
+    margin: 1vh;
 }
 
 .table-header-section-raw:hover {
@@ -79,23 +80,81 @@ body {
 
 .data-value {
     white-space: nowrap;
-    width: 100%;
+    width: calc(100% - 1vh);
+    height: 100%;
     text-align: center;
     font-size: 2.5vh;
-    margin-top: 1vh;
-    border-radius: 0.5vw;
     font-weight: bolder;
     color: white;
-    transition: background-color 0.25s, height 0.15s, text-shadow 0.15s;
-    background-color: #4d4e4e00;
+    transition: background-color 0.15s, height 0.15s, text-shadow 0.15s;
+    background-color: #474540;
     z-index: 10;
+    margin-left: 0.5vh;
+    margin-right: 0.5vh;
+    border-radius: 0.67vh;
     height: fit-content;
+    padding-top: 0.5vh;
+    padding-bottom: 0.5vh;
+    border-top: solid 0.5vh #131313;
+    border-bottom: solid 0.5vh #131313;
 }
 
 .data-value:hover {
     cursor: pointer;
-    background-color: #333333 !important;
+    background-color: #1b1b1b !important;
     text-shadow: #161311 0px 0px 1vh;
+}
+
+.modal {
+    z-index: 10000;
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    position: absolute;
+    background-color: #000000;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 0.35vh solid #888;
+    width: calc(100vw - 25vh - 3.5vw - 15vw);
+    left: calc(25vh + 3.5vw + 5vw);
+    min-height: 25vh;
+    color: white;
+    /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close-comment-modal {
+    color: #aaa;
+    float: right;
+    font-size: 8vh;
+    font-weight: bold;
+    top: 0;
+}
+
+.close-comment-modal:hover,
+.close-comment-modal:focus {
+    color: rgb(243, 114, 8);
+    text-decoration: none;
+    cursor: pointer;
 }
 
 h3 {
@@ -364,7 +423,7 @@ h3 {
 
 #open-sidebar {
     background-color: #1a1919;
-    width: 5vh;
+    width: 3.5vw;
     height: calc(100vh - 1.5vh);
     left: 0vh;
     top: 0vh;
@@ -381,7 +440,7 @@ h3 {
 
 #open-sidebar:hover {
     cursor: pointer;
-    background-color: #dfdad6;
+    background-color: #aca8a4;
     color: black;
 }
 
@@ -394,7 +453,7 @@ p {
 #sidebar {
     position: sticky;
     background-color: black;
-    width: 30vh;
+    width: calc(25vh + 3.5vw);
     height: calc(100vh - 1.5vh);
     z-index: 100;
     display: flex;
@@ -405,13 +464,16 @@ p {
 
 #side-button-container {
     width: 25vh;
-    height: calc(100vh - 1.5vh);
+    height: calc(100vh - 2.5vh);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
 .side-button {
     position: relative;
     color: white;
-    border-radius: 1vh;
+    border-radius: 0.75vh;
     font-size: 3.5vh;
     width: 20vh;
     padding: 1.25vh;
@@ -419,17 +481,20 @@ p {
     margin-right: auto;
     margin-top: 1.5vh;
     font-weight: bolder;
-    transition: background-color 0.15s, scale 0.15s, text-shadow 0.15s, box-shadow 0.15s, border 0.15s;
+    transition: background-color 0.15s, scale 0.15s, text-shadow 0.15s, box-shadow 0.15s, border 0.15s, line-height 0.15s;
     text-align: center;
-    border: 0.5vh solid #444444;
+    border: 0.35vh solid #444444;
     text-shadow: #6c676700 0vh 0vh 1vh;
+    height: 5.5vh;
+    line-height: 5.35vh;
 }
 
 .side-button:hover {
     cursor: pointer;
     text-shadow: #000000 0vh 0vh 1vh;
-    border: 0.5vh solid #444444;
+    border: 0.35vh solid #444444;
     box-shadow: none !important;
+    line-height: 4.5vh;
 }
 
 .side-button::after {
@@ -447,7 +512,7 @@ p {
 .side-button:hover::after {
     width: 100%;
     height: 50%;
-    background-color: #a1958a;
+    background-color: #3a3530;
 }
 
 .side-button::before {
@@ -465,11 +530,15 @@ p {
 .side-button:hover::before {
     width: 100%;
     height: 50%;
-    background-color: #a1958a;
+    background-color: #3a3530;
 }
 
 .active {
-    border: 0.5vh solid rgb(189, 95, 33);
+    border: 0.55vh solid rgb(189, 95, 33);
+}
+
+.active:hover {
+    border: 0.55vh solid rgb(104, 102, 102);
 }
 
 #settings {
@@ -678,7 +747,7 @@ h2 {
 }
 
 .stat-compare-container {
-    background-color:#333333;
+    background-color: #333333;
     width: 95%;
     height: 5vh;
     margin-top: 1vh;
@@ -772,7 +841,7 @@ h2 {
 }
 
 #match-field {
-    background-color:#444444;
+    background-color: #444444;
     max-width: calc(90vw - 30vh);
     width: 100vw;
     height: 30vw;
@@ -1083,10 +1152,10 @@ a:hover {
 
 .column {
     width: fit-content;
-    padding: 1vh;
     top: 0;
     max-width: 50vh;
-    animation: column-sort 2.5s ease-in-out infinite;
+    animation: column-sort 2.5s infinite;
+    background-repeat: repeat
 }
 
 @keyframes overall-pulse {
@@ -1101,11 +1170,11 @@ a:hover {
 
 @keyframes column-sort-up {
     0% {
-        background-position: 0% 125%;
+        background-position: 0% 100%;
     }
 
     100% {
-        background-position: 0% 0%;
+        background-position: 0% 200%;
     }
 }
 
@@ -1115,7 +1184,7 @@ a:hover {
     }
 
     100% {
-        background-position: 0% 225%;
+        background-position: 0% 0%;
     }
 }
 

@@ -18,7 +18,7 @@ const toFormData = (f => f(f))(h => f => f(x => h(h)(f)(x)))(f => fd => pk => d 
   })(new FormData())()
 
 pickListForm.addEventListener("submit",  e => {
-    if(prompt("Password") != "team3197stovepiper") {
+    if(prompt("Password") != "Tylenol") {
         return;
     }
     var formData = new FormData();

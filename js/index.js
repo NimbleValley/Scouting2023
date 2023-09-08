@@ -29,6 +29,9 @@ var previousGridScrollY = 0;
 
 var previousTeamComment = -1;
 
+const commentModal = document.getElementById("comment-modal");
+const closeCommentModal = document.getElementById("close-comment-modal");
+
 const sideButtons = document.getElementsByClassName("side-button");
 for (var i = 1; i < sideButtons.length - 1; i++) {
     sideButtons[i].addEventListener("click", function () {
@@ -436,7 +439,7 @@ function resetRaw() {
 
         col.className = "column";
         if (h % 2 == 1) {
-            col.style.backgroundColor = "#4d473f";
+            //col.style.backgroundColor = "#4d473f";
         }
         col.appendChild(temp);
         rawTable.appendChild(col);
@@ -477,10 +480,12 @@ function resetRaw() {
             var temp = document.createElement("div");
             temp.className = "data-value";
             temp.id = i;
-            console.log(RECORDS[i][TEAM_INDEX]);
+            if (i % 3 == 0) {
+                temp.style.backgroundColor = "#302f2b";
+            }
             if (PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX])) != -1) {
                 if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() != 0) {
-                    temp.style.color = teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() - 1];
+                    temp.style.boxShadow = `inset 0px 0px 0.15vh 0.35vh ${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() - 1]}`;
                 }
             } else {
                 //alert("Team not found in pick list :(");
@@ -490,6 +495,14 @@ function resetRaw() {
                 temp.id = i;
                 temp.classList.add(s);
                 temp.onclick = function () { showGrid(this.id, this.classList[1], RECORDS) }
+                temp.addEventListener("click", function () {
+                    setRowHighlight(this.id, true);
+                });
+            } else if (FIELDS[s].includes("Comments")) {
+                temp.innerText = "{ View }";
+                temp.id = i;
+                temp.classList.add(s);
+                temp.onclick = function () { showCommentModal(RECORDS[this.id][this.classList[1]]) }
                 temp.addEventListener("click", function () {
                     setRowHighlight(this.id, true);
                 });
@@ -504,11 +517,32 @@ function resetRaw() {
     }
 }
 
+function showCommentModal(text) {
+    // Show modal
+    commentModal.style.display = "block";
+    // Set modal text to comment
+    commentModal.children[0].children[1].innerText = text;
+}
+
+window.onclick = function (event) {
+    if (event.target == commentModal) {
+        commentModal.style.display = "none";
+    }
+}
+
+commentModal.onclick = function () {
+    commentModal.style.display = "none";
+}
+
 function setRowHighlight(row, always) {
     var cols = document.getElementsByClassName("column");
     for (var c = 0; c < cols.length; c++) {
         for (var i = 1; i < cols[c].children.length; i++) {
-            cols[c].children[i].style.backgroundColor = "#4d473f00";
+            if ((i - 1) % 3 == 0) {
+                cols[c].children[i].style.backgroundColor = "#302f2b";
+            } else {
+                cols[c].children[i].style.backgroundColor = "#474540";
+            }
         }
     }
 
@@ -619,7 +653,7 @@ function setUpCompare() {
 
         tempStatName = document.createElement("p");
         tempStatName.className = "compare-stat-description";
-        tempStatName.innerText = TEAM_FIELDS[i+1];
+        tempStatName.innerText = TEAM_FIELDS[i + 1];
         tempLineContainer.appendChild(tempStatName);
 
         tempStat.insertBefore(tempLineContainer, tempStat.childNodes[1]);
@@ -666,12 +700,12 @@ function doCompare(teamSelects, statContainers) {
             }
         }
 
-        if(teamStats[0] < 0) {
+        if (teamStats[0] < 0) {
             teamStats[1] += Math.abs(teamStats[0]);
             teamStats[0] = 0.1;
         }
 
-        if(teamStats[1] < 0) {
+        if (teamStats[1] < 0) {
             teamStats[0] += Math.abs(teamStats[1]);
             teamStats[1] = 0.1;
         }
@@ -685,7 +719,7 @@ function doCompare(teamSelects, statContainers) {
             }
             if (width > 50) {
                 tempLine.style.zIndex = 10;
-                tempNumbers[l].style.backgroundColor = `rgba(50, 205, 50, ${(width-50) / 50})`;
+                tempNumbers[l].style.backgroundColor = `rgba(50, 205, 50, ${(width - 50) / 50})`;
                 tempNumbers[l].style.border = "solid 0.5vh limegreen";
                 tempNumbers[l].style.fontWeight = "bold";
                 tempNumbers[l].style.textShadow = "lime 0px 0px 0.75vh";
@@ -697,8 +731,8 @@ function doCompare(teamSelects, statContainers) {
                 tempNumbers[l].style.textShadow = "none";
                 tempLine.classList = "compare-inner-line";
                 tempNumbers[l].style.border = "solid 0.5vh transparent";
-            } 
-            if(teamStats[0] == teamStats[1]) {
+            }
+            if (teamStats[0] == teamStats[1]) {
                 console.log(width);
                 tempLine.style.zIndex = 0;
                 tempNumbers[l].style.backgroundColor = "#3d8eff";
@@ -1560,6 +1594,13 @@ function getSortedIndex(colNum, team, records, columns) {
 function sortColumn(colNum, type, records, columns, field, team, useCols) {
     var direction = parseInt(localStorage.getItem("direction"));
     var previousColumn = parseInt(localStorage.getItem("column"));
+    // set headers to color, then highlight current one
+    let tempHeaders = document.getElementsByClassName("table-header-section-raw");
+    for (let headerNum = 0; headerNum < tempHeaders.length; headerNum++) {
+        tempHeaders[headerNum].style.backgroundColor = "#333333";
+    }
+    tempHeaders[colNum].style.backgroundColor = "#995303";
+
     localStorage.setItem("column", colNum);
     localStorage.setItem("direction", parseInt(direction) + 1);
     if (previousColumn != colNum) {
@@ -1571,18 +1612,15 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
         var cols = document.getElementsByClassName("column");
         for (var i = 0; i < cols.length; i++) {
             cols[i].style.background = "";
-            if (i % 2 == 1) {
-                cols[i].style.background = "#4d473f";
-            }
         }
         if (direction % 3 == 0) {
-            cols[colNum].style.background = 'linear-gradient(0deg, rgba(159,99,48,1) 0%, rgba(102,95,81,1) 100%)';
-            cols[colNum].style.animation = `column-sort-up ${document.documentElement.scrollHeight / 500}s infinite`;
+            cols[colNum].style.background = 'linear-gradient(180deg, rgba(18,18,18,1) 0%, rgba(255,158,0,1) 100%)';
+            cols[colNum].style.animation = `column-sort-up ${2.5}s linear infinite`;
         } else {
-            cols[colNum].style.background = 'linear-gradient(180deg, rgba(159,99,48,1) 0%, rgba(102,95,81,1) 100%)';
-            cols[colNum].style.animation = `column-sort-down ${document.documentElement.scrollHeight / 500}s infinite`;
+            cols[colNum].style.background = 'linear-gradient(0deg, rgba(18,18,18,1) 0%, rgba(255,158,0,1) 100%)';
+            cols[colNum].style.animation = `column-sort-down ${2.5}s linear infinite`;
         }
-        cols[colNum].style.backgroundSize = "100% 500%";
+        cols[colNum].style.backgroundSize = "100% 50%";
     }
 
     if (type == 1) {
@@ -1644,6 +1682,14 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
                     temp.innerText = "{ Show Grid }";
                     temp.id = i;
                     temp.onclick = function () { showGrid(this.id, this.classList[1], sortedRows) }
+                } else if (field[s].includes("Comments")) {
+                    temp.innerText = "{ View }";
+                    temp.id = i;
+                    temp.classList.add(s);
+                    temp.onclick = function () { showCommentModal(sortedRows[this.id][this.classList[1]]) }
+                    temp.addEventListener("click", function () {
+                        setRowHighlight(this.id, true);
+                    });
                 } else {
                     if (team) {
                         if (s == 0) {
@@ -2107,7 +2153,6 @@ function getTeamData() {
         tempC.className = "column";
 
         if (i % 2 == 1) {
-            tempC.style.backgroundColor = "#4d473f";
         }
 
         var temp = document.createElement("div");
@@ -2164,11 +2209,12 @@ function getTeamData() {
 
                 tempData.addEventListener("click", function () {
                     setRowHighlight(parseInt(this.classList[1]), true);
-                    if (this.children.length > 0) {
+                    /*if (this.children.length > 0) {
                         closeTeamComments(this.id, parseInt(this.classList[1]), this);
                     } else {
                         openTeamComments(this.id, parseInt(this.classList[1]), this);
-                    }
+                    }*/
+                    showCommentModal(TEAM_ROWS[this.id][TEAM_COLUMNS.length - 1]);
                 });
             } else {
                 tempData.innerText = Math.floor(average / teamRows.length * 10) / 10;
@@ -2179,7 +2225,7 @@ function getTeamData() {
             //console.log(PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))]);
             if (PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i])) != -1) {
                 if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))].getColor() != 0) {
-                    tempData.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))].getColor() - 1]}`, "important");
+                    tempData.style.boxShadow = `inset 0px 0px 0.15vh 0.35vh ${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))].getColor() - 1]}`;
                     //console.log(tempData.style.backgroundColor);
                 }
             }
@@ -2210,20 +2256,20 @@ function getTeamData() {
             var cols = document.getElementsByClassName("column");
             for (var i = 0; i < TEAMS.length; i++) {
                 if (cols[0].children[i + 1].children.length > 0) {
-                    commentsPreviouslyOpenedId.push(cols[0].children[i + 1].id);
-                    commentsPreviouslyOpenedClass.push(cols[0].children[i + 1].classList[1]);
-                    closeTeamComments(cols[0].children[i + 1].id, parseInt(cols[0].children[i + 1].classList[1]), cols[0].children[i + 1]);
+                    //commentsPreviouslyOpenedId.push(cols[0].children[i + 1].id);
+                    //commentsPreviouslyOpenedClass.push(cols[0].children[i + 1].classList[1]);
+                    //closeTeamComments(cols[0].children[i + 1].id, parseInt(cols[0].children[i + 1].classList[1]), cols[0].children[i + 1]);
                 }
                 for (var c = 0; c < cols.length; c++) {
-                    cols[c].children[i + 1].style.backgroundColor = "#4d473f00";
+                    //cols[c].children[i + 1].style.backgroundColor = "#4d473f00";
                 }
             }
             sortColumn(this.classList[1], detectCharacter(1), TEAM_ROWS, TEAM_COLUMNS, TEAM_FIELDS, true, true);
             for (var i = 0; i < TEAMS.length; i++) {
                 if (commentsPreviouslyOpenedId.includes(cols[0].children[i + 1].id)) {
-                    var tempIndex = commentsPreviouslyOpenedId.indexOf(cols[0].children[i + 1].id);
-                    console.log(tempIndex);
-                    openTeamComments(cols[0].children[i + 1].id, parseInt(cols[0].children[i + 1].classList[1]), cols[0].children[i + 1]);
+                    //var tempIndex = commentsPreviouslyOpenedId.indexOf(cols[0].children[i + 1].id);
+                    //console.log(tempIndex);
+                    //openTeamComments(cols[0].children[i + 1].id, parseInt(cols[0].children[i + 1].classList[1]), cols[0].children[i + 1]);
                 }
             }
             /*for (var i = 0; i < TEAMS.length; i++) {
@@ -2233,6 +2279,7 @@ function getTeamData() {
                         alert(i);
                     }
             }*/
+            //showCommentModal(TEAM_ROWS[cols[0].children[i + 1].id][TEAM_COLUMNS.length - 1]);
         };
     }
     setRowHighlight(parseInt(localStorage.getItem("previousHighlightRow")), true);
@@ -2253,12 +2300,12 @@ function openTeamComments(id, oldId, element) {
 
     for (var i = 0; i < cols.length; i++) {
         if (cols[i].children[parseInt(oldId) + 1] != element) {
-            cols[i].children[parseInt(oldId) + 1].style.paddingBottom = `${tempComment.offsetHeight * 1 + (window.innerHeight * (0.8 / 100))}px`;
+            //cols[i].children[parseInt(oldId) + 1].style.paddingBottom = `${tempComment.offsetHeight * 1 + (window.innerHeight * (0.8 / 100))}px`;
         }
         if (cols[i].children[parseInt(oldId) + 1] == element) {
         }
     }
-    cols[0].children[parseInt(oldId) + 1].style.setProperty("border", "0.5vh solid #a8652d", "important");
+    //cols[0].children[parseInt(oldId) + 1].style.setProperty("border", "0.5vh solid #a8652d", "important");
     previousTeamComment = id;
 }
 
@@ -2267,14 +2314,14 @@ function closeTeamComments(id, oldId, element) {
     var cols = document.getElementsByClassName("column");
     for (var i = 0; i < cols.length; i++) {
         if (cols[i].children[parseInt(oldId) + 1] != element) {
-            cols[i].children[parseInt(oldId) + 1].style.paddingBottom = `0`;
+            //cols[i].children[parseInt(oldId) + 1].style.paddingBottom = `0`;
         }
     }
     var tempText = TEAMS[id];
     element.innerHTML = "";
     element.innerText = tempText;
     previousTeamComment = -1;
-    cols[0].children[parseInt(oldId) + 1].style.setProperty("border", "0vh solid #a8652d", "important");
+    //cols[0].children[parseInt(oldId) + 1].style.setProperty("border", "0vh solid #a8652d", "important");
 }
 
 function getTeamMatchesTBA(url) {
@@ -2285,17 +2332,17 @@ function getTeamMatchesTBA(url) {
             let tempCommentContainer = document.getElementById("breakdown-comment-container");
             let tempLinkContainer = document.createElement("div");
             tempLinkContainer.id = "team-link-container";
-            for(var i = 0; i < json.length; i ++) {
+            for (var i = 0; i < json.length; i++) {
                 let tempMatchText = document.createElement("a");
                 tempMatchText.className = "breakdown-comment";
                 tempMatchText.text = "Qual " + json[i].match_number;
-                if(json[i].videos.length > 0) {
+                if (json[i].videos.length > 0) {
                     //console.log(json[i].videos[0].key);
                     tempMatchText.href = `https://www.youtube.com/watch?v=${json[i].videos[0].key}`;
                 } else {
                     tempMatchText.text = tempMatchText.text + "(No Video Found)";
                 }
-                if(i < json.length - 1) {
+                if (i < json.length - 1) {
                     tempMatchText.text = tempMatchText.text + ",";
                 }
                 tempMatchText.target = "_blank";
