@@ -16,6 +16,12 @@ body {
     background: rgb(194, 110, 0);
 }
 
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
 /* RAW TABLE*/
 
 #data-table {
@@ -25,7 +31,7 @@ body {
     display: flex;
     justify-content: space-around;
     margin-left: 34vh;
-    margin-top: -98.25vh;
+    margin-top: 1.25vh;
     position: relative;
     top: 0vh;
     z-index: 0;
@@ -52,6 +58,7 @@ body {
     font-weight: 700;
     background-color: #333333;
     margin: 1vh;
+    z-index: 1000;
 }
 
 .table-header-section-raw:hover {
@@ -95,8 +102,19 @@ body {
     height: fit-content;
     padding-top: 0.5vh;
     padding-bottom: 0.5vh;
-    border-top: solid 0.5vh #131313;
-    border-bottom: solid 0.5vh #131313;
+    position: relative;
+    border-top: 0.5vh solid #131313;;
+    border-bottom: 0.5vh solid #131313;;
+}
+
+.data-value::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 0.9vh;
+    left: 0;
+    top: -0.9vh;
+    background-color: #131313;
 }
 
 .data-value:hover {
@@ -106,7 +124,7 @@ body {
 }
 
 .modal {
-    z-index: 10000;
+    z-index: 10000000;
     display: none;
     /* Hidden by default */
     position: fixed;
@@ -134,10 +152,11 @@ body {
     /* 15% from the top and centered */
     padding: 20px;
     border: 0.35vh solid #888;
-    width: calc(100vw - 25vh - 3.5vw - 15vw);
+    width: calc(100vw - 25vh - 5vh - 15vw);
     left: calc(25vh + 3.5vw + 5vw);
     min-height: 25vh;
     color: white;
+    font-size: 3.5vh;
     /* Could be more or less, depending on screen size */
 }
 
@@ -150,8 +169,23 @@ body {
     top: 0;
 }
 
+.close-pick-list-sort-modal {
+    color: #aaa;
+    float: right;
+    font-size: 8vh;
+    font-weight: bold;
+    top: 0;
+}
+
 .close-comment-modal:hover,
 .close-comment-modal:focus {
+    color: rgb(243, 114, 8);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.close-pick-list-sort-modal:hover,
+.close-pick-list-sort-modal:focus {
     color: rgb(243, 114, 8);
     text-decoration: none;
     cursor: pointer;
@@ -180,27 +214,28 @@ h3 {
     left: 35vh;
     height: fit-content;
     align-items: start;
-    width: 100%;
+    width: calc(100% - 35vh);
 }
 
 #inner-pick-list-container {
     position: relative;
     margin-top: 0vh;
-    width: calc((100% * 0.7) - 35vh);
+    width: 100vw;
     min-width: 40vh;
     row-gap: 1vh;
     height: fit-content;
-    background-color: #272727;
+    background-color: #131313;
     padding: 1vh;
     padding-top: 1vh;
     border-radius: 0.75vh;
     display: flex;
     flex-direction: column;
     font-size: 2.5vh !important;
+    max-width: calc(100vw - 35vh - 32.5vh);
 }
 
 .pick-list-team {
-    background-color: #5b5b5b;
+    background-color: #474540;
     color: white;
     padding: 0.5vh;
     border-radius: 0.5vh;
@@ -209,10 +244,26 @@ h3 {
     display: flex;
     align-items: center;
     user-select: none;
+    position: relative;
 }
 
 .pick-list-team:hover {
-    filter: brightness(0.85) contrast(1.55);
+    filter: brightness(0.95) contrast(1.55);
+}
+
+.pick-list-sort-button {
+    font-size: 2.5vw;
+    width: fit-content;
+    border: 0.5vh solid white;
+    padding: 0vh 1vh 0vh 1vh;
+    border-radius: 0.5vh;
+    transition: color 0.25s, background-color 0.25s;
+}
+
+.pick-list-sort-button:hover {
+    cursor: pointer;
+    background-color: white;
+    color: black;
 }
 
 .sortable-ghost {
@@ -256,14 +307,37 @@ h3 {
     border-radius: 0.25vh;
 }
 
+.pick-list-team-stat {
+    margin-left: auto;
+    width: 7vh;
+    background-color: #0000008c;
+    border-radius: 0.5vh;
+    text-align: center;
+    position: relative;
+}
+
+.pick-list-team > .pick-list-team-stat ~ .pick-list-team-stat {
+    margin-left: 5vh;
+}
+
 .pick-list-control-panel {
     width: 4vh;
     height: 4vh;
     background-color: #2b2b2b;
     border-radius: 0.5vh;
-    margin-left: auto;
-    z-index: 10;
+    margin-left: 2vh;
+    z-index: 1;
     text-align: center;
+    transition: margin-left 0.25s;
+}
+
+@keyframes control-panel-slide-open {
+    0% {
+        width: 0px;
+    }
+    100% {
+        width: 15vh;
+    }
 }
 
 .pick-list-control-panel::after {
@@ -273,9 +347,10 @@ h3 {
     width: 100%;
     height: 100%;
     left: 0;
-    top: 0;
+    top: -4vh;
     transition: transform 0.15s;
-    line-height: 2.5vh;
+    line-height: 2.65vh;
+    z-index: 1000;
 }
 
 .pick-list-control-panel:hover::after {
@@ -283,17 +358,18 @@ h3 {
 }
 
 .pick-list-toggle-control-panel {
-    position: absolute;
+    position: relative;
     width: 15vh;
+    scale: 0;
     display: flex;
     justify-content: space-around;
-    background-color: #1b1b1b;
-    border-radius: 1vh;
+    background-color: #2b2b2b;
+    border-radius: 0.5vh;
     align-items: center;
     z-index: 100;
-    display: none;
     margin-left: -15vh;
     padding: 0.25vh;
+    transition: scale 0.25s;
 }
 
 .pick-list-control-panel:hover {
@@ -345,10 +421,10 @@ h3 {
 .pick-list-info-button {
     font-style: italic;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #444444;
+    background-color: #2B2B2B;
     width: 4vh;
     margin-left: 2vh;
-    height: auto;
+    height: 4vh;
     border-radius: 0.5vh;
     text-align: center;
     margin-right: 2vh;
@@ -361,21 +437,17 @@ h3 {
 }
 
 #sync-pick-list-button {
-    position: sticky;
+    position: fixed;
     width: 20vh;
     height: 8vh;
     border: 0.5vh solid rgb(173, 100, 48);
     border-radius: 1vh;
     background-color: transparent;
     right: 2vh;
-    margin-right: 0;
-    top: 0;
+    top: 2vh;
     font-weight: bold;
-    float: right;
     color: rgb(173, 100, 48);
     max-width: 30vh;
-    margin: 2vh;
-    margin-right: 2vh;
     font-size: 4vh;
     font-family: 'Poppins', sans-serif;
     transition: background-color 0.15s, color 0.15s;
@@ -387,20 +459,52 @@ h3 {
     color: #2b2b2b;
 }
 
+#sort-pick-list-button {
+    position: fixed;
+    width: 20vh;
+    height: 8vh;
+    border: 0.5vh solid rgb(173, 100, 48);
+    border-radius: 1vh;
+    background-color: transparent;
+    right: 2vh;
+    top: 12vh;
+    font-weight: bold;
+    color: rgb(173, 100, 48);
+    max-width: 30vh;
+    font-size: 4vh;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+#sort-pick-list-button:hover {
+    cursor: pointer;
+    background-color: rgb(173, 100, 48);
+    color: #2b2b2b;
+}
+
 .slider {
     position: sticky;
     -webkit-appearance: none;
     appearance: none;
-    width: calc((100% * 0.7) - 35vh);
+    width: 100%;
     min-width: 40vh;
     height: 1vh;
-    border-radius: 0.5vh;
-    background: #d3d3d3;
+    border-radius: 0.25vh;
+    background: #222020;
     outline: none;
-    opacity: 0.7;
+    opacity: 1;
     -webkit-transition: .2s;
     transition: opacity .2s;
     padding: 0;
+    top: 1vh;
+    z-index: 100;
+    max-width: calc(100vw - 35vh - 32.5vh);
+    border: solid 0.5vh #474540;
+}
+
+.slider:hover {
+    background: #222020;
+    border: solid 0.5vh #c48818;
 }
 
 .slider::-webkit-slider-thumb {
@@ -408,8 +512,8 @@ h3 {
     appearance: none;
     width: 2.75vh;
     height: 2.75vh;
-    border-radius: 50%;
-    background: #d35d0e;
+    border-radius: 0.75vh;
+    background: #d16117;
     cursor: pointer;
 }
 
@@ -423,7 +527,7 @@ h3 {
 
 #open-sidebar {
     background-color: #1a1919;
-    width: 3.5vw;
+    width: 5vh;
     height: calc(100vh - 1.5vh);
     left: 0vh;
     top: 0vh;
@@ -436,6 +540,7 @@ h3 {
     font-weight: bolder;
     transition: background-color 0.5s, color 0.5s;
     z-index: 10;
+    scale: -1;
 }
 
 #open-sidebar:hover {
@@ -451,14 +556,14 @@ p {
 }
 
 #sidebar {
-    position: sticky;
+    position: fixed;
     background-color: black;
-    width: calc(25vh + 3.5vw);
+    width: calc(25vh + 5vh);
     height: calc(100vh - 1.5vh);
     z-index: 100;
     display: flex;
     justify-content: flex-start;
-    left: -25vh;
+    left: 0vh;
     top: 0;
 }
 
@@ -506,7 +611,7 @@ p {
     top: 0;
     background-color: #7979797b;
     z-index: -1;
-    transition: width 0.2s, height 0.2s, background-color 0.25s;
+    transition: width 0.15s, height 0.2s, background-color 0.25s;
 }
 
 .side-button:hover::after {
@@ -524,7 +629,7 @@ p {
     bottom: 0;
     background-color: #7979797e;
     z-index: -1;
-    transition: width 0.25s, height 0.25s, background-color 0.25s;
+    transition: width 0.15s, height 0.25s, background-color 0.25s;
 }
 
 .side-button:hover::before {
@@ -542,7 +647,7 @@ p {
 }
 
 #settings {
-    position: sticky;
+    position: fixed;
     left: 0;
     top: -0;
     width: 100vw;
@@ -1051,12 +1156,12 @@ h9 {
 
 #breakdown-comment-container {
     flex-direction: column;
-    width: 64vh;
-    height: 66vh;
+    width: 73vh;
+    max-height: 66vh;
     border-radius: 0.5vh;
     background-color: #161311;
     justify-content: space-evenly;
-    overflow: scroll;
+    overflow-y: auto;
     color: white;
     padding: 2vh;
     font-size: 3.75vh;
@@ -1087,7 +1192,7 @@ a:hover {
 }
 
 #team-link-container {
-    position: absolute;
+    position: relative;
     max-width: 60vh;
     display: flex;
     flex-wrap: wrap;

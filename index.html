@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    
+
     <!--<div id="loading-container">
         <div id="load-horizontal"></div>
         <div id="load-vertical"></div>
@@ -25,13 +25,14 @@
         <form id="pick-list-form">
             <button id="sync-pick-list-button" type="submit">Sync</button>
         </form>
+        <button id="sort-pick-list-button" onclick="showPickListSort()">Sort</button>
         <div id="inner-pick-list-container">
 
         </div>
     </div>
 
     <div id="overall-grid">
-        
+
     </div>
 
     <div id="grid-frc">
@@ -127,14 +128,25 @@
     </div>
 
     <div id="comment-modal" class="modal">
-
         <!-- Modal content -->
         <div class="modal-content">
-          <span class="close-comment-modal">&times;</span>
-          <p>Comment here</p>
+            <span class="close-comment-modal">&times;</span>
+            <p>Comment here</p>
         </div>
-      
-      </div>
+    </div>
+
+    <div id="pick-list-sort-modal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close-pick-list-sort-modal" onclick="closePickListSortModal()">&times;</span>
+            <p>Select statistic to sort by:</p>
+            <div class="container">
+            <div class="pick-list-sort-button" onclick="sortPickList(1)">Auto Points</div>
+            <div class="pick-list-sort-button" onclick="sortPickList(2)">Tele Points</div>
+            <div class="pick-list-sort-button" onclick="sortPickList(13)">Total Points</div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="lib/csv.js"></script>

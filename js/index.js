@@ -4,7 +4,7 @@ const rowHighlight = document.getElementById("row-highlight");
 
 const sidebar = document.getElementById("sidebar");
 const openSidebarButton = document.getElementById("open-sidebar");
-var sidebarOpen = false;
+var sidebarOpen = true;
 
 const body = document.body;
 const settings = document.getElementById("settings");
@@ -31,6 +31,9 @@ var previousTeamComment = -1;
 
 const commentModal = document.getElementById("comment-modal");
 const closeCommentModal = document.getElementById("close-comment-modal");
+
+const sortPickListModal = document.getElementById("pick-list-sort-modal");
+const closePickListModal = document.getElementById("close-pick-list-sort-modal");
 
 const sideButtons = document.getElementsByClassName("side-button");
 for (var i = 1; i < sideButtons.length - 1; i++) {
@@ -532,6 +535,10 @@ window.onclick = function (event) {
 
 commentModal.onclick = function () {
     commentModal.style.display = "none";
+}
+
+function setAlteredRowHighlight(rows, individualRow) {
+    
 }
 
 function setRowHighlight(row, always) {
@@ -1701,14 +1708,14 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
                         }
                     }
                     temp.innerText = sortedRows[i][s];
-                    temp.style.color = "white";
-                    //Lol
-                    if (true) {
-                        console.log(PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(sortedRows[i][0]))].color);
-                        if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(sortedRows[i][0]))].getColor() != 0) {
-                            temp.style.setProperty("color", `${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(sortedRows[i][0]))].getColor() - 1]}`, "important");
-                            //console.log(tempData.style.backgroundColor);
-                        }
+                }
+                temp.style.boxShadow = "";
+                //Lol
+                if (true) {
+                    //console.log(PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(sortedRows[i][0]))].color);
+                    if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(sortedRows[i][0]))].getColor() != 0) {
+                        temp.style.boxShadow = `inset 0px 0px 0.15vh 0.35vh ${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(sortedRows[i][0]))].getColor() - 1]}`;
+                        //console.log(tempData.style.backgroundColor);
                     }
                 }
             }
@@ -1717,13 +1724,25 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
 
         if (team) {
             if (parseInt(localStorage.getItem("previousHighlightRow")) != -1) {
-                var previousTeam = TEAM_ROWS[parseInt(localStorage.getItem("previousHighlightRow"))][0];
+                var previousTeam = TEAMS[parseInt(localStorage.getItem("previousHighlightRow"))];
                 var originalHighlight = localStorage.getItem("previousHighlightRow");
                 console.log(previousTeam);
                 for (var i = 0; i < sortedRows.length; i++) {
                     if (sortedRows[i][0] == previousTeam) {
                         setRowHighlight(i, true);
                         localStorage.setItem("previousHighlightRow", originalHighlight);
+                    }
+                }
+            }
+            for (var i = 0; i < sortedRows.length; i++) {
+                for (var t = 0; t < TEAMS.length; t++) {
+                    console.log(sortedRows[i][0])
+                    if (sortedRows[i][0] == TEAMS[t]) {
+                        for (var c = 0; c < cols.length; c++) {
+                            //cols[c].children[i+1].classList = "data-value";
+                            //cols[c].children[i+1].classList.add(t);
+                        }
+                        break
                     }
                 }
             }
@@ -1829,11 +1848,11 @@ function toggleSidebar() {
     if (sidebarOpen) {
         tl.to(sidebar, { left: "0vh", duration: 0.5, ease: "power2" });
         //tl.to(rawTable, { marginLeft: "23vw", duration: 0.5, ease: "power2"}, "-=0.5");
-        tl.to(openSidebarButton, { scale: "-1 1", duration: 0.5, ease: "power2" }, "-=0.5");
+        tl.to(openSidebarButton, { scale: "1 1", duration: 0.5, ease: "power2" }, "-=0.5");
     } else {
         tl.to(sidebar, { left: "-25vh", duration: 0.5, ease: "power2" });
         //tl.to(rawTable, { marginLeft: "3vw", duration: 0.5, ease: "power2"}, "-=0.5");
-        tl.to(openSidebarButton, { scale: "1 1", duration: 0.5, ease: "power2" }, "-=0.5");
+        tl.to(openSidebarButton, { scale: "-1 1", duration: 0.5, ease: "power2" }, "-=0.5");
     }
 }
 
@@ -1843,6 +1862,8 @@ function refreshData() {
 }
 
 function setUpPickList() {
+    getTeamData();
+
     breakdownLines.style.display = "none";
     graphContainer.style.display = "none";
     overallGrid.style.display = "none";
@@ -1870,7 +1891,7 @@ function setUpPickList() {
 
         tempTeam.appendChild(tempTeamText);
 
-        console.log(TEAMS_FLIPPED)
+        //console.log(TEAMS_FLIPPED)
         if (TEAMS_FLIPPED.includes(PICK_LIST_OBJECTS[i].getTeam())) {
             let tempWarning = document.createElement("div");
             tempWarning.className = "warning-container";
@@ -1976,6 +1997,21 @@ function setUpPickList() {
             tempTeam.appendChild(tempWarning)
         }
 
+        let tempAutoPoints = document.createElement("div");
+        tempAutoPoints.innerText = TEAM_ROWS[TEAM_COLUMNS[0].indexOf(PICK_LIST_OBJECTS[i].getTeam())][1];
+        tempAutoPoints.className = "pick-list-team-stat";
+        tempTeam.appendChild(tempAutoPoints);
+
+        let tempTelePoints = document.createElement("div");
+        tempTelePoints.innerText = TEAM_ROWS[TEAM_COLUMNS[0].indexOf(PICK_LIST_OBJECTS[i].getTeam())][2];
+        tempTelePoints.className = "pick-list-team-stat";
+        tempTeam.appendChild(tempTelePoints);
+
+        let tempPoints = document.createElement("div");
+        tempPoints.innerText = TEAM_ROWS[TEAM_COLUMNS[0].indexOf(PICK_LIST_OBJECTS[i].getTeam())][13];
+        tempPoints.className = "pick-list-team-stat";
+        tempTeam.appendChild(tempPoints);
+
         var tempControlPanel = document.createElement("div");
         tempControlPanel.className = "pick-list-control-panel";
 
@@ -1989,13 +2025,18 @@ function setUpPickList() {
                 var toggles = document.getElementsByClassName("pick-list-control-panel");
                 for (var i = 0; i < toggles.length; i++) {
                     if (this != toggles[i]) {
-                        toggles[i].children[0].style.display = "none";
+                        //toggles[i].children[0].style.display = "none";
+                        toggles[i].children[0].style.scale = 0;
+                        toggles[i].style.marginLeft = "2vh";
                     }
                 }
-                if (this.children[0].style.display != "flex") {
-                    this.children[0].style.display = "flex";
+                if (this.children[0].style.scale != 1) {
+                    this.children[0].style.scale = 1;
+                    this.style.marginLeft = "17vh";
                 } else {
-                    this.children[0].style.display = "none";
+                    //this.children[0].style.display = "none";
+                    this.children[0].style.scale = 0;
+                    this.style.marginLeft = "2vh";
                 }
             } else {
 
@@ -2108,8 +2149,59 @@ function setUpPickList() {
     pickListContainer.appendChild(tempSyncButton);*/
 }
 
-function getTeamData() {
+function showPickListSort() {
+    sortPickListModal.style.display = "block";
+}
 
+function sortPickList(colNum) {
+    var sortedColumn = JSON.parse(JSON.stringify(TEAM_COLUMNS));
+    var sortedRows = [];
+    var previousRows = [];
+    var takenRows = [];
+    var counter = 0;
+
+    sortedColumn = sortedColumn[colNum].sort(function (a, b) { return b - a });
+
+    var tempColumns = JSON.parse(JSON.stringify(TEAM_COLUMNS));
+
+    for (var r = 0; r < TEAM_ROWS.length; r++) {
+        for (var i = 0; i < tempColumns[0].length; i++) {
+            //console.log(tempColumns[colNum][i]);
+            //console.log(takenRows.includes(i));
+            if (TEAM_COLUMNS[colNum][i] == sortedColumn[r] && !takenRows.includes(i)) {
+                sortedRows[counter] = TEAM_ROWS[i];
+                previousRows[counter] = i;
+                takenRows[counter] = i;
+                counter++;
+                break;
+            }
+        }
+    }
+
+    //console.log(sortedRows);
+
+    var newPickList = [];
+    var newPickListTeamKey = [];
+    console.log(PICK_LIST_TEAM_KEY)
+    for (var i = 0; i < sortedRows.length; i++) {
+        for (var t = 0; t < PICK_LIST_OBJECTS.length; t++) {
+            if (TEAM_ROWS[TEAMS.indexOf(PICK_LIST_OBJECTS[t].getTeam())] == sortedRows[i]) {
+                newPickList.push(PICK_LIST_OBJECTS[t]);
+                newPickListTeamKey.push(String(PICK_LIST_OBJECTS[t].getTeam()));
+                break;
+            }
+        }
+    }
+    PICK_LIST_OBJECTS = newPickList;
+    PICK_LIST_TEAM_KEY = newPickListTeamKey;
+    setUpPickList();
+}
+
+function closePickListSortModal() {
+    sortPickListModal.style.display = "none";
+}
+
+function getTeamData() {
     breakdownLines.style.display = "none";
     graphContainer.style.display = "none";
     pickListContainer.style.display = "none";
@@ -2172,6 +2264,7 @@ function getTeamData() {
 
         rawTable.appendChild(tempC);
     }
+    // Where in the world did I set the highlight I'm falling asleep :(
 
     for (var g = 0; g < dataToKeep.length + 1; g++) {
         TEAM_COLUMNS[g] = new Array();
