@@ -186,11 +186,14 @@ function getPickList() {
         var tempIndex = [];
         var tempNum = [];
         var tempColor = [];
-        console.log(dataset);
-        if (dataset.records.length != 0) {
+        if (dataset.records.length != 0 && String(dataset.records[0][0]).includes(",")) {
             tempIndex = dataset.records[0][0].match(/\d+/g);
             tempNum = dataset.records[0][1].match(/\d+/g);
             tempColor = dataset.records[0][2].match(/\d+/g);
+        } else if(dataset.records.length != 0 && !String(dataset.records[0][0]).includes(",")) {
+            tempIndex = [dataset.records[0][0]];
+            tempNum = [dataset.records[0][1]];
+            tempColor = [dataset.records[0][2]];
         }
         PICK_LIST = [];
         for (var i = 0; i < tempIndex.length; i++) {
@@ -207,7 +210,6 @@ function getPickList() {
         console.log(PICK_LIST_TEAM_KEY);
         if (PICK_LIST_OBJECTS.length != TEAMS.length || PICK_LIST_OBJECTS.length == 0) {
             var pickListTeamsIncluded = [];
-            console.log(TEAMS);
             for (var p = 0; p < PICK_LIST_OBJECTS.length; p++) {
                 pickListTeamsIncluded.push(PICK_LIST_OBJECTS[p].getTeam());
             }
@@ -219,7 +221,7 @@ function getPickList() {
                 }
             }
         }
-        console.log(PICK_LIST_TEAM_KEY);
+        console.log(PICK_LIST_OBJECTS);
         //openTeamOveralls();
         resetRaw();
     }).catch(error => {
@@ -247,7 +249,6 @@ function getData() {
     }
     ).done(function (dataset) {
         rawTable.innerHTML = "";
-        //console.log(dataset.records);
         DATA = dataset;
         FIELDS = dataset.fields;
         RECORDS = dataset.records;
@@ -257,7 +258,7 @@ function getData() {
         TEAMS_DUMB = [];
         TEAMS_RECKLESS = [];
         TEAMS = [];
-
+        
         //Delete Time stamps
         for (var i = 0; i < RECORDS.length; i++) {
             RECORDS[i].splice(0, 1);
@@ -266,13 +267,13 @@ function getData() {
 
         //var tableHeader = document.createElement("div");
         //tableHeader.id = "raw-table";
-
+        
         FIELDS.push("Cubes");
         FIELDS.push("Cones");
         FIELDS.push("GP Moved");
         FIELDS.push("GP Points");
         FIELDS.push("Points");
-
+        
         for (var i = 0; i < RECORDS.length; i++) {
             if (!TEAMS.includes(RECORDS[i][0])) {
                 TEAMS[TEAMS.length] = RECORDS[i][0];
@@ -299,11 +300,11 @@ function getData() {
             RECORDS[i].push(totalCubes);
             RECORDS[i].push(totalCones);
         }
-
+        
         for (var i = 0; i < RECORDS.length; i++) {
             RECORDS[i].push(RECORDS[i][7] + RECORDS[i][8] + RECORDS[i][9] + RECORDS[i][16] + RECORDS[i][17] + RECORDS[i][18]);
         }
-
+        
         for (var i = 0; i < RECORDS.length; i++) {
             RECORDS[i].push((RECORDS[i][7] * 6) + (RECORDS[i][8] * 4) + (RECORDS[i][9] * 3) + (RECORDS[i][16] * 5) + (RECORDS[i][17] * 3) + (RECORDS[i][18] * 2));
         }
@@ -311,29 +312,29 @@ function getData() {
         for (var i = 0; i < RECORDS.length; i++) {
             RECORDS[i].push(parseInt(RECORDS[i][4]) + parseInt(RECORDS[i][6]));
         }
-
+        
         for (var h = 0; h < FIELDS.length; h++) {
             COLUMNS[h] = new Array();
             var col = document.createElement("div");
             var temp = document.createElement("div");
-
+            
             var text = document.createElement("h3");
             text.innerText = FIELDS[h];
             temp.appendChild(text);
-
+            
             temp.className = "table-header-section-raw";
-
+            
             //console.log(RECORDS[1][h]);
-            var dataType = new String(RECORDS[1][h]).substring(0, 1);
-            if (RECORDS[1][h] == null) {
-                dataType = 1;
+            var dataType = 1;
+            if (RECORDS.length > 0) {
+                dataType = new String(RECORDS[0][h]).substring(0, 1);
             }
             temp.id = dataType;
             temp.classList.add(`${(h)}`);
             //console.log(temp.classList);
             //temp.classList.add(h - 1);
             temp.onclick = function () { sortColumn(this.classList[1], detectCharacter(this.id), RECORDS, COLUMNS, FIELDS, false, true) };
-
+            
             col.className = "column";
             if (h % 2 == 1) {
                 col.style.backgroundColor = "#4d473f";
@@ -341,10 +342,10 @@ function getData() {
             col.appendChild(temp);
             rawTable.appendChild(col);
         }
-
+        
         localStorage.setItem("direction", 0);
         localStorage.setItem("column", -1);
-
+        
         for (var i = 0; i < RECORDS.length; i++) {
             for (var s = 0; s < RECORDS[i].length; s++) {
                 if (FIELDS[s] == "Flip") {
@@ -422,7 +423,7 @@ function resetRaw() {
         COLUMNS[h] = new Array();
         var col = document.createElement("div");
         var temp = document.createElement("div");
-
+        
         var text = document.createElement("h3");
         text.innerText = FIELDS[h];
         temp.appendChild(text);
@@ -430,9 +431,9 @@ function resetRaw() {
         temp.className = "table-header-section-raw";
 
         //console.log(RECORDS[1][h]);
-        var dataType = new String(RECORDS[1][h]).substring(0, 1);
-        if (RECORDS[1][h] == null) {
-            dataType = 1;
+        var dataType = 1;
+        if (RECORDS.length > 0) {
+            dataType = new String(RECORDS[0][h]).substring(0, 1);
         }
         temp.id = dataType;
         temp.classList.add(`${(h)}`);
@@ -486,6 +487,7 @@ function resetRaw() {
             if (i % 3 == 0) {
                 temp.style.backgroundColor = "#302f2b";
             }
+            console.log(PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX])));
             if (PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX])) != -1) {
                 if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() != 0) {
                     temp.style.boxShadow = `inset 0px 0px 0.15vh 0.35vh ${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() - 1]}`;
@@ -537,12 +539,34 @@ commentModal.onclick = function () {
     commentModal.style.display = "none";
 }
 
-function setAlteredRowHighlight(rows, individualRow) {
-    
+function setTeamRowHighlight(row, always) {
+    let cols = document.getElementsByClassName("column");
+    for (var c = 0; c < cols.length; c++) {
+        for (var i = 1; i < cols[c].children.length; i++) {
+            if ((i - 1) % 3 == 0) {
+                cols[c].children[i].style.backgroundColor = "#302f2b";
+            } else {
+                cols[c].children[i].style.backgroundColor = "#474540";
+            }
+        }
+    }
+
+    if (localStorage.getItem("previousHighlightRow") != row || always) {
+        localStorage.setItem("previousHighlightRow", row);
+        for (var i = 0; i < TEAM_ROWS.length; i++) {
+            if (cols[0].children[i + 1].innerText == TEAMS[row]) {
+                for (var c = 0; c < cols.length; c++) {
+                    cols[c].children[i + 1].style.setProperty("background-color", "#a8652d", "important");
+                }
+            }
+        }
+    } else {
+        localStorage.setItem("previousHighlightRow", -1);
+    }
 }
 
 function setRowHighlight(row, always) {
-    var cols = document.getElementsByClassName("column");
+    let cols = document.getElementsByClassName("column");
     for (var c = 0; c < cols.length; c++) {
         for (var i = 1; i < cols[c].children.length; i++) {
             if ((i - 1) % 3 == 0) {
@@ -1723,7 +1747,7 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
         // This code is a mess
 
         if (team) {
-            if (parseInt(localStorage.getItem("previousHighlightRow")) != -1) {
+            /*if (parseInt(localStorage.getItem("previousHighlightRow")) != -1) {
                 var previousTeam = TEAMS[parseInt(localStorage.getItem("previousHighlightRow"))];
                 var originalHighlight = localStorage.getItem("previousHighlightRow");
                 console.log(previousTeam);
@@ -1733,18 +1757,21 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
                         localStorage.setItem("previousHighlightRow", originalHighlight);
                     }
                 }
-            }
+            }*/
             for (var i = 0; i < sortedRows.length; i++) {
                 for (var t = 0; t < TEAMS.length; t++) {
                     console.log(sortedRows[i][0])
                     if (sortedRows[i][0] == TEAMS[t]) {
                         for (var c = 0; c < cols.length; c++) {
-                            //cols[c].children[i+1].classList = "data-value";
-                            //cols[c].children[i+1].classList.add(t);
+                            cols[c].children[i + 1].classList = "data-value";
+                            cols[c].children[i + 1].classList.add(t);
                         }
-                        break
+                        break;
                     }
                 }
+            }
+            if (parseInt(localStorage.getItem("previousHighlightRow")) != -1) {
+                setTeamRowHighlight(localStorage.getItem("previousHighlightRow"), true);
             }
         }
 
@@ -2216,9 +2243,9 @@ function getTeamData() {
     var dataToKeep = [];
     var dCounter = 0;
     for (var i = 0; i < FIELDS.length; i++) {
-        var dataType = new String(RECORDS[1][i]).substring(0, 1);
-        if (RECORDS[1][i] == null) {
-            dataType = 1;
+        var dataType = 1;
+        if (RECORDS.length > 0) {
+            dataType = new String(RECORDS[0][i]).substring(0, 1);
         }
         if (detectCharacter(dataType) == 1 && FIELDS[i] != "Match Number" && !FIELDS[i].includes("Placement")) {
             dataToKeep[dCounter] = i - 1;
@@ -2239,7 +2266,6 @@ function getTeamData() {
 
     TEAMS.sort((a, b) => a - b);
     console.log(TEAMS);
-
     for (var i = 0; i < dataToKeep.length; i++) {
         var tempC = document.createElement("div");
         tempC.className = "column";
@@ -2301,7 +2327,7 @@ function getTeamData() {
                 }
 
                 tempData.addEventListener("click", function () {
-                    setRowHighlight(parseInt(this.classList[1]), true);
+                    setTeamRowHighlight(parseInt(this.classList[1]), true);
                     /*if (this.children.length > 0) {
                         closeTeamComments(this.id, parseInt(this.classList[1]), this);
                     } else {
@@ -2312,7 +2338,7 @@ function getTeamData() {
             } else {
                 tempData.innerText = Math.floor(average / teamRows.length * 10) / 10;
                 tempData.addEventListener("click", function () {
-                    setRowHighlight(parseInt(this.classList[1]), false);
+                    setTeamRowHighlight(parseInt(this.classList[1]), false);
                 });
             }
             //console.log(PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(TEAMS[i]))]);

@@ -105,6 +105,7 @@ body {
     position: relative;
     border-top: 0.5vh solid #131313;;
     border-bottom: 0.5vh solid #131313;;
+    font-weight: normal;
 }
 
 .data-value::after {
