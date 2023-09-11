@@ -595,7 +595,7 @@ function showGrid(recordNum, colNum, record) {
     // I can't deal with sticky I gave up haha
     previousGridScrollX = window.scrollX;
     previousGridScrollY = window.scrollY;
-    window.scrollTo(0, 0);
+    //window.scrollTo(0, 0);
     // Very clean code, great use of sticky
     breakdownLines.style.display = "none";
     graphContainer.style.display = "none";
@@ -625,7 +625,7 @@ function hideGrid() {
     body.style.overflow = "auto";
     frcGrid.style.display = "none";
     // The impossible sticky strikes again :(
-    window.scrollTo(previousGridScrollX, previousGridScrollY);
+    //window.scrollTo(previousGridScrollX, previousGridScrollY);
 }
 
 function setUpCompare() {
@@ -2174,6 +2174,21 @@ function setUpPickList() {
     tempSyncButton.innerText = "Sync";
     tempSyncButton.id = "sync-pick-list-button";
     pickListContainer.appendChild(tempSyncButton);*/
+}
+
+function downloadPickList() {
+    let fileText = JSON.parse(JSON.stringify(PICK_LIST_TEAM_KEY));
+    for(let i = 0; i < fileText.length; i ++) {
+        fileText[i] += "\n";
+    }
+    const element = document.createElement("a");
+    const file = new Blob(fileText, {
+      type: "text/plain",
+    });
+    element.href = URL.createObjectURL(file);
+    element.download = "PicklistRaw.txt";
+    document.body.appendChild(element);
+    element.click();
 }
 
 function showPickListSort() {

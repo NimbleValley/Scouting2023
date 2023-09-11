@@ -23,9 +23,10 @@
     <div id="pick-list-container">
         <input type="range" min="1.5" max="5" value="4" class="slider" id="pick-list-scale" step="0.1">
         <form id="pick-list-form">
-            <button id="sync-pick-list-button" type="submit">Sync</button>
+            <button id="sync-pick-list-button" class="pick-list-operator-button" type="submit">Sync</button>
         </form>
-        <button id="sort-pick-list-button" onclick="showPickListSort()">Sort</button>
+        <button id="sort-pick-list-button" class="pick-list-operator-button" onclick="showPickListSort()">Sort</button>
+        <button id="save-pick-list-button" class="pick-list-operator-button" onclick="downloadPickList()">Save</button>
         <div id="inner-pick-list-container">
 
         </div>

@@ -103,8 +103,10 @@ body {
     padding-top: 0.5vh;
     padding-bottom: 0.5vh;
     position: relative;
-    border-top: 0.5vh solid #131313;;
-    border-bottom: 0.5vh solid #131313;;
+    border-top: 0.5vh solid #131313;
+    ;
+    border-bottom: 0.5vh solid #131313;
+    ;
     font-weight: normal;
 }
 
@@ -317,7 +319,7 @@ h3 {
     position: relative;
 }
 
-.pick-list-team > .pick-list-team-stat ~ .pick-list-team-stat {
+.pick-list-team>.pick-list-team-stat~.pick-list-team-stat {
     margin-left: 5vh;
 }
 
@@ -336,6 +338,7 @@ h3 {
     0% {
         width: 0px;
     }
+
     100% {
         width: 15vh;
     }
@@ -437,7 +440,7 @@ h3 {
     background-color: chocolate;
 }
 
-#sync-pick-list-button {
+.pick-list-operator-button {
     position: fixed;
     width: 20vh;
     height: 8vh;
@@ -445,7 +448,6 @@ h3 {
     border-radius: 1vh;
     background-color: transparent;
     right: 2vh;
-    top: 2vh;
     font-weight: bold;
     color: rgb(173, 100, 48);
     max-width: 30vh;
@@ -454,33 +456,22 @@ h3 {
     transition: background-color 0.15s, color 0.15s;
 }
 
-#sync-pick-list-button:hover {
+.pick-list-operator-button:hover {
     cursor: pointer;
     background-color: rgb(173, 100, 48);
     color: #2b2b2b;
+}
+
+#sync-pick-list-button {
+    top: 2vh;
 }
 
 #sort-pick-list-button {
-    position: fixed;
-    width: 20vh;
-    height: 8vh;
-    border: 0.5vh solid rgb(173, 100, 48);
-    border-radius: 1vh;
-    background-color: transparent;
-    right: 2vh;
     top: 12vh;
-    font-weight: bold;
-    color: rgb(173, 100, 48);
-    max-width: 30vh;
-    font-size: 4vh;
-    font-family: 'Poppins', sans-serif;
-    transition: background-color 0.15s, color 0.15s;
 }
 
-#sort-pick-list-button:hover {
-    cursor: pointer;
-    background-color: rgb(173, 100, 48);
-    color: #2b2b2b;
+#save-pick-list-button {
+    top: 22vh;
 }
 
 .slider {
@@ -676,21 +667,22 @@ p {
 h5 {
     font-size: 8vh;
     color: white;
-    background-color: #2b2b2b;
+    background-color: #1f1f1f;
     width: fit-content;
     padding: 0.5vw;
     padding-left: 1vw;
     padding-right: 1vw;
-    border-radius: 0.5vw;
+    border-radius: 0.25vw;
     margin: 0;
     height: fit-content;
     user-select: none;
     transition: background-color 0.5s;
+    border: solid 0.5vh #5e5751;
 }
 
 h5:hover {
     cursor: pointer;
-    background-color: #1b1b1b;
+    background-color: #000000;
 }
 
 select {
@@ -749,8 +741,8 @@ option {
 #grid-frc {
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.596);
-    position: sticky;
+    background-color: rgba(0, 0, 0, 0.795);
+    position: fixed;
     top: 0vh;
     z-index: 10000;
     left: 0;
@@ -773,8 +765,16 @@ option {
     border-radius: 0.5vw;
 }
 
-#close-grid-button {
+#close-grid-button:hover {
     cursor: pointer;
+}
+
+#close-grid-button>h2 {
+    transition: font-weight 0.15s;
+}
+
+#close-grid-button:hover>h2 {
+    font-weight: bolder !important;
 }
 
 #close-grid-button::after {
@@ -785,7 +785,7 @@ option {
     height: 0vw;
     left: 0;
     top: 0;
-    transition: width 0.25s, height 0.25s, background-color 0.25s, border-radius 0.25s;
+    transition: width 0.15s, height 0.15s, background-color 0.15s, border-radius 0.15s;
 }
 
 #close-grid-button:hover::after {
@@ -1266,7 +1266,7 @@ a:hover {
 
 @keyframes overall-pulse {
     0% {
-        background-position: 0% -70%;
+        background-position: 0% -100%;
     }
 
     100% {
