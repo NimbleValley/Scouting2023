@@ -1,5 +1,5 @@
 function runAutoPie(autoTypes, autoSuccess) {
-    const autoNames = ["A1pC", "A1pCM", "A2pCM", "A3pCM", "A1p", "A1pM","A2pM", "A3pM", "A", "AM", "AC", "ACM"];
+    const autoNames = ["A1pC", "A1pCM", "A2pCM", "A3pCM", "A1p", "A1pM", "A2pM", "A3pM", "A", "AM", "AC", "ACM"];
     const autoNameKeys = ["1P with Charge", "1P with Charge & Mobility", "2P with Charge and Mobility", "3P with Charge and Mobility", "1 Piece", "1P with Mobility", "2P with Mobility", "3P with Mobility", "No auto", "Only Mobility", "Only Charge", "Charge with Mobility"];
 
     let fillColors = ["#D62828", "#F77F00", "#FCBF49", "#9e997b", "#ffffff", "#ffea00"];
@@ -7,6 +7,7 @@ function runAutoPie(autoTypes, autoSuccess) {
     let autoNumbers = [];
     let autoKeys = [];
     let autoWork = [];
+
     for (var i = 0; i < autoTypes.length; i++) {
         if (!autoKeys.includes(autoTypes[i])) {
             autoKeys.push(autoTypes[i]);
@@ -35,7 +36,7 @@ function runAutoPie(autoTypes, autoSuccess) {
 
         ctx.beginPath();
         ctx.arc(canvas.width * (1 / 2), canvas.height * (1 / 2), consistencyRate * canvas.height * (1 / 2), percentOn * (Math.PI * 2), (addFactor * (Math.PI * 2)) + (percentOn * (Math.PI * 2)));
-        ctx.fillStyle = fillColors[i%6];
+        ctx.fillStyle = fillColors[i % 6];
         ctx.lineTo(canvas.width * (1 / 2), canvas.height * (1 / 2));
         ctx.fill();
 
@@ -51,11 +52,15 @@ function runAutoPie(autoTypes, autoSuccess) {
     let tempAutoDescriptionContainer = document.createElement("div");
     tempAutoDescriptionContainer.id = "breakdown-auto-values-container";
 
-    for(var i = 0; i < autoKeys.length; i ++) {
+    for (var i = 0; i < autoKeys.length; i++) {
         let tempAutoDescription = document.createElement("p");
         tempAutoDescription.className = "auto-breakdown-description";
-        tempAutoDescription.innerText = `${autoNameKeys[autoNames.indexOf(autoKeys[i])]}: ${autoWork[i]}/${autoNumbers[i]}`;
-        tempAutoDescription.style.color = fillColors[i%6];
+        if (autoNameKeys[autoNames.indexOf(autoKeys[i])]) {
+            tempAutoDescription.innerText = `${autoNameKeys[autoNames.indexOf(autoKeys[i])]}: ${autoWork[i]}/${autoNumbers[i]}`;
+        } else {
+            tempAutoDescription.innerText = `BAD DATA: ${autoWork[i]}/${autoNumbers[i]}`;
+        }
+        tempAutoDescription.style.color = fillColors[i % 6];
 
         tempAutoDescriptionContainer.appendChild(tempAutoDescription);
     }

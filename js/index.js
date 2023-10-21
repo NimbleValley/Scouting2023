@@ -16,7 +16,7 @@ console.log(localStorage.getItem("spreadsheet-url"));
 
 const breakdownLines = document.getElementById("breakdown-lines-container");
 // CHANGE BELOW
-const overallCategoryHeaders = ["Points", "Gp Moved", "Gp Points", "Auto Points", "Tele Points", "Cubes Moved", "Cones Moved", "High Gp (Tele)", "Mid Gp (Tele)", "Low Gp (Tele)"];
+const overallCategoryHeaders = ["Points", "Gp Moved", "Gp Points", "Auto Points", "Tele Points", "Cubes Moved", "Cones Moved", "High Gp (Tele)", "Mid Gp (Tele)", "Low Gp (Tele)", "GP Missed (Auto)", "GP Missed (Tele)"];
 var firstOverall = true;
 
 const graphContainer = document.getElementById("graph-container");
@@ -282,6 +282,7 @@ function getData() {
         TEAMS.sort(function (a, b) { return a - b });
         console.log(TEAMS);
 
+        // Cubes & cones
         for (var i = 0; i < RECORDS.length; i++) {
             var totalCubes = 0;
             var totalCones = 0;
@@ -301,14 +302,17 @@ function getData() {
             RECORDS[i].push(totalCones);
         }
         
+        // GP Moved
         for (var i = 0; i < RECORDS.length; i++) {
-            RECORDS[i].push(RECORDS[i][7] + RECORDS[i][8] + RECORDS[i][9] + RECORDS[i][16] + RECORDS[i][17] + RECORDS[i][18]);
+            RECORDS[i].push(RECORDS[i][7] + RECORDS[i][8] + RECORDS[i][9] + RECORDS[i][17] + RECORDS[i][18] + RECORDS[i][19]);
         }
         
+        // GP Points
         for (var i = 0; i < RECORDS.length; i++) {
-            RECORDS[i].push((RECORDS[i][7] * 6) + (RECORDS[i][8] * 4) + (RECORDS[i][9] * 3) + (RECORDS[i][16] * 5) + (RECORDS[i][17] * 3) + (RECORDS[i][18] * 2));
+            RECORDS[i].push((RECORDS[i][7] * 6) + (RECORDS[i][8] * 4) + (RECORDS[i][9] * 3) + (RECORDS[i][17] * 5) + (RECORDS[i][18] * 3) + (RECORDS[i][19] * 2));
         }
 
+        // Total points
         for (var i = 0; i < RECORDS.length; i++) {
             RECORDS[i].push(parseInt(RECORDS[i][4]) + parseInt(RECORDS[i][6]));
         }
@@ -487,13 +491,13 @@ function resetRaw() {
             if (i % 3 == 0) {
                 temp.style.backgroundColor = "#302f2b";
             }
-            console.log(PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX])));
+            //console.log(PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX])));
             if (PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX])) != -1) {
                 if (PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() != 0) {
                     temp.style.boxShadow = `inset 0px 0px 0.15vh 0.35vh ${teamColors[PICK_LIST_OBJECTS[PICK_LIST_TEAM_KEY.indexOf(String(RECORDS[i][TEAM_INDEX]))].getColor() - 1]}`;
                 }
             } else {
-                //alert("Team not found in pick list :(");
+                console.error("Team '" + String(RECORDS[i][TEAM_INDEX]) + "' not found in pick list :(");
             }
             if (FIELDS[s].includes("Placement")) {
                 temp.innerText = "{ Show Grid }";
@@ -861,7 +865,7 @@ function setUpGraph() {
     tempTeamSelect.addEventListener("input", doGraph);
     tempTeamSelect.style.width = "15vh";
     tempTeamSelect.style.marginRight = "5vh";
-    for (var i = 1; i < TEAMS.length; i++) {
+    for (var i = 0; i < TEAMS.length; i++) {
         let op = document.createElement("option");
         op.text = TEAMS[i];
         op.value = TEAMS[i];
@@ -1239,11 +1243,13 @@ function openTeamOveralls() {
     //console.log(TEAM_COLUMNS);
     var overallData = [];
 
-    var sortIndexes = [13, 11, 12, 1, 2, 9, 10, 6, 7, 8, 0, 0, 0];
+    var sortIndexes = [15, 13, 14, 1, 2, 11, 12, 7, 8, 9, 6, 10, 0];
 
     localStorage.setItem("breakdown-team", document.getElementById("team-overall-select").value);
 
     for (var i = 0; i < overallCategoryHeaders.length; i++) {
+        //console.log(sortIndexes[i]);
+
         var teamsSorted = [];
         for (var t = 0; t < getSortedIndex(sortIndexes[i], 456, TEAM_ROWS, TEAM_COLUMNS).length; t++) {
             teamsSorted[t] = getSortedIndex(sortIndexes[i], 456, TEAM_ROWS, TEAM_COLUMNS)[t][0];
@@ -1539,13 +1545,33 @@ function openTeamOveralls() {
 
     getTeamMatchesTBA(`https://www.thebluealliance.com/api/v3/team/frc${document.getElementById("team-overall-select").value}/event/${document.getElementById("event-select").value}/matches`);
 
+    let tempStationsText = document.createElement("h1");
+    tempStationsText.className = "breakdown-comment";
+    // Floor, Single, Double
+    let usedStations = [0, 0, 0];
+
+    // Adds up the number of times team used floor, single, & double loading stations
+    for (var i = 0; i < RECORDS.length; i++) {
+        if (RECORDS[i][TEAM_INDEX] == parseInt(document.getElementById("team-overall-select").value)) {
+            if(RECORDS[i][30] == "Floor") {
+                usedStations[0] ++;
+            } else if(RECORDS[i][30] == "Single") {
+                usedStations[1] ++;
+            } else if(RECORDS[i][30] == "Double") {
+                usedStations[2] ++;
+            }
+        }
+    }
+    tempStationsText.innerText = `Used floor pickup: ${usedStations[0]}\nUsed single loading station: ${usedStations[1]}\nUsed double loading station: ${usedStations[2]}`
+    tempCommentContainer.appendChild(tempStationsText);
+
     //let commentText = "Comments: ";
     for (var i = 0; i < RECORDS.length; i++) {
         if (RECORDS[i][TEAM_INDEX] == parseInt(document.getElementById("team-overall-select").value)) {
             //console.log('y');
             let tempComment = document.createElement("h1");
             tempComment.className = "breakdown-comment";
-            tempComment.innerText = RECORDS[i][28];
+            tempComment.innerText = RECORDS[i][31];
             tempCommentContainer.appendChild(tempComment);
             //commentText = commentText + "\n" + "\n" + RECORDS[i][27];
         }
@@ -1566,7 +1592,7 @@ function openTeamOveralls() {
         if (RECORDS[g][TEAM_INDEX] == document.getElementById("team-overall-select").value) {
             let tempAuto = "A";
             // CHANGE
-            let autoGP = parseInt(RECORDS[g][7]) + parseInt(RECORDS[g][8]) + parseInt(RECORDS[g][9]);
+            let autoGP = parseInt(RECORDS[g][7]) + parseInt(RECORDS[g][8]) + parseInt(RECORDS[g][9] + parseInt(RECORDS[g][16]));
             if (autoGP > 0) {
                 tempAuto += autoGP;
                 tempAuto += "p";
@@ -1583,7 +1609,7 @@ function openTeamOveralls() {
             } else {
                 team_auto_success.push(0);
             }
-            console.log(tempAuto);
+            console.warn(tempAuto);
         }
     }
 
@@ -1617,7 +1643,7 @@ function getSortedIndex(colNum, team, records, columns) {
         }
     }
 
-    //console.log(sortedRows);
+    console.log(sortedRows);
 
     return sortedRows;
 }
@@ -1651,7 +1677,7 @@ function sortColumn(colNum, type, records, columns, field, team, useCols) {
             cols[colNum].style.background = 'linear-gradient(0deg, rgba(18,18,18,1) 0%, rgba(255,158,0,1) 100%)';
             cols[colNum].style.animation = `column-sort-down ${2.5}s linear infinite`;
         }
-        cols[colNum].style.backgroundSize = "100% 50%";
+        cols[colNum].style.backgroundSize = "100vh 50%";
     }
 
     if (type == 1) {

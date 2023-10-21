@@ -975,13 +975,13 @@ h8 {
 }
 
 h9 {
-    font-size: 1.75vh;
+    font-size: 1.725vh;
     color: #847676;
 }
 
 #overall-grid {
     position: absolute;
-    grid-template-columns: 55vh 1fr;
+    grid-template-columns: 62.5vh 1fr;
     grid-template-rows: 1fr 5fr;
     grid-column-gap: 2vh;
     grid-row-gap: 2vh;
@@ -1276,11 +1276,11 @@ a:hover {
 
 @keyframes column-sort-up {
     0% {
-        background-position: 0% 100%;
+        background-position: 0% 0%;
     }
 
     100% {
-        background-position: 0% 200%;
+        background-position: 0% 100%;
     }
 }
 
